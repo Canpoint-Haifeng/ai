@@ -16,12 +16,13 @@ bot_token = os.environ["SLACK_BOT_TOKEN"]
 web_client = WebClient(token=bot_token)
 client = SocketModeClient(app_token=app_token, web_client=web_client)
 
+from digit_recognition import recognize_digit
+
 def process_image(image_url):
     """
     Process the image from Slack and recognize handwritten digits
     """
-    # TODO: Implement OpenCV digit recognition
-    pass
+    return recognize_digit(image_url)
 
 def handle_message(client: SocketModeClient, req: SocketModeRequest):
     if req.type == "events_api":
