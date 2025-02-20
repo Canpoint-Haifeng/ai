@@ -1,4 +1,180 @@
-{{The original template content from the user's message}}
+<template>
+  <div class="page-main" :class="{ 'page-main-left': !navChildStatus }">
+    <div class="page-title">
+      <h2 class="title-text">教师评语/描述提示</h2>
+    </div>
+    <div class="page-content">
+      <div class="page-search-form">
+        <el-form
+          :inline="true"
+          :model="searchForm"
+          ref="searchform"
+          :rules="searchRules"
+          @submit.native.prevent
+        >
+          <el-form-item label="" prop="idValue">
+            <div class="search-form-apps-bind">
+              <el-input
+                v-model.trim="searchForm.prompt"
+                placeholder="请输入提示语内容"
+                class="form-input"
+              ></el-input>
+            </div>
+          </el-form-item>
+          <el-form-item style="margin-left: 30px">
+            <el-button
+              class="btn"
+              native-type="submit"
+              @click="search('search')"
+              >搜索</el-button
+            >
+            <el-button class="btn gray-btn" @click="search('reset')"
+              >重置</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="page-table">
+        <el-row>
+          <el-col :span="12">
+            <p class="ban-p-text">
+              共<i> {{ tableData.totalCount ? tableData.totalCount : 0 }} </i
+              >个提示语
+            </p>
+          </el-col>
+          <el-col :span="12" style="text-align: right">
+            <el-button
+              style="padding: 8px 12px"
+              v-if="isAuth('sys:user:insert')"
+              class="add-btn btn"
+              @click="addQuestion"
+            >
+              <i class="iconfont icon-nonebg-add" style="font-size: 13px"></i>
+              添加提示语
+            </el-button>
+            <el-button
+              style="padding: 8px 12px"
+              v-else
+              class="dis-btn"
+              :disabled="true"
+            >
+              <i class="iconfont icon-nonebg-add" style="font-size: 13px"></i>
+              添加提示语
+            </el-button>
+          </el-col>
+        </el-row>
+        <div class="pd10"></div>
+        <el-table
+          v-loading="loading"
+          :data="tableData.list"
+          style="width: 100%"
+        >
+          <el-table-column prop="prompt" width="" label="提示语名称">
+            <template slot-scope="scope">
+              <span> {{ scope.row.prompt || "--" }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="添加时间">
+            <template slot-scope="scope">
+              {{ scope.row.timeCreate | datetime }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" label="上线状态">
+            <template slot-scope="scope">
+              <el-switch
+                style="display: block"
+                v-model="scope.row.status"
+                :active-value="1"
+                :inactive-value="0"
+                active-color="#447FFF"
+                inactive-color="#DCDFE6"
+                @change="handleSwitch(scope.row)"
+              >
+              </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column prop="caozuo" width="300" label="操作">
+            <template slot-scope="scope">
+              <span class="operate-btn" @click="changeRole(scope.row)"
+                >编辑</span
+              >
+              <em class="line">|</em>
+              <span class="operate-btn" @click="onlineItemShow(scope.row)">
+                <span>删除</span>
+              </span>
+            </template>
+          </el-table-column>
+          <noresult-common text="暂无数据！" slot="empty"></noresult-common>
+        </el-table>
+        <div class="page-log-pagination" v-if="tableData.list.length">
+          <el-pagination
+            @current-change="handleCurrentChange"
+            :current-page.sync="tableData.currPage"
+            :page-size="tableData.pageSize"
+            layout="prev, pager, next, jumper"
+            :total="tableData.totalCount"
+          >
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+
+    <!--编辑-->
+    <el-dialog
+      :title="selectRoleDialog.title"
+      :visible.sync="selectRoleDialog.visible"
+      :modal-append-to-body="false"
+      :width="selectRoleDialog.width"
+    >
+      <div class="dialog-content">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          ref="changeRoleForm"
+          label-width="95px"
+        >
+          <el-form-item label="提示语内容">
+            <el-input
+              v-model.trim="selectRoleDialog.ruleForm.prompt"
+              style="width: 300px"
+              maxlength="32"
+              placeholder="请输入提示语内容"
+              @input="changeMessage($event)"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="btn" @click="changeRoleAction">确 定</el-button>
+        <el-button
+          class="btn light-gray-btn"
+          @click="selectRoleDialog.visible = false"
+          >取 消</el-button
+        >
+      </div>
+    </el-dialog>
+
+    <!--启用和停用-->
+    <el-dialog
+      :title="onlineDialog.title"
+      :visible.sync="onlineDialog.visible"
+      :modal-append-to-body="false"
+      :width="onlineDialog.width"
+    >
+      <div class="dialog-content">
+        <p class="dialog-tips">{{ onlineDialog.content }}</p>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="btn" @click="updateStatus">确 定</el-button>
+        <el-button
+          class="btn light-gray-btn"
+          @click="onlineDialog.visible = false"
+          >取 消</el-button
+        >
+      </div>
+    </el-dialog>
+  </div>
+</template>
 
 <script type="text/ecmascript-6">
 import CTS from "@/common/js/constant";
