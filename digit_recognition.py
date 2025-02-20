@@ -48,9 +48,13 @@ def recognize_digit(image_url):
         # Resize to standard size (28x28 for MNIST-like recognition)
         digit_region = cv2.resize(digit_region, (28, 28))
         
-        # TODO: Add actual digit recognition model here
-        # For now, we'll return a placeholder
-        return "Detected digit region successfully"
+        # Initialize and use the digit recognizer
+        from model import DigitRecognizer
+        recognizer = DigitRecognizer()
+        
+        # Get prediction
+        prediction = recognizer.predict(digit_region)
+        return prediction
         
     except Exception as e:
         print(f"Error processing image: {str(e)}")
