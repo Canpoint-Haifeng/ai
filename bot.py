@@ -22,7 +22,9 @@ def process_image(image_url):
     """
     Process the image from Slack and recognize handwritten digits
     """
-    return recognize_digit(image_url)
+    # Add bot token to headers for accessing private Slack files
+    headers = {'Authorization': f'Bearer {bot_token}'}
+    return recognize_digit(image_url, headers=headers)
 
 def handle_message(client: SocketModeClient, req: SocketModeRequest):
     if req.type == "events_api":

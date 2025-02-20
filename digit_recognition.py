@@ -20,12 +20,15 @@ def find_digit_contour(preprocessed_image):
         return None
     return max(contours, key=cv2.contourArea)
 
-def recognize_digit(image_url):
+def recognize_digit(image_url, headers=None):
     """Download and process image from URL to recognize digit"""
     try:
-        # Download image from URL
+        # Download image from URL with authentication if needed
         with tempfile.NamedTemporaryFile(delete=True) as tmp_file:
-            urllib.request.urlretrieve(image_url, tmp_file.name)
+            req = urllib.request.Request(image_url, headers=headers) if headers else urllib.request.Request(image_url)
+            with urllib.request.urlopen(req) as response:
+                with open(tmp_file.name, 'wb') as f:
+                    f.write(response.read())
             image = cv2.imread(tmp_file.name)
             
         if image is None:
