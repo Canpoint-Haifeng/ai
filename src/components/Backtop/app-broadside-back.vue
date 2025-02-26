@@ -1,87 +1,80 @@
 <template>
-  <div class="app-broadside-back">
-    <div class="back-item" @click="scrollToTop" v-show="visible">
-      <i class="el-icon-arrow-up"></i>
-      <span>返回顶部</span>
-    </div>
-    <div class="back-item" @click="goBack" v-if="showBack">
-      <i class="el-icon-back"></i>
-      <span>返回上一页</span>
-    </div>
+  <div>
+    <!-- <div class="three-broad-side">
+      <div class="three-broad-side-body">
+        <QQFeedback @showLogin="showLogin"></QQFeedback>
+        <CompanyWeiXin></CompanyWeiXin>
+        <CompanyWeiXin2></CompanyWeiXin2>
+      </div>
+      <div class="broad-side-backtop">
+        <BackTopComponents></BackTopComponents>
+      </div>
+    </div> -->
+
+    <!-- <InvitationActivity></InvitationActivity> -->
+    <!-- <CpRankingList v-if="isHome" @showLogin="showLogin"></CpRankingList> -->
+    <app-login ref="appLogin" />
   </div>
 </template>
 
 <script>
-export default {
+import { computed, ref } from 'vue'
+import { useStore } from 'vuex'
+import QQFeedback from './QQFeedback.vue'
+import CompanyWeiXin from './CompanyWeiXin.vue'
+import CompanyWeiXin2 from './CompanyWeiXin2.vue'
+import InvitationActivity from './InvitationActivity.vue'
+import CpRankingList from './CpRankingList.vue'
+import BackTopComponents from './components/BackTopComponents.vue'
+
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'AppBroadsideBack',
-  props: {
-    showBack: {
-      type: Boolean,
-      default: true
-    }
+  components: {
+    QQFeedback,
+    CompanyWeiXin,
+    CompanyWeiXin2,
+    InvitationActivity,
+    CpRankingList,
+    BackTopComponents,
   },
-  data() {
+  setup() {
+    const store = useStore()
+    const appLogin = ref(null)
+    
+    // Get state from store
+    const fullpath = computed(() => store.state.fullpath)
+    
+    // Computed property
+    const isHome = computed(() => fullpath.value === 'paperIndex')
+    
+    // Methods
+    const showLogin = () => {
+      appLogin.value.showLogin()
+    }
+    
     return {
-      visible: false,
-      scrollTop: 0
-    }
-  },
-  mounted() {
-    window.addEventListener('scroll', this.handleScroll)
-  },
-  beforeUnmount() {
-    window.removeEventListener('scroll', this.handleScroll)
-  },
-  methods: {
-    handleScroll() {
-      this.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-      this.visible = this.scrollTop > 200
-    },
-    scrollToTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      })
-    },
-    goBack() {
-      this.$router.go(-1)
+      appLogin,
+      isHome,
+      showLogin
     }
   }
-}
+})
 </script>
 
-<style scoped>
-.app-broadside-back {
-  position: fixed;
-  right: 40px;
-  bottom: 100px;
-  z-index: 1000;
-}
-.back-item {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #487FFF;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-  position: relative;
-}
-.back-item span {
-  display: none;
-  position: absolute;
-  right: 50px;
-  white-space: nowrap;
-  background-color: #487FFF;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-.back-item:hover span {
-  display: block;
-}
+<style lang="scss" scoped>
+  .three-broad-side {
+    position: fixed;
+    right: 0px;
+    z-index: 99;
+    top: calc(40% + 130px);
+    width: 40px;
+    .three-broad-side-body {
+      box-shadow: 0px 2px 6px 0px rgba(42, 77, 138, 0.27);
+    }
+  }
+  .broad-side-backtop {
+    padding-top: 14px;
+  }
 </style>
