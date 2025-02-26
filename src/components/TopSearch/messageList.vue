@@ -14,7 +14,7 @@
           <!--优先级  mousedown > blur > click  需要理解鼠标事件的 顺序-->
           <span
             class="span_clear"
-            @mousedown="clear"
+            @mousedown="$emit('clearList')"
           > 清空 </span>
         </div>
         <!-- 搜索历史 -->
@@ -28,7 +28,7 @@
             <span
               class="span_name"
               :title="item"
-              @mousedown="changeHistoryText(item)"
+              @mousedown="$emit('changeHistoryText', item)"
             >{{ item }}</span>
           </div>
         </div>
@@ -62,7 +62,7 @@
             <span
               class="span2"
               :title="item.paperName"
-              @mousedown="changePaperName(item)"
+              @mousedown="$emit('changePaperName', item)"
             >
               {{ item.paperName }}
             </span>
@@ -86,7 +86,7 @@ export default defineComponent({
       },
     },
     currSearchOption: {
-      type: Number,
+      type: [Number, String],
       default: 1,
     },
     historyList: {
@@ -100,31 +100,7 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ['clearList', 'changeHistoryText', 'changePaperName'],
-  setup(props, { emit }) {
-    // Methods
-    const clear = (event) => {
-      // 点击清除后 ，input 不失焦
-      event.preventDefault()
-      emit('clearList')
-    }
-    
-    const changeHistoryText = (item) => {
-      console.log('底层事件触发')
-      emit('changeHistoryText', item)
-    }
-    
-    const changePaperName = (item) => {
-      emit('changePaperName', item)
-      console.log(item, 'item--')
-    }
-    
-    return {
-      clear,
-      changeHistoryText,
-      changePaperName
-    }
-  }
+  emits: ['clearList', 'changeHistoryText', 'changePaperName']
 })
 </script>
 
