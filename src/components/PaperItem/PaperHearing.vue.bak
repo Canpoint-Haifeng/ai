@@ -1,0 +1,84 @@
+<template>
+  <div
+    v-if="hearingData && hearingData.path"
+    class="paper-hearing-box"
+  >
+    <div class="paper-hearing-title">
+      听力音频：
+    </div>
+    <div class="paper-hearing-content">
+      <cp-vue-audio
+        :the-url="hearingData.path"
+        :the-control-list="controlList"
+      />
+    </div>
+  </div>
+</template>
+<script>
+  import { API } from '@/api/config'
+  import CpVueAudio from '@/components/AudioPlay/cp-vue-audio.vue'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    components: { CpVueAudio })
+
+    return {
+    props: {
+      period: String,
+      subject: String,
+      paperIdEnc: String,
+      source: [String, Number],
+    }
+
+    return {
+    setup() {
+      const state = reactive({
+        controlList: 'noDownload noSpeed onlyOnePlaying',
+        hearingData: null,
+      }
+    }
+
+    return {
+    mounted() {
+      this.getPaperAudioHttp()
+    }
+
+    return {
+    methods: {
+      getPaperAudioHttp() {
+        let params = {
+          period: this.period,
+          subject: this.subject,
+          paperIdEnc: this.paperIdEnc,
+          source: this.source,
+        }
+        console.log(params)
+        this.apiGet(API.PAPERS_GETPAPERAUDIO, params).then((res) => {
+          if (this.checkoutRes(res)) {
+            if (res.data && res.data[0]) {
+              this.hearingData = res.data[0]
+            }
+          }
+        }
+      }
+
+    return {
+    }
+
+    return {
+  }
+})
+</script>
+<style scoped lang="scss">
+  .paper-hearing-box {
+    display: flex;
+    padding: 20px 0;
+    .paper-hearing-title {
+      line-height: 36px;
+    }
+    .paper-hearing-content {
+      padding-left: 10px;
+    }
+  }
+})
+</style>

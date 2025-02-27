@@ -1,0 +1,187 @@
+<template>
+  <div>
+    <div v-if="ques.questionId">
+      <question-item
+        :question-item="ques"
+        :show-similar="true"
+        :show-share-question="showShareQuestion"
+        v-on="$listeners"
+      />
+    </div>
+    <div v-else>
+      <div>
+        <div v-if="ques.hasQues">
+          <div
+            v-if="segmentName"
+            class="big-exam-question"
+          >
+            <span class="big-ques-name">{{ ques.typeShowInfo ? ques.typeShowInfo : segmentName }}
+            </span>
+            <span class="big-ques-lines">
+              <span class="double-triangle" />
+              <span class="dotted-line" />
+            </span>
+            <span
+              class="big-ques-button"
+              @click="onAddQuestionType()"
+            >
+              <i class="iconfont iconadd">+</i>
+              添加题型下试题
+            </span>
+          </div>
+        </div>
+        <div
+          v-else
+          :class="ques.isValid == 1 ? 'paper-segment' : 'paper-segment-layered'"
+        >
+          <LayeredLevelName
+            v-if="ques.layeredLevelCode"
+            :layered-level-code="ques.layeredLevelCode"
+          />{{ segmentName || '' }}
+        </div>
+      </div>
+      <div v-if="ques.children && ques.children.length">
+        <paper-body-cell
+          v-for="(item, index) in ques.children"
+          :key="index"
+          :ques="item"
+          :show-share-question="showShareQuestion"
+          :show-layered-name="showLayeredName"
+          v-on="$listeners"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import QuestionItem from '@/components/QuestionItem/QuestionItem'
+  import { LayeredLevelName } from '@/components/CpFan/index'
+  export default {
+    name: 'PaperBodyCell',
+    components: { QuestionItem, LayeredLevelName },
+    props: {
+      ques: Object,
+      showShareQuestion: {
+        type: Boolean,
+        default: false,
+      },
+      showLayeredName: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    data() {
+      return {
+        segmentName: '',
+      }
+    },
+    watch: {
+      ques() {
+        this.initSegmentName()
+      },
+    },
+    mounted() {
+      this.initSegmentName()
+    },
+    methods: {
+      initSegmentName() {
+        this.segmentName =
+          this.ques.typeShowInfo ||
+          this.ques.segmentName ||
+          this.ques.bigExamQuestionName ||
+          ''
+        if (this.ques.isValid === 0) {
+          this.segmentName = ''
+        }
+      },
+      onAddQuestionType() {
+        this.$emit('addQuestionType', this.ques)
+      },
+    },
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .paper-segment {
+    margin-bottom: 20px;
+    width: 874px;
+    background: #f6f6f6;
+    font-size: 16px;
+    font-family: Microsoft YaHei;
+    font-weight: 400;
+    color: #333333;
+    line-height: 42px;
+    text-align: center;
+  }
+  .big-exam-question {
+    margin: 20px 0;
+    display: flex;
+    align-items: flex-end;
+    .big-ques-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #333333;
+      line-height: 20px;
+      padding: 5px 0;
+      max-width: 600px;
+    }
+    .big-ques-lines {
+      flex: 1;
+      padding: 0 15px;
+      display: flex;
+      height: 30px;
+      align-items: flex-end;
+      .double-triangle {
+        width: 30px;
+        padding: 9px 0;
+        display: inline-block;
+        &::before {
+          display: inline-block;
+          content: '';
+          border-width: 5px 5px 5px 6px;
+          border-style: solid;
+          border-color: transparent transparent transparent #cccccc;
+        }
+        &::after {
+          display: inline-block;
+          content: '';
+          border-width: 5px 5px 5px 6px;
+          border-style: solid;
+          border-color: transparent transparent transparent #e7e7e7;
+          margin-left: -3px;
+        }
+      }
+
+      .dotted-line {
+        display: inline-block;
+        flex: 1;
+        height: 15px;
+        position: relative;
+        border-top: 1px dashed #dadada;
+      }
+    }
+    .big-ques-button {
+      width: 130px;
+      line-height: 30px;
+      border: 1px dashed $color-button-d;
+      text-align: center;
+      color: $color-button-d;
+      border-radius: 15px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .big-ques-button:hover {
+      border: 1px dashed $color-button-d-hover;
+      color: $color-button-d-hover;
+    }
+  }
+
+  .paper-segment-layered {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333333;
+    margin-bottom: 20px;
+  }
+</style>

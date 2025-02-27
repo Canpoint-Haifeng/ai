@@ -1,0 +1,486 @@
+<template>
+  <li
+    :id="questionItem.questionId + idExtends"
+    ref="questionDom"
+    class="question-wrapper-faber"
+  >
+    <div class="question-container">
+      <!--试题整体-->
+      <div
+        v-if="showTypePart"
+        class="question-type-difficulty clearfix"
+      >
+        <span class="item">题型：<em class="">{{
+          questionItem.quesType | isEmptyObject('name')
+        }}</em></span>
+        <span class="item">预估难度：<em class="">{{
+          questionItem.difficulty | isEmptyObject('name')
+        }}</em></span>
+        <div
+          v-if="itemObj"
+          class="item-time item"
+        >
+          <span class="item">推荐时间：<em class="">{{ itemObj.creteTime }}</em></span>
+        </div>
+      </div>
+      <slot name="reason" />
+      <div
+        ref="renderQuestionRef"
+        class="question-content"
+        @click="toggleExplain(questionIndex)"
+      >
+        <!--是否 有音频 -->
+        <!-- <AudioPlay v-if="quesitonAudio" :audiourl="quesitonAudio"></AudioPlay> -->
+
+        <!-- 试题展示区 -->
+        <question-cell
+          v-if="questionItem && renderflag"
+          :show-attr="showAttr"
+          :show-region="showRegion"
+          :level="1"
+          :ques-struct-pm="
+            questionItem.quesStruct &&
+              questionItem.quesStruct.code
+              ? questionItem.quesStruct.code
+              : '-1'
+          "
+          :ques="questionItem"
+          :show-question-num="questionItem.showQuestionNum"
+          :question-num="questionIndex+1"
+          :show-explain="questionItem.showExplain"
+        />
+      </div>
+      <!--试题考点区-->
+      <div
+        v-if="questionItem.showExplain || questionItem.showKnowledge"
+        class="ques-explain-part"
+      >
+        <question-knowledge
+          :show-knowledge="questionItem.showKnowledge"
+          :show-explain-code="questionItem.showExplainCode"
+          :show-login="questionItem.showLogin"
+          :knowledges-data="questionItem.knowledge || []"
+        />
+
+        <div
+          v-if="questionItem.showExplainCode"
+          class="explain-code-info"
+        >
+          很抱歉，您每日最多可查看30题的答案解析，<br>
+          如需查看更多请<span
+            class="active-serve"
+            @click="openVip"
+          >开通会员服务</span>或<span
+            class="active-serve"
+            @click="openSchool"
+          >开通校园服务</span>享受解析畅享服务
+        </div>
+        <!-- analysisQuesConfig 可能 又分析的 题目结构 -->
+        <!-- 试题解析答案 -->
+        <answer-analysis
+          v-if="
+            questionItem.showExplain &&
+              !questionItem.showExplainCode
+          "
+          :ques="questionItem"
+        />
+      </div>
+
+      <!-- 试题试卷来源区 -->
+      <div
+        v-if="
+          questionItem.questionSourceList &&
+            questionItem.questionSourceList.length > 0 &&
+            questionItem.questionSourceList != null
+        "
+        class="question-source color-9 font-12"
+      >
+        <!-- 来源：
+        <span
+          class="color-3"
+          @click="handleCommand(questionItem.questionSourceList[0])"
+        >
+          {{
+            questionItem.questionSourceList[0].paperName
+              ? questionItem.questionSourceList[0].paperName
+              : '未获取到试卷名称'
+          }}
+        </span> -->
+        <el-dropdown
+          v-if="questionItem.questionSourceList.length > 1"
+          placement="bottom"
+          class="custom-dropdown"
+          @command="handleCommand"
+          @visible-change="visibleChange"
+        >
+          <el-button
+            type="text"
+            class="dropdown-text"
+          >
+            <span class="text">更多<i class="el-icon-arrow-down el-icon--right" /></span>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu class="custom-dropdown-menu">
+              <el-dropdown-item
+                v-for="item in questionItem.questionSourceList"
+                :key="item.paperId"
+                class="dropdown-menu-item"
+                :command="item"
+              >
+                {{ item.paperName ? item.paperName : '未获取到试卷名称' }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+      <!-- <div class="question-id color-9 clearfix" v-if="!questionItem.hideQuestionId">ID: {{questionItem.questionId}}</div> -->
+      <!-- 试题操作区 -->
+      <!-- <slot name="questoinOperate"> -->
+      <div class="question-bottom">
+        <div class="question-info color-9 font-12">
+          <span class="item">更新：<em class="">{{
+            questionItem.updateTime | datetime('YYYY/MM/DD')
+          }}</em></span>
+
+          <span class="item">组卷：<em class="">{{
+            questionItem.useCount
+              ? questionItem.useCount
+              : 0
+          }}</em></span>
+        </div>
+        <div class="question-operate">
+          <span
+            v-if="!questionItem.canCollect"
+            class="hide-collect-black"
+          >&nbsp;</span>
+          <span
+            class="operate-btn add-btn"
+            @click="changeQuestionBox"
+          >
+            选用此题
+          </span>
+        </div>
+      </div>
+    </div>
+  </li>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import QuestionCell from './QuestionCell.vue'
+import QuestionKnowledge from '@/components/QuestionItem/QuestionKnowledge'
+import AnswerAnalysis from '@/components/QuestionItem/AnswerAnalysis'
+import { mapState } from 'vuex'
+import AudioPlay from '@/components/AudioPlay/index'
+import ShareQuestionPopover from '@/components/QuestionItem/ShareQuestionPopover'
+export default {
+  components: {
+    QuestionCell,
+    QuestionKnowledge,
+    AnswerAnalysis,
+    AudioPlay,
+    ShareQuestionPopover,
+  },
+  props: {
+    questionItem: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+    itemObj: {
+      type: Object,
+      default: () => {},
+    },
+    questionIndex: {
+      type: Number,
+      default: 0,
+    },
+    showView: {
+      // 试题显示地方 0-普通列表 1-试题详情特殊处理
+      type: Number,
+      default: 0,
+    },
+    showAttr: {
+      type: Boolean,
+      default: false,
+    },
+    showTypePart: {
+      type: Boolean,
+      default: true,
+    },
+    showError: {
+      type: Boolean,
+      default: true,
+    },
+    showDelete: {
+      type: Boolean,
+      default: false,
+    },
+    showRegion: {
+      type: Boolean,
+      default: false,
+    },
+    showExplain: {
+      // 是否显示答案和解析
+      type: Boolean,
+      default: false,
+    },
+    showLikePart: {
+      // 是否显示喜欢 按钮
+      type: Boolean,
+      default: false,
+    },
+    autoRender: {
+      // 是否自动渲染
+      type: Boolean,
+      default: true,
+    },
+    showShareQuestion: {
+      // 是否显示 分享按钮
+      type: Boolean,
+      default: false,
+    },
+    showSimilar: {
+      // 显示 相似题
+      type: Boolean,
+      default: false,
+    },
+    idExtends: {
+      type: String,
+      default: '',
+    },
+    showEdit: {
+      // 显示 编
+      type: Boolean,
+      default: false,
+    },
+    showChangeQues: {
+      // 显示 选用此题
+      type: Boolean,
+      default: false,
+    },
+    isShowCancelShare: {
+      // 是否显示取消分享的按钮
+      type: Boolean,
+      default: false,
+    },
+    reloadShareImgUrl: {
+      // 是不是每次 都要获取 图片
+      type: Boolean,
+      default: false,
+    },
+    showRecommend: Boolean,
+  },
+  watch: {
+    questionItem() {
+      this.renderflag = false
+      this.$nextTick(() => {
+        this.renderflag = true
+        this.onRenderJax()
+      })
+    },
+    'questionItem.showExplain'() {
+      if (this.renderflag && this.questionItem.showExplain) {
+        this.$nextTick(() => {
+          this.onRenderJax()
+        })
+      }
+    },
+  },
+  mounted() {
+    // console.log(this.questionItem, 'questionItem---')
+  },
+  computed: {
+    ...mapState(['currSubject']),
+    hasEditQuesiton() {
+      if (
+        this.showEdit &&
+        this.questionItem &&
+        this.questionItem.questionInfo
+      ) {
+        let editType = this.questionItem.questionInfo.editType
+        // let canAdapted = this.questionItem.questionInfo.canAdapted
+        if (editType == 1 || editType == 2) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    },
+    quesitonAudio() {
+      if (
+        this.questionItem &&
+        this.questionItem.questionInfo &&
+        this.questionItem.questionInfo.context &&
+        this.questionItem.questionInfo.context.audio
+      ) {
+        console.log(
+          'quesitonAudio',
+          this.questionItem.questionInfo.context.audio,
+        )
+        return this.questionItem.questionInfo.context.audio
+      } else {
+        return ''
+      }
+    },
+  },
+  data() {
+    return {
+      renderflag: true,
+      showInmation: false,
+      elLeft: 0, // 当前点击购物车按钮在网页中的绝对top值
+      elTop: 0, // 当前点击购物车按钮在网页中的绝对left值
+    }
+  },
+  methods: {
+    openVip() {
+      // CpBuyVip.install({})
+    },
+    openSchool() {
+      this.$router.push({
+        path: '/open/campus/service',
+      })
+    },
+    changeQuestionBox() {
+      this.$emit('changeQuestionBox', this.questionItem)
+    },
+    // 显示答案
+    toggleExplain(questionIndex) {
+      if (this.showView) {
+        this.$emit('toggleExplainDetail', this.questionItem)
+      } else {
+        this.$emit('toggleExplain', this.questionItem, questionIndex)
+      }
+    },
+    visibleChange(visible) {
+      // console.log(visible)
+    },
+    onRenderJax() {
+      this.onRenderJaxPage('renderQuestionRef')
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.question-wrapper-faber {
+  .question-container {
+    border-radius: 6px;
+  }
+  .question-bottom {
+    border-radius: 0 0 6px 6px;
+    .question-operate {
+      .operate-btn .iconfont {
+        color: #fea600;
+      }
+      .operate-btn.remove-btn .iconremove,
+      .operate-btn.add-btn .iconadd {
+        color: #ffffff;
+      }
+      .operate-btn:hover {
+        color: #487FFF;
+        .iconfont {
+          color: #fea600;
+        }
+        &.remove-btn,
+        &.add-btn {
+          color: #ffffff;
+          .iconremove,
+          .iconadd {
+            color: #ffffff;
+          }
+        }
+      }
+    }
+    .operate-btn.collected-btn.gl,
+    .operate-btn.collect-btn.gl {
+      width: 72px;
+      display: inline-block;
+    }
+  }
+}
+.ques-cell {
+  width: 100%;
+}
+
+.question-type-difficulty {
+  padding: 0 20px;
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid #eeeeee;
+  box-sizing: border-box;
+  & > .item {
+    color: #999999;
+    padding-right: 18px;
+    & > em {
+      color: #666666;
+    }
+  }
+  & > .share-item {
+    float: right;
+    color: #666666;
+  }
+  .item-time {
+    position: absolute;
+    right: 50px;
+    top: 0px;
+    .item {
+      padding-right: 20px;
+    }
+  }
+  .item-recommend {
+    display: inline-block;
+    width: 104px;
+    line-height: 28px;
+    border-radius: 15px;
+    opacity: 1;
+    border: 1px solid #487FFF;
+    text-align: center;
+
+    font-size: 14px;
+    color: #487FFF;
+    .iconfont {
+      display: inline-block;
+      font-size: 14px;
+      color: #487FFF;
+      padding-right: 5px;
+      vertical-align: bottom;
+    }
+  }
+}
+.question-wrapper-faber .question-source {
+  padding: 10px 36px;
+}
+
+.ques-explain-part {
+  padding: 10px 28px;
+  border-top: 1px solid #eeeeee;
+}
+
+.explain-code-info {
+  padding: 29px 0;
+  text-align: center;
+  background: #f4f4f4;
+  color: #999999;
+  margin: 10px 0;
+  line-height: 20px;
+  .active-serve {
+    color: $color-theme;
+    text-decoration: underline;
+  }
+}
+.hide-collect-black {
+  display: inline-block;
+  height: 14px;
+  width: 25px;
+}
+.link-good-plaza {
+  color: $color-theme;
+  user-select: none;
+  cursor: pointer;
+}
+</style>

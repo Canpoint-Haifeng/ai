@@ -1,0 +1,292 @@
+<template>
+  <li class="paper-item">
+    <div class="paper-info">
+      <div class="info-left color-9 font-12">
+        <h3
+          class="paper-title color-3"
+          @click="paperEdit(paperItem)"
+        >
+          {{ paperItem.paperName }}
+        </h3>
+        <div>
+          <span class="item">题量 <em
+            v-if="paperItem.totalCount"
+            class="text"
+          >{{ paperItem.totalCount }}</em>
+            <em
+              v-else
+              class="text"
+            >-</em></span>
+          <span class="item">{{ paperItem.createTime.split(' ')[0] }}组卷</span>
+        </div>
+      </div>
+      <div class="paper-operate">
+        <span
+          :class="{ 'operate-item': true, 'gray': paperItem.downLoad }"
+          @click.stop="showDownloadDialog(paperItem)"
+        >
+          <i class="icon iconfont icon-xiazai" />
+          <div class="t">试卷下载</div>
+        </span>
+        <span
+          class="operate-item"
+          @click.stop="showCopyPaperDialog(paperItem)"
+        >
+          <i class="icon iconfont icon-fuzhi" />
+          <div class="t">试卷复制</div>
+        </span>
+        <span
+          v-show="isMyPaper"
+          class="operate-item"
+          @click.stop="paperEdit(paperItem)"
+        >
+          <i class="icon iconfont icon-bianji" />
+          <div class="t">试卷编辑</div>
+        </span>
+      </div>
+    </div>
+    <i
+      class="icon iconfont icon-guanbi"
+      @click.stop="deletePaper(paperItem)"
+    />
+  </li>
+</template>
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  props: {
+    paperItem: {
+      type: Object,
+      require: true,
+      default: () => { })
+
+    return {
+    })
+
+    return {
+    paperDetail: {
+      type: Boolean,
+      default: false,
+    })
+
+    return {
+    isDownloadDialog: {
+      type: Boolean,
+      default: false,
+    })
+
+    return {
+    isMyPaper: {
+      type: Boolean,
+      default: false,
+    })
+
+    return {
+    isAddBook: {
+      type: Boolean,
+      default: false,
+    })
+
+    return {
+    subjectCode: [String, Number],
+    isShowPaper: {
+      type: Boolean,
+      default: false,
+    })
+
+    return {
+  })
+
+    return {
+  created() {
+    // console.log(this.isMyPaper, this.isDownloadDialog, 'isMyPaper')
+  })
+
+    return {
+  methods: {
+    // 删除组卷
+    deletePaper(paperItem) {
+      this.$emit('showDeleteDialog', paperItem)
+    })
+
+    return {
+    // 显示下载试卷提示框
+    showDownloadDialog(paperItem) {
+      if (paperItem.downLoad) return
+      this.$emit('showDownloadDialog', paperItem)
+    })
+
+    return {
+    // 显示 添加到图书的dialog
+    showAddBookDialog(paperItem) {
+      this.$emit('showAddBookDialog', paperItem)
+    })
+
+    return {
+    // 试卷复制
+    showCopyPaperDialog(paperItem) {
+      this.$emit('showCopyPaperDialog', paperItem)
+    })
+
+    return {
+    // 编辑
+    paperEdit(paperItem) {
+      this.$emit('showEditPaperDialog', paperItem)
+    })
+
+    return {
+    showShareDialog(paperItem) {
+      this.$emit('showShareDialog', paperItem)
+    })
+
+    return {
+    // 查看详情
+    checkPaperDetail(paperItem) {
+      this.$emit('checkPaperDetail', paperItem)
+    })
+
+    return {
+  })
+
+    return {
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.paper-item {
+  width: 874px;
+  height: 108px;
+  padding: 26px 20px;
+  border: 1px solid $color-border;
+  box-sizing: border-box;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  position: relative;
+
+  &:hover {
+    border: 1px solid #487FFF;
+    border-radius: 6px;
+
+    .delete-item {
+      position: absolute;
+      color: $color-theme-l;
+      font-size: 16px;
+      top: 0;
+      right: 0;
+      display: none;
+    }
+  }
+
+  .paper-title {
+    display: inline-block;
+    max-width: 450px;
+    line-height: 20px;
+    margin-bottom: 26px;
+    cursor: pointer;
+    font-size: $font-size-medium;
+    font-weight: 400;
+    transition: 0.2s;
+
+    &:hover {
+      color: $color-theme;
+    }
+  }
+
+  .paper-info {
+    display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+    justify-content: space-between;
+
+    .info-left {
+      .item {
+        margin-right: 10px;
+        color: #666666;
+        background: #f0f0f0;
+        border-radius: 4px;
+        padding: 3px 5px;
+
+        .text {
+          color: #ff7e3d;
+        }
+      }
+    }
+
+    .paper-operate {
+      .operate-item.gray {
+        color: #999999;
+
+        &>i {
+          background-color: #f2f2f0;
+          color: #bababa;
+
+          &:hover {
+            color: #bababa;
+          }
+        }
+      }
+
+      .operate-item {
+        text-align: center;
+        color: $color-text-d;
+        cursor: pointer;
+        width: 65px;
+        display: inline-block;
+
+        &>i {
+          background: #487FFF22;
+          border-radius: 6px;
+          padding: 8px;
+          font-size: 24px;
+          color: #487FFF;
+          display: inline-block;
+
+          &:hover {
+            color: #3e73cd;
+          }
+        }
+
+        .t {
+          font-size: 12px;
+          padding-top: 7px;
+          color: #666666;
+          font-weight: normal;
+        }
+      }
+
+      .operate-item:not(:last-child) {
+        padding-right: 5px;
+      }
+
+      .delete-item {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        color: #ff6e5d;
+        font-size: 20px;
+        display: none;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .icon-guanbi {
+    position: absolute;
+    color: $color-theme-l;
+    font-size: 16px;
+    top: 0;
+    right: 0;
+    display: none;
+  }
+
+  &:hover {
+    .icon-guanbi {
+      display: block;
+    }
+  }
+}
+</style>

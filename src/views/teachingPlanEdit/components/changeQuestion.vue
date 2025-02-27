@@ -1,0 +1,253 @@
+<template>
+  <div>
+    <el-drawer
+      v-model:visible="visible"
+      title="换题"
+      direction="rtl"
+      size="800px"
+    >
+      <div class="drawer_content">
+        <div class="switch_tab">
+          <div class="switch">
+            <span
+              :class="{active: activeTab === 1}"
+              @click="tabChange(1)"
+            >相似题</span>
+            <span
+              :class="{active: activeTab === 2}"
+              @click="tabChange(2)"
+            >相近题</span>
+            <i :style="{left: activeTab === 1 ? '19px' : '107px'}" />
+          </div>
+          <!-- <div class="point">
+                        <span>考点:</span>
+                        <div v-if="activeTab === 1">121212121212</div>
+                        <div v-else>
+                            <el-radio-group v-model="point">
+                                <el-radio :label="3">备选项111111</el-radio>
+                                <el-radio :label="6">备选项111111</el-radio>
+                            </el-radio-group>
+                        </div>
+                    </div> -->
+        </div>
+        <div class="sort_total">
+          <div class="sort_list">
+            <!-- <span :class="formData.sortType === 2 ? 'active' : ''" @click="changeSortType(2)">最新<i
+                            class="iconfont icon-transfer_2_line"></i></span>
+                        <span :class="formData.sortType === 3 ? 'active' : ''" @click="changeSortType(3)">最热<i
+                            class="iconfont icon-transfer_2_line"></i></span> -->
+          </div>
+          <div class="total">
+            共 <span>{{ pagination.total }}</span> 题
+          </div>
+        </div>
+        <div class="question_list">
+          <noresult-common
+            v-if="!pagination.total"
+            v-slot:empty
+            text="很遗憾，没有找到您要的试题"
+          />
+          <div
+            v-for="(v, i) in questionList"
+            :key="v.questionId"
+            class="question_item"
+          >
+            <question
+              :index="i+1"
+              :info="v"
+              type="2"
+              @change="changeQuestion(v)"
+            />
+          </div>
+        </div>
+        <div class="pagination">
+          <el-pagination
+            v-if="pagination.total"
+            background
+            layout="prev, pager, next, jumper"
+            :total="pagination.total"
+            :page-size="pagination.pageSize"
+            :current-page="pagination.pageNum"
+            @current-change="currentChange"
+          />
+        </div>
+      </div>
+    </el-drawer>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import question from "./question.vue";
+export default {
+    components: {
+        question
+    },
+    props: {
+        value: {
+            type: Boolean,
+            default: false,
+        },
+        currentObj: {
+            default: () => {},
+        }
+    },
+    data() {
+        return {
+            activeTab: 1,
+            point: 3,
+            pagination: {
+                total: 0,
+                pageNum: 1,
+                pageSize: 10,
+            },
+            questionList: [],
+        };
+    },
+    computed: {
+        visible: {
+            get() {
+                return this.value;
+            },
+            set(val) {
+                this.$emit('input', val);
+            },
+        },
+        oldQuestion() {
+            return this.currentObj.generalQuestionVo || {}
+        }
+    },
+    watch: {
+        value(v) {
+            if(v) {
+                this.getList();
+            } else {
+                this.questionList = []
+                this.pagination.total = 0
+            }
+        }
+    },
+    mounted() {
+        // this.getList();
+    },
+    methods: {
+        moreChange() {
+
+        },
+        tabChange(i) {
+            this.activeTab = i
+            this.pagination.pageNum = 1
+            this.getList()
+        },
+        currentChange(i) {
+            this.pagination.pageNum = i
+            this.getList()
+        },
+        getList() {
+            let params = {
+                difficulty: (this.oldQuestion.difficulty && this.oldQuestion.difficulty.code) || 1,
+                questionId: this.oldQuestion.questionId || '02031810-0cc9-baf3-e759-705581817856',
+                quesType: (this.oldQuestion.quesType && this.oldQuestion.quesType.code) || '121213',
+                pageNum: this.pagination.pageNum,
+                pageSize: this.pagination.pageSize,
+            }
+            const urlPath = `/lesson-app/general/question/${['getRelationQuestion', 'getNearQuestions'][this.activeTab-1]}`
+            this.apiGet({ urlPath }, params).then(res => {
+                if(res.code == 200) {
+                    this.questionList = res.data.records
+                    this.pagination.total = res.data.total
+                } else {
+                    this.questionList = []
+                    this.pagination.total = 0
+                }
+            })
+        },
+        changeQuestion(v) {
+            this.$emit('select', v)
+        },
+    },
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+:deep(.el-drawer) {
+    .el-drawer__body .drawer_content{
+        padding: 0 20px;
+        .switch_tab {
+            padding: 0 10px;
+            .switch{
+                display: flex;
+                position: relative;
+                padding-bottom: 6px;
+                span {
+                    font-size: 16px;
+                    margin-right: 40px;
+                    cursor: pointer;
+                    &.active {
+                        color: #487FFF;
+                    }
+                }
+                i {
+                    position: absolute;
+                    left: 20px;
+                    bottom: 0;
+                    width: 10px;
+                    height: 2px;
+                    background: #487FFF;
+                    transition: all 0.2s;
+                }
+            }
+            .point {
+                display: flex;
+                align-items: center;
+                height: 40px;
+                >span {
+                    font-weight: bold;
+                    margin-right: 10px;
+                }
+            }
+        }
+        .sort_total {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 0 12px;
+            .sort_list {
+                display: flex;
+                align-items: center;
+                >span {
+                    margin-right: 30px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    &.active,
+                    &:hover {
+                        color: #487FFF;
+                    }
+                    i {
+                        font-size: 16px;
+                        transform: translate(-4px, 1px) rotateX(180deg);
+                    }
+                }
+            }
+            .total {
+                font-size: 12px;
+                span {
+                    color: #FF6900;
+                }
+            }
+        }
+        .question_list {
+            height: calc(100vh - 220px);
+            overflow: auto;
+        }
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+    }
+}
+</style>

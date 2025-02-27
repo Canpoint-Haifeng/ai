@@ -1,0 +1,223 @@
+<template>
+  <div class="pagination-wrapper">
+    <button
+      :disabled="preDisable"
+      @click="goPre"
+    >
+      <span class="el-icon-arrow-left" />
+    </button>
+    <!--上一页按钮-->
+    <ul>
+      <!--页码列表-->
+      <li
+        v-for="index in pages"
+        :key="index"
+        ref="pages"
+      >
+        <button
+          v-if="isShowBtn(index)"
+          :class="current === index ? 'active' : ''"
+          @click="jumpToPage(index)"
+        >
+          {{ index }}
+        </button>
+        <div
+          v-else-if="isShowEllipsis(index)"
+          class="ellipsis"
+        >
+          &#8230;
+        </div>
+        <!--省略号-->
+      </li>
+    </ul>
+    <button
+      :disabled="nextDisable"
+      @click="goNext"
+    >
+      <span class="el-icon-arrow-right" />
+    </button>
+    <!--上一页按钮-->
+  </div>
+</template>
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    props: {
+      total: {
+        type: Number,
+        default: 200,
+      }
+
+    return {
+      pageSize: {
+        type: Number, // 每页显示数据pageSize
+        default: 10,
+      }
+
+    return {
+    }
+
+    return {
+    setup() {
+      const state = reactive({
+        current: 1, // 定义当前页current
+        pages: [], // 页码列表pages
+        pageLength: 0, // 页码长度pageLength
+      }
+    }
+
+    return {
+    computed: {
+      preDisable() {
+        // 是否禁用上一页
+        return this.current === 1
+      }
+
+    return {
+      nextDisable() {
+        // 是否禁用下一页
+        return this.current === this.pageLength
+      }
+
+    return {
+    }
+
+    return {
+    watch: {
+      total(val) {
+        // 监听数据总数total的改变在计算页码列表getPagesLength()
+        this.getPagesLength()
+      }
+
+    return {
+      current(val) {
+        // 监听当前页current改变，向父组件传递参数当前页
+        this.$emit('change', val)
+      }
+
+    return {
+    }
+
+    return {
+    created() {
+      // 初始化计算页码列表getPagesLength()
+      this.getPagesLength()
+    }
+
+    return {
+    methods: {
+      getPagesLength() {
+        // 计算页码列表
+        if (!this.total) return
+        this.pageLength = Math.ceil(this.total / this.pageSize)
+        this.pages = new Array(this.pageLength)
+        for (let i = 0; i < this.pageLength; i++) {
+          this.pages[i] = i + 1
+        }
+      }
+
+    return {
+      jumpToPage(index) {
+        // 点击页码
+        this.current = index
+      }
+
+    return {
+      goPre() {
+        // 上一页
+        this.current -= this.current === 1 ? 0 : 1
+      }
+
+    return {
+      goNext() {
+        // 下一页
+        this.current += this.current === this.pageLength ? 0 : 1
+      }
+
+    return {
+      isShowBtn(index) {
+        // 页码是否被省略
+        if (this.pageLength < 4) {
+          return true
+        } else {
+          if (index === 1 || index === this.pageLength) {
+            return true
+          } else {
+            if (this.current < 2 && index < 3) {
+              return true
+            } else if (
+              this.current > this.pageLength - 2 &&
+              index > this.pageLength - 3
+            ) {
+              return true
+            } else if (index < this.current + 2 && index > this.current - 2) {
+              return true
+            } else {
+              return false
+            }
+          }
+        }
+      }
+
+    return {
+      isShowEllipsis(index) {
+        // 是否显示省略号
+        return index === 2 || index === this.pageLength - 1
+      }
+
+    return {
+    }
+
+    return {
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .pagination-wrapper {
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    ul {
+      display: flex;
+      .active {
+        border: solid 1px $color-theme;
+        background-color: $color-theme;
+        color: white;
+      }
+      .ellipsis {
+        color: #999;
+        line-height: 24px;
+      }
+    }
+    button {
+      height: 30px;
+      width: 26px;
+      margin: 0 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      padding: 0;
+      text-align: center;
+      border: solid 1px #ccc;
+      color: #777;
+      font-weight: bold;
+      background: #fff;
+      overflow: hidden;
+      user-select: none;
+      &:hover {
+        border: solid 1px $color-theme;
+        cursor: pointer;
+      }
+      &:disabled {
+        border: solid 1px #ccc;
+        color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+})
+</style>

@@ -1,0 +1,577 @@
+<template>
+  <div class="content-container">
+    <div class="user-content">
+      <div class="user-content-left">
+        <div class="papers-right-title">
+          我的题库
+        </div>
+        <ul class="my-resources-list">
+          <li
+            :class="{ active: activeName == 'myQuesCollect' }"
+            @click="activeName = 'myQuesCollect'"
+          >
+            <span class="icon iconfont icon-a-wodejuanku-shoucangsvg" />
+            我的收藏
+          </li>
+        </ul>
+      </div>
+      <div class="user-content-right">
+        <el-tabs
+          v-model="activeName"
+          @tab-click="handleClick"
+        >
+          <item-one
+            :is-chapter="isChapter === 1"
+            :d-tree="treeDataList"
+            :book-id="bookId"
+            :has-chapter-child="hasChapterChild"
+            :check-node-code="checkNodeCode"
+            :version-code="teachCurrentCode"
+            :version-grade-code="gradeCurrentCode"
+            :volume-code="volumeCurrentCode"
+            :check-node-code-knowledge="checkNodeCodeKnowledge"
+          />
+        </el-tabs>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import CTS from '@/common/js/constant'
+import { delCatalogueTypeByTree } from '@/common/js/util.js'
+import { isLogin } from '@/common/js/util'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import ItemOne from '../components/one-selection'
+import myUploadQues from './my-ques/my-upload-ques.vue'
+export default {
+  components: {
+    ItemOne,
+    myUploadQues,
+  },
+  data() {
+    return {
+      tabs: [
+        {
+          name: '章节',
+          id: 1,
+          activeImg: null,
+          imgUrl: require('@/assets/images/school/tab1.png'),
+        },
+        {
+          name: '知识点',
+          id: 0,
+          activeImg: null,
+          imgUrl: require('@/assets/images/school/tab2.png'),
+        },
+      ],
+      isChapter: 1,
+      checkStrictly: false, // 控制可选和不可选
+      treeLoading: false,
+      ktreeLoading: false,
+      questionId: '',
+      questionDome: '',
+      questionVisible: false,
+      nickName: 'Smile',
+      visible: false,
+      crumbsData: [
+        {
+          path: '',
+          isLink: false,
+          text: '校本资源 ',
+        },
+        {
+          path: '',
+          isLink: false,
+          text: '校本题库 ',
+        },
+      ],
+      activeName: 'myQuesCollect',
+      defaultProps: {
+        children: 'children',
+        label: 'name',
+        isLeaf: (data, node) => {
+          return !data.type
+        },
+      },
+      treeDataList: [],
+      knowledgeTreeDataList: [],
+
+      teachData: [],
+      teachCurrentCode: '',
+      teachCurrentName: '',
+      classData: [],
+      gradeCurrentCode: '',
+      gradeCurrentName: '',
+      volumeCurrentCode: '',
+      volumeCurrentName: '',
+      bookText: {},
+      bookId: '',
+      checkNodeCode: '',
+      hasChapterChild: false,
+      treeNotMsg: '暂无数据',
+      checkNodeCodeKnowledge: '',
+      openTreeKeys: [],
+    }
+  },
+  watch: {
+    currSubject(val, old) {},
+    userInfo(v) {},
+  },
+  computed: {
+    ...mapState([
+      'userInfo',
+      'currSubject',
+      'bookCurrent',
+      'gradeCurrent',
+      'volumeCurrent',
+    ]),
+    tabActiveName() {
+      return this.$route.query.tabActiveName
+        ? this.$route.query.tabActiveName
+        : 'myQuesCollect'
+    },
+  },
+  mounted() {
+    if (this.currSubject && this.currSubject.subjectCode) {
+    }
+  },
+  created() {
+    this.activeName = this.tabActiveName
+    if (this.$route.query.isKnowledge) {
+      this.isChapter = 0
+    }
+  },
+  methods: {
+    executeDefaultChapter() {
+      // 选择第一个章节 并且 张开第一个章节
+      if (this.treeDataList && this.treeDataList[0]) {
+        let data = this.treeDataList[0]
+        this.checkNodeCodeLevel = data.level + ''
+        this.checkNodeCode = data.chapterCode + ''
+        this.hasChapterChild = data.hasChild
+
+        this.openTreeKeys = [data.chapterCode]
+
+        this.$nextTick(() => {
+          if (this.$refs.lemonTree) {
+            this.$refs.lemonTree.setCurrentKey(data.chapterCode)
+          }
+        })
+      } else {
+        this.checkNodeCodeLevel = ''
+        this.checkNodeCode = ''
+      }
+    },
+    // 获取年级和册列表
+    getGradeCategoryId() {
+      let strParams = {
+        versionCode: this.teachCurrentCode,
+        subjectCode: this.currSubject.subjectCode,
+      }
+      var classArrVom = []
+      this.getInvokeData(5, strParams).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          // 判断是否是高中学段
+          if (String(this.currSubject.periodCode) === '13') {
+            res.data.forEach(item => {
+              let currItem = {
+                gradeCode: item.code,
+                gradeName: item.name,
+                volumeCode: '',
+                volumeName: '',
+              }
+              classArrVom.push(currItem)
+            })
+            this.classData = classArrVom
+          } else {
+            res.data.forEach(item => {
+              if (item.children && item.children.length) {
+                item.children.forEach(value => {
+                  // let currItem = { gradeCode: this.runCodeSplice(item.code, 1), gradeName: item.name, volumeCode: this.runCodeSplice(value.code, 2), volumeName: value.name }
+                  let currItem = {
+                    gradeCode: item.code,
+                    gradeName: item.name,
+                    volumeCode: value.code,
+                    volumeName: value.name,
+                  }
+                  classArrVom.push(currItem)
+                })
+              }
+            })
+            this.classData = classArrVom
+          }
+        }
+      })
+    },
+    // 选择年级版本
+    selectGrade(item) {
+      this.gradeCurrentCode = item.gradeCode
+      this.gradeCurrentName = item.gradeName
+      this.volumeCurrentCode = item.volumeCode
+      this.volumeCurrentName = item.volumeName
+      // 重置数据
+      this.bookText = {}
+      this.treeDataList = []
+      this.visible = false
+      this.getPaperList() // 获取右侧栏数据
+      if (this.currSubject.periodCode == '13') {
+        this.addChooseConfig(this.currSubject.subjectCode, {
+          grade: item.gradeCode,
+          volume: item.gradeCode,
+          version: this.teachCurrentCode,
+        })
+      } else {
+        this.addChooseConfig(this.currSubject.subjectCode, {
+          grade: item.gradeCode,
+          volume: item.volumeCode,
+          version: this.teachCurrentCode,
+        })
+      }
+    },
+    // 选择教材版本
+    selectBook(item) {
+      this.teachCurrentName = item.name
+      this.teachCurrentCode = item.code
+      this.gradeCurrentCode = ''
+      this.gradeCurrentName = ''
+      this.classData = []
+      this.volumeCurrentCode = ''
+      this.volumeCurrentName = ''
+      this.getGradeCategoryId()
+    },
+    // 获取侧边栏数据
+    getPaperList() {
+      // type=6&strParams={"stage":"13","subject":"1312","versions":"131238","grade":"13123841","volume":"0"}
+      let strParams = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        versions: this.teachCurrentCode,
+        grade: this.gradeCurrentCode,
+        volume: this.volumeCurrentCode ? this.volumeCurrentCode : '0',
+      }
+
+      if (
+        strParams.stage &&
+        strParams.subject &&
+        strParams.versions &&
+        strParams.grade
+      ) {
+        this.getInvokeData(6, strParams).then(res => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            if (res.data && res.data.bookText) {
+              this.bookText = res.data.bookText
+              this.bookId = res.data.bookText.id + ''
+              this.checkNodeCode = ''
+            } else {
+              this.bookId = ''
+              this.checkNodeCode = ''
+            }
+            if (res.data && res.data.chapters) {
+              // 处理层级关系
+              let catalist = this.setTreeLevel(res.data.chapters)
+              // 处理 将树中 catalogueType=='1' 的去掉
+              this.treeDataList = delCatalogueTypeByTree(catalist)
+              this.executeDefaultChapter()
+              // 设置 默认展开值
+            } else {
+              this.treeDataList = []
+              this.executeDefaultChapter()
+            }
+            this.treeLoading = false
+          } else {
+            this.treeLoading = false
+            this.treeDataList = []
+            this.executeDefaultChapter()
+          }
+        })
+      }
+    },
+    // 获取教材版本列表
+    getBookCategoryId() {
+      let strParams = {
+        periodCode: this.currSubject.periodCode,
+        subjectCode: this.currSubject.subjectCode,
+      }
+      this.getInvokeData(4, strParams).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          let bookArr = res.data
+          this.teachData = bookArr
+        }
+      })
+    },
+    getDefaultBook() {
+      this.apiGet(API.GET_DEFAULT_SUBJECT).then(res => {
+        if (res.data && res.code === CTS.constant.SUCCESS_CODE) {
+          if (
+            res.data.periodName === this.currSubject.periodName &&
+            res.data.subjectName === this.currSubject.subjectName
+          ) {
+            this.teachCurrentName = res.data.bookVersionName
+            this.teachCurrentCode = res.data.bookVersionCode
+            this.gradeCurrentCode = res.data.gradeCode
+            this.gradeCurrentName = res.data.gradeName
+            this.volumeCurrentCode = res.data.volumeCode
+            this.volumeCurrentName = res.data.volumeName
+            this.getGradeCategoryId(res.data.bookVersionCode) // 获取年级
+          } else {
+            this.getDefaultBookToBack() // 获取全品AI教研云后台的信息
+          }
+        }
+      })
+    },
+    // 获取全品AI教研云后台的默认学段学科
+    getDefaultBookToBack() {
+      if (isLogin()) {
+        if (!this.userInfo.userGuid) return
+      }
+      let strParams = {
+        periodCode: this.currSubject.periodCode,
+        subjectCode: this.currSubject.subjectCode,
+      }
+      this.getInvokeData(3, strParams, this.userInfo.userGuid || '').then(
+        res => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            let codeObj = res.data.paramValue
+            this.teachCurrentName = res.data.textbookVersionName
+            this.teachCurrentCode = codeObj.textbookVersionCode
+            this.gradeCurrentCode = codeObj.gradeCode
+            this.gradeCurrentName = res.data.gradeName
+            if (this.currSubject.periodCode === '13') {
+              this.volumeCurrentCode = ''
+              this.volumeCurrentName = ''
+            } else {
+              this.volumeCurrentCode = codeObj.volumeCode
+              this.volumeCurrentName = res.data.volumeName
+            }
+
+            this.getGradeCategoryId(codeObj.textbookVersionCode) // 获取年级
+            this.getPaperList() // 获取右侧栏数据
+          }
+        },
+      )
+    },
+    handleTabsClick(tab, event) {
+      this.isChapter = tab.id
+    },
+    handleClick() {},
+    // 点击行的选中状态
+    handleRowClick(node, data) {
+      this.checkNodeCode = data.chapterCode
+      this.hasChapterChild = data.hasChild
+    },
+    checkClick(data) {
+      this.checkNodeCode = data.chapterCode
+      this.hasChapterChild = data.hasChild
+    },
+    // 点击行的选中状态
+    khandleRowClick(node, data) {
+      node.checked = !node.checked
+      if (node.checked) {
+        this.$refs['klemonTree'].setChecked(node, true, true)
+      } else {
+        this.$refs['klemonTree'].setChecked(node, false, true)
+      }
+      this.kcheckClick() // 调用获取题目接口
+    },
+    // 复选框点击问题
+    kcheckClick() {
+      let noMore = this.getSimpleCheckedNodes(this.$refs['klemonTree'].store)
+      let str = this.reQuids(JSON.stringify(noMore), 'code')
+      this.checkNodeCodeKnowledge = str
+    },
+  },
+}
+</script>
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.user-content {
+  width: 1200px;
+  min-height: 473px;
+  margin-bottom: 70px;
+  display: flex;
+
+  .user-content-left {
+    width: 270px;
+    margin-right: 16px;
+    background-color: $color-white;
+    // .user-content-left-route {
+    //   background-color: $color-white;
+    //   min-height: 470px;
+
+    .papers-right-title {
+      height: 49px;
+      padding: 20px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #333333;
+      text-align: left;
+      font-style: normal;
+      text-transform: none;
+      border-bottom: 2px solid #eeeeee;
+    }
+
+    .header {
+      height: 48px;
+      line-height: 48px;
+      padding: 0 14px;
+      color: $color-text-d;
+      font-size: $font-size-medium;
+      font-weight: bold;
+      border-bottom: 1px solid $color-background-l;
+      position: relative;
+      box-sizing: border-box;
+
+      .title {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 200px;
+      }
+
+      i {
+        position: absolute;
+        right: 14px;
+        cursor: pointer;
+        color: $color-theme;
+      }
+    }
+
+    .content {
+      padding: 17px 14px 17px 0;
+    }
+
+    // }
+  }
+
+  .user-content-right {
+    width: 914px;
+    background-color: transparent;
+
+    :deep(.el-tabs .el-tabs__header) {
+      // padding: 0 20px;
+      margin: 0;
+    }
+
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+      background-color: $color-theme;
+    }
+
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+      color: $color-theme;
+    }
+  }
+}
+
+// .school-question-tabs{
+//   background-color: #FFFFFF;
+//   margin-bottom: 10px;
+//   &>span
+//   {
+//     display: inline-block;
+//     width: 50%;
+//     line-height: 40px;
+//     text-align: center;
+//     cursor: pointer;
+//     &.active{
+//       background-color: #487FFF;
+//       color: #FFFFFF;
+//     }
+//   }
+// }
+.my-resources-list {
+  margin-top: 20px;
+
+  li {
+    height: 50px;
+    line-height: 50px;
+    cursor: pointer;
+    padding: 0 16px;
+
+    i {
+      font-size: 16px;
+      margin-right: 6px;
+    }
+
+    border-left: 3px solid #ffffff;
+  }
+
+  li.active {
+    color: #487fff;
+    border-left: 3px solid #487fff;
+    background-color: #f3f7fb;
+  }
+
+  li:hover {
+    color: #487fff;
+  }
+}
+
+// .school-question-tabs {
+//   width: 100%;
+
+//   // border-bottom: 1px solid #F4F4F5;
+//   ul {
+//     width: 100%;
+//     height: 58px;
+//     display: flex;
+//     background: #f7f7f7;
+//     text-align: center;
+
+//     // box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.06);
+//     li:nth-child(1) {
+//       img:nth-child(2) {
+//         left: 0;
+//         width: 172px;
+//       }
+//     }
+
+//     li:nth-child(2) {
+//       img:nth-child(2) {
+//         right: 0;
+//         width: 172px;
+//       }
+//     }
+
+//     img {
+//       pointer-events: none;
+//     }
+
+//     .tab-bar {
+//       width: 172px;
+//       height: 100%;
+//       text-align: center;
+//       line-height: 58px;
+//       font-size: 16px;
+//       background-repeat: no-repeat;
+//       background-size: 100% 100%;
+//       position: relative;
+//       cursor: pointer;
+//       box-shadow: 0px 2px 2px -2px rgba(0, 0, 0, 0.1);
+
+//       img {
+//         position: absolute;
+//         top: 0;
+//         height: 100%;
+//         z-index: 5;
+//       }
+
+//       span {
+//         position: absolute;
+//         z-index: 10;
+//         left: 50px;
+//       }
+//     }
+
+//     .activeTab {
+//       span {
+//         color: #487FFF;
+//         font-weight: bold;
+//       }
+//     }
+//   }
+// }
+</style>

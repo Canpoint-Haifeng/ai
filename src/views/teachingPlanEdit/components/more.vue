@@ -1,0 +1,245 @@
+<template>
+  <div class="more">
+    <span>更多</span>
+    <div class="drops">
+      <div
+        class="dropdown" 
+        :class="{active: names[0]}"
+        @mouseenter="visible.year = true"
+        @mouseleave="visible.year = false"
+      >
+        <span>{{ names[0] || '年份' }}</span>
+        <i
+          v-if="names[0]"
+          class="el-icon-arrow-down el-icon-close"
+          @click="del('year')"
+        />
+        <i
+          v-else
+          class="el-icon-arrow-down el-icon--right"
+          :class="{rotate: visible.year}"
+        />
+        <transition name="list">
+          <div
+            v-if="visible.year"
+            class="list"
+          >
+            <div class="content">
+              <p
+                v-for="(v, i) in options[0]"
+                :key="i"
+                :class="{'active': v.id === values.year}"
+                @click="select('year', v)"
+              >
+                {{ v.name }}
+              </p>
+            </div>
+          </div>
+        </transition>
+      </div>
+      <div
+        class="dropdown" 
+        :class="{active: names[1]}"
+        @mouseenter="visible.area = true"
+        @mouseleave="visible.area = false"
+      >
+        <span>{{ names[1] || '地区' }}</span>
+        <i
+          v-if="names[1]"
+          class="el-icon-arrow-down el-icon-close"
+          @click="del('area')"
+        />
+        <i
+          v-else
+          class="el-icon-arrow-down el-icon--right"
+          :class="{rotate: visible.area}"
+        />
+        <transition name="list">
+          <div
+            v-if="visible.area"
+            class="list area"
+          >
+            <div class="content">
+              <p
+                v-for="(v, i) in options[1]"
+                :key="i"
+                :class="{'active': v.id === values.area}"
+                @click="select('area', v)"
+              >
+                {{ v.name }}
+              </p>
+            </div>
+          </div>
+        </transition>
+      </div>
+      <!-- <div class="dropdown" 
+                @mouseenter="visible.semester = true"
+                @mouseleave="visible.semester = false"
+                :class="{active: names[2]}">
+                <span>{{names[2] || '地区'}}</span>
+                <i class="el-icon-arrow-down el-icon-close" v-if="names[2]"></i>
+                <i class="el-icon-arrow-down el-icon--right" v-else></i>
+                <transition name="list">
+                    <div class="list" v-if="visible.semester">
+                        <div class="content">
+                            <p v-for="(v, i) in options[2]" :key="i" @click="select('semester', v)">{{ v.name }}</p>
+                        </div>
+                    </div>
+                </transition>
+            </div> -->
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+export default {
+    name: 'More',
+    data() {
+        return {
+            options: [[], [], []],
+            names: ['', '', ''],
+            sort: ['year', 'area'],
+            visible: {
+                year: '',
+                area: '',
+            },
+            values: {
+                year: '',
+                area: '',
+            },
+        }
+    },
+    watch: {
+        names(v) {
+            // this.$emit('change', {from: this.values.area, years: this.values.year})
+        },
+    },
+    created() {
+        this.getList()
+    },
+    methods: {
+        reset() {
+            this.names = ['', '', '']
+            this.values = {
+                year: '',
+                area: '',
+            }
+        },
+        getList() {
+            this.apiGet({urlPath:'/lesson-app/config/getAreas'}).then((res) => {
+                let arr = res.data || []
+                arr.unshift({ id: '', name: '全国',})
+                this.options.splice(1, 1, arr)
+            })
+            this.apiGet({urlPath:'/lesson-app/config/getYears'}).then((res) => {
+                let arr = res.data || []
+                this.options.splice(0, 1, arr)
+            })
+        },
+        select(k ,v) {
+            if(this.values[k] === v.id) return
+            this.values[k] = v.id
+            this.visible[k] = false
+            this.names.splice(this.sort.indexOf(k), 1, v.name)
+            this.$emit('change', {from: this.values.area, years: this.values.year})
+        },
+        del(k) {
+            this.values[k] = ''
+            this.names.splice(this.sort.indexOf(k), 1, '')
+            this.$emit('change', {from: this.values.area, years: this.values.year})
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.list-enter-active, .list-leave-active {
+    transition: all .2s;
+}
+.list-enter, .list-leave-to {
+    transform: translateY(10px);
+    opacity: 0;
+}
+.more {
+    display: flex;
+    position: relative;
+    z-index: 2;
+    padding-bottom: 10px;
+    >span {
+        font-weight: bold;
+        font-size: 14px;
+        margin-right: 30px;
+        line-height: 24px;
+    }
+    .drops {
+        display: flex;
+        .dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 12px;
+            border: 1px solid #fff;
+            margin-right: 12px;
+            transition: all 0.2s;
+            >span {
+                margin-right: 3px;
+            }
+            >i {
+                transition: all .2s;
+                &.rotate {
+                    transform: rotateX(180deg);
+                }
+            }
+            &.active {
+                border-color: #487fff;
+                >span, >i {
+                    color: #487fff;
+                }
+            }
+            .list {
+                position: absolute;
+                z-index: 2;
+                top: 25px;
+                left: 0;
+                width: 100%;
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+                width: 180px;
+                transition: all 0.2s;
+                padding: 6px 0;
+                .content {
+                    overflow-y: auto;
+                    max-height: 300px;
+                }
+                p {
+                    height: 34px;
+                    line-height: 34px;
+                    padding: 0 10px;
+                    &.active, &:hover {
+                        background: #ecf5ff;
+                        color: #66b1ff;
+                    }
+                }
+                &.area {
+                    width: 500px;
+                    .content {
+                        display: flex;
+                        flex-wrap: wrap;
+                        padding: 10px;
+                    }
+                    p {
+                        margin: 0 6px 6px 0;
+                    }
+                }
+            }
+        }     
+    }
+}
+</style>

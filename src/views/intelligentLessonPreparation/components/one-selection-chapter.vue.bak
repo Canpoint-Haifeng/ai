@@ -1,0 +1,840 @@
+<template>
+  <div class="ai-container">
+    <div class="ai-header">
+      <div class="show-info-title">
+        <span />已选章节<i>（{{ interCheckNodeCodeKnowledgeArr.length }}）</i>
+      </div>
+      <div class="show-clear">
+        <span @click="deleteAllNode"><i class="iconfont iconnonebg-delete" />清空</span>
+      </div>
+    </div>
+    <ul class="ai-choose-box">
+      <li
+        v-for="(value, index) in interCheckNodeCodeKnowledgeArr"
+        :key="index"
+      >
+        {{ value.chapterName }}
+        <i
+          class="iconfont iconclose"
+          @click="deleteCheckNode(value)"
+        />
+      </li>
+      <p v-if="!interCheckNodeCodeKnowledgeArr.length">
+        未选择，请从左侧列表中选择章节。
+      </p>
+    </ul>
+    <div class="ai-header">
+      <div class="show-info-title">
+        <span />设置难度及年份 <i>（选填）</i>
+      </div>
+    </div>
+    <div class="ai-select-box">
+      <!-- <span class="select-item">
+        <label>试题难度</label>
+        <el-select v-model="diffPaper" placeholder="请选择">
+          <el-option
+            v-for="item in questionDiffData"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
+          >
+          </el-option>
+        </el-select>
+      </span> -->
+      <span class="select-item">
+        <label>年份</label>
+        <el-select
+          v-model="years"
+          placeholder="请选择"
+        >
+          <el-option
+            v-for="item in questionYearData"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code"
+          />
+        </el-select>
+      </span>
+    </div>
+    <div class="ai-header">
+      <div class="show-info-title">
+        <span />设置题型和数量 <i>（必填）</i>
+      </div>
+    </div>
+    <div class="ai-setting-box">
+      <span
+        v-for="(item, index) in typesList"
+        :key="index"
+        class="setting-item"
+      >
+        <label :title="item.name">{{ item.name }}</label>
+        <el-input-number
+          v-model="item.inNum"
+          :min="0"
+          :max="100"
+          label="描述文字"
+          @change="handleChange"
+        />
+      </span>
+    </div>
+    <div class="btn-box">
+      <el-button
+        type="primary"
+        class="btn product-paper"
+        @click="makeQuestionMethod"
+      >
+        生成试卷
+      </el-button>
+    </div>
+    <div
+      v-show="appendItem"
+      class="gray-line"
+    />
+    <div
+      v-show="appendItem"
+      class="paper-container"
+    >
+      <div
+        v-if="questionsData.list.length"
+        class="paper-sort font-12"
+      >
+        <div class="paper-total color-9 fl">
+          共
+          <strong class="num">{{
+            questionsData.count ? questionsData.count : 0
+          }}</strong>道题目
+        </div>
+        <div class="paper-show-answer el-cyy-rewrite">
+          <el-checkbox
+            v-model="showAnswer"
+            @change="AllShowAnswer(showAnswer)"
+          >
+            显示答案
+          </el-checkbox>
+        </div>
+        <div class="paper-add-black">
+          <span
+            class="add-btn"
+            @click="onAddBatchQuestionBox"
+          >
+            <i class="iconfont iconall" />全部加入试题篮
+          </span>
+        </div>
+      </div>
+      <div
+        ref="intelligenceChapterRef"
+        class="paper-content"
+      >
+        <div v-if="questionsData.list.length">
+          <ul
+            v-for="(subItem, subIndex) in questionsData.list"
+            :key="subIndex"
+            class="paper-list"
+          >
+            <p class="type-big">
+              第
+              {{ subIndex === 0 ? '一' : '' }}
+              {{ subIndex === 1 ? '二' : '' }}
+              {{ subIndex === 2 ? '三' : '' }}
+              {{ subIndex === 3 ? '四' : '' }}
+              {{ subIndex === 4 ? '五' : '' }}
+              {{ subIndex === 5 ? '六' : '' }}
+              {{ subIndex === 6 ? '七' : '' }}
+              {{ subIndex === 7 ? '八' : '' }}
+              部分 {{ subItem.quesTypeName }}
+            </p>
+            <div class="pd20" />
+            <question-item
+              v-for="(subItem, subIndex) in subItem.quesList"
+              :key="subIndex"
+              :question-item="subItem"
+              :question-index="subIndex"
+              @add-question-box="onAddQuestionBox"
+              @delete-question-box="onDeleteQuestionBox"
+              @check-question-detail="onCheckQuestionDetail"
+              @collect-question="onCollectQuestion"
+              @show-report-dialog="onShowReportDialog"
+              @toggle-explain="onToggleExplainInter"
+            />
+          </ul>
+        </div>
+        <noresult-common
+          v-else
+          slot="empty"
+          text="暂未查询到题目数据！"
+        />
+      </div>
+    </div>
+    <!-- <router-view></router-view> -->
+    <!-- 收藏成功提示框 -->
+    <collect-message ref="collectMessage" />
+    <!-- 纠错提示框 -->
+    <report-dialog
+      ref="reportDialog"
+      @report-error="onReportError"
+    />
+    <!-- 登录弹窗 -->
+    <app-login ref="appLogin" />
+    <!---->
+    <!--添加到试题栏-->
+    <app-tool-basket />
+    <!---->
+    <!--选择题目弹窗-->
+    <make-question-dialog v-if="makeDailogShow" />
+    <!---->
+    <!-- 无知识点提示框 -->
+    <no-que-message ref="knowledgeMessage" />
+    <!---->
+  </div>
+</template>
+
+<script>
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import { getToken, isLogin } from '@/common/js/util'
+import MakeQuestionDialog from '@/components/MakeQuestionDialog/MakeQuestionDialog'
+import NoresultCommon from '@/components/Noresult/Noresult-common'
+import questionItemMixin from '@/common/mixins/questionItemMixin'
+import NoQueMessage from '@/components/NoQueMessage/NoQueMessage'
+import CpWarningDialog from '@/components/AuthorityVip/CpWarningDialog'
+export default {
+  components: {
+    NoresultCommon,
+    MakeQuestionDialog,
+    NoQueMessage,
+  },
+  mixins: [questionItemMixin],
+  props: {
+    currentNodeCodeChapter: Array,
+    dTree: Array,
+    versionCode: String,
+    versionGradeCode: String,
+    volumeCode: String,
+  },
+  data() {
+    return {
+      questionsData: {
+        list: [],
+        page: 1,
+        pageSize: 10,
+        count: 0,
+      },
+      appendItem: false,
+      showAnswer: false,
+      makeDailogShow: false,
+      danNum: 1,
+      diffPaper: 0,
+      years: 0,
+      bookId: '', // 选择图书
+      checkNodeCode: '', // 选择的章节
+      interCheckNodeCodeKnowledgeArr: [],
+      SelectObj: {},
+      typesList: [],
+      questionDiffData: [],
+      questionYearData: [],
+      lastTextBookChapterCode: '',
+    }
+  },
+  computed: {
+    ...mapState(['currSubject']),
+  },
+  watch: {
+    currentNodeCodeChapter(v) {
+      this.OnInterCheckNodeCodeChapter(v)
+    },
+  },
+  created() {
+    this.getQuestionDiffList() // 题目难度
+    this.getYearsList() // 题目年份
+    this.getRelationCategoryId() // 题目类型
+  },
+  methods: {
+    // 删除试题篮题目
+    onDeleteBasket(v) {
+      console.log(v)
+      if (this.questionsData.list.length) {
+        // this.questionsData.list = []
+        // this.makeQuestionMethod()
+        // 更新列表
+        for (let sub of this.questionsData.list) {
+          if (sub && sub.quesList) {
+            for (let cques of sub.quesList) {
+              let questionId = this.getCurrQuestionId(cques)
+              if (questionId && cques.isAddedToBox && !v[questionId]) {
+                cques.isAddedToBox = 0
+                // this.$set(cques,'isAddedToBox',0)
+                // console.log('设置isAddedToBox为0')
+              }
+            }
+          }
+        }
+      }
+      // this.getQusList() // 刷新题目
+    },
+    // 监听试题答案解析
+    onToggleExplainInter(questionItem, questionIndex) {
+      if (!isLogin()) {
+        if (!questionItem.showLogin) {
+          this.$set(questionItem, 'showKnowledge', true)
+          this.$set(questionItem, 'showLogin', true)
+        } else {
+          this.$set(questionItem, 'showKnowledge', false)
+          this.$set(questionItem, 'showLogin', false)
+        }
+        return
+      }
+      var currQuestionItem = {}
+      this.questionsData.list.forEach(valueQue => {
+        if (questionItem.questionInfo.quesType.name === valueQue.quesTypeName) {
+          currQuestionItem = valueQue.quesList[questionIndex]
+        }
+      })
+      if (currQuestionItem.showExplain) {
+        this.$set(currQuestionItem, 'showExplain', false)
+        this.$set(currQuestionItem, 'showKnowledge', false)
+      } else {
+        let parms = {
+          qids: questionItem.questionInfo.questionId,
+        }
+        let set = {
+          authCode: 1,
+        }
+        this.apiGet(API.BACK_QUES_LIST_EXPLAIN, parms, set).then(res => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            this.$set(currQuestionItem, 'showExplain', true)
+            this.$set(currQuestionItem, 'showKnowledge', true)
+            currQuestionItem.questionInfo = res.data[0]
+            this.questionsData.list.forEach(valueQue => {
+              if (
+                questionItem.questionInfo.quesType.name ===
+                valueQue.quesTypeName
+              ) {
+                valueQue.quesList[questionIndex] = currQuestionItem
+              }
+            })
+          }
+        })
+      }
+    },
+    // 获取题目列表
+    getQusList() {
+      let parms = {
+        token: getToken(),
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        difficulty: this.diffPaper ? this.diffPaper : '',
+        year: this.years ? this.years : '',
+        textBookId: this.bookId,
+        textBookChapterCodes: this.checkNodeCode,
+        quesTypeSampling: this.SelectObj,
+        versionCode: this.versionCode || '',
+        versionGradeCode: this.versionGradeCode || '',
+        volumeCode: this.volumeCode || '',
+        lastTextBookChapterCode: this.lastTextBookChapterCode || '',
+      }
+
+      this.apiGet(API.BACK_QUES_LIST_INTER, parms).then(res => {
+        this.makeDailogShow = false
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          if (res.data.count > 0) {
+            this.$router.push({ path: '/smartpaper/paperView' })
+          } else {
+            CpWarningDialog.install({
+              code: 'warningdialog',
+              msg: '当前条件未查询到任何试题，请修改后再试',
+            })
+            // this.makeDailogShow = false
+            // this.appendItem = true
+            // if (res.data) this.questionsData = res.data
+
+            this.$nextTick(() => {
+              this.onRenderJaxPage('intelligenceChapterRef')
+            })
+          }
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    // 全部显示答案和解析
+    AllShowAnswer(showAllExplain) {
+      if (!isLogin()) {
+        this.$refs.appLogin.showLogin()
+        return
+      }
+      if (showAllExplain) {
+        // 显示所有答案
+        let questionIds = []
+        this.questionsData.list.forEach(item => {
+          // console.log(item, 'item')
+          item.quesList.forEach(value => {
+            questionIds.push(value.questionInfo.questionId)
+          })
+        })
+        if (questionIds.length === 0) {
+          return
+        }
+        let parms = {
+          qids: questionIds.join(','),
+        }
+        let set = {
+          authCode: 1,
+        }
+        this.apiGet(API.BACK_QUES_LIST_EXPLAIN, parms, set).then(res => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            this.questionsData.list.forEach((item, index) => {
+              item.quesList.forEach((value, num) => {
+                questionIds.push(value.questionInfo.questionId)
+                this.$set(value, 'showExplain', true)
+                this.$set(value, 'showKnowledge', true)
+                value.questionInfo = res.data[index]
+              })
+            })
+          }
+        })
+      } else {
+        // 隐藏所有答案
+        this.questionsData.list.forEach(item => {
+          item.quesList.forEach((value, num) => {
+            this.$set(value, 'showExplain', false)
+            this.$set(value, 'showKnowledge', false)
+          })
+        })
+      }
+    },
+    // 监听全部加入试题篮
+    onAddBatchQuestionBox() {
+      if (!isLogin()) {
+        this.$refs.appLogin.showLogin()
+        return
+      }
+      let questionList = []
+      this.questionsData.list.forEach(item => {
+        item.quesList.forEach((value, num) => {
+          if (!value.isAddedToBox) {
+            questionList.push({
+              questionId: value.questionInfo.questionId,
+              subjective: value.questionInfo.subjective.code,
+              typeName: value.questionInfo.quesType.name,
+              type: value.questionInfo.quesType.code,
+            })
+          }
+        })
+      })
+      if (!questionList.length) {
+        this.$message.error('无可添加的试题!')
+        return
+      }
+      let parms = {
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        paramsJson: JSON.stringify(questionList),
+      }
+      let set = {
+        authCode: 0,
+      }
+      this.apiPost(API.QUESTION_BATCH_ADD, parms, set).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$message.success('成功添加到试题篮!')
+          // this.questionsData.list.forEach(subItem => {
+          //   subItem.isAddedToBox = 1
+          // })
+          this.questionsData.list.forEach(item => {
+            item.quesList.forEach(subItem => {
+              subItem.isAddedToBox = 1
+            })
+          })
+          this.Bus.$emit('addBasket')
+        }
+      })
+    },
+    // 分页
+    handleCurrentChange(currPage) {
+      this.questionsData.page = currPage
+      document.documentElement.scrollTop = 0 // 返回页面顶部
+      this.showAnswer = false // 重置显示答案和解析按钮
+      this.getQusList()
+    },
+    // 选择知识点
+    OnInterCheckNodeCodeChapter(val) {
+      this.interCheckNodeCodeKnowledgeArr = val
+      if (!val.length) {
+        this.bookId = ''
+        this.checkNodeCode = ''
+      } else {
+        this.bookId = val[0].belongBook
+        this.checkNodeCode = this.reQuids(JSON.stringify(val), 'chapterCode')
+        this.lastTextBookChapterCode = this.getLastTextBookChapterCode(
+          this.dTree,
+          val[val.length - 1].chapterCode,
+        )
+      }
+    },
+    // 全部删除
+    deleteAllNode() {
+      this.interCheckNodeCodeKnowledgeArr = []
+      this.appendItem = false
+      this.$emit('deleteAllNodeChapter')
+    },
+    // 单个删除
+    deleteCheckNode(val) {
+      this.interCheckNodeCodeKnowledgeArr.splice(
+        this.interCheckNodeCodeKnowledgeArr.findIndex(
+          item => String(item.chapterCode) === String(val.chapterCode),
+        ),
+        1,
+      )
+      this.$emit('deleteOneNodeChapter', this.interCheckNodeCodeKnowledgeArr)
+    },
+    // 生成试题
+    makeQuestionMethod() {
+      this.$router.push({ path: '/smartpaper/paperView' })
+      return
+      //   if (!this.interCheckNodeCodeKnowledgeArr.length) {
+      //     this.$refs.knowledgeMessage.showMessage('请选择教材章节！')
+      //     return false
+      //   }
+      // if(!this.diffPaper) {
+      //   this.$refs.knowledgeMessage.showMessage('请选择试题难度！')
+      //   return false
+      // }
+      // if(!this.years) {
+      //   this.$refs.knowledgeMessage.showMessage('请选择试题年份！')
+      //   return false
+      // }
+      let newArr = this.typesList
+      var totalNum = this.typesList.reduce(function(prev, cur) {
+        return cur.inNum + prev
+      }, 0)
+      if (totalNum > 100) {
+        this.$refs.knowledgeMessage.showMessage('试题总题数不能超过100题！')
+        return
+      }
+      const even = element => element.inNum !== 0
+      // console.log(newArr.some(even), 'even')
+      if (!newArr.some(even)) {
+        this.$refs.knowledgeMessage.showMessage('试题数量不能全部都为空！')
+        this.questionsData = {
+          list: [],
+          page: 1,
+          pageSize: 10,
+          count: 0,
+        }
+        return false
+      }
+      let newObj = {}
+      newArr.forEach((item, index) => {
+        newObj[item.code] = String(item.inNum)
+      })
+      this.SelectObj = newObj
+      this.makeDailogShow = true
+      this.showAnswer = false // 重置显示答案和解析按钮
+      this.getQusList() // 刷新试题接口
+    },
+    // 获取当前学段试卷类型关联id
+    getRelationCategoryId() {
+      let parms = {
+        categoryId: CTS.cfgDict.CID_QUESTION_PERIOD_SUBJECT_TYPE,
+        code: this.currSubject.subjectCode,
+        level: '2',
+      }
+      this.wayGet(API.GET_CHILD_DICT, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.currTypeCode = 0
+          this.currSubTypeCode = 0
+          if (res.data.length) {
+            this.getTypesList(res.data[1].relationCategoryId)
+          } else {
+            this.typesList = []
+          }
+        }
+      })
+    },
+    // 获取当前学段试卷类型
+    getTypesList(relationCategoryId) {
+      if (!relationCategoryId) {
+        return
+      }
+      let parms = {
+        categoryId: relationCategoryId,
+        level: '1,2',
+      }
+      this.wayGet(API.GET_DICT_BY_LEVEL, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          let arr = []
+          res.data.forEach(item => {
+            arr.push(Object.assign({ inNum: 0 }, item))
+          })
+          this.typesList = arr
+        }
+      })
+    },
+    // 获取题目难度
+    getQuestionDiffList() {
+      let parms = {
+        categoryId: CTS.cfgDict.CID_QUESTION_DIFF,
+      }
+      this.wayGet(API.GET_DICT_BY_DICTID, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          let arrData = res.data
+          arrData.unshift({
+            code: 0,
+            name: '不限',
+          })
+          this.questionDiffData = arrData
+        }
+      })
+    },
+    // 获取年份
+    getYearsList() {
+      let parms = {
+        categoryId: CTS.cfgDict.CID_PAPER_YEARS,
+      }
+      this.wayGet(API.GET_DICT_BY_DICTID, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          let arrData = res.data
+          arrData.unshift({
+            code: 0,
+            name: '不限',
+          })
+          this.questionYearData = arrData
+        }
+      })
+    },
+    handleChange(value) {
+      // console.log(value, this.typesList)
+    },
+    selectType(item) {
+      this.currTypeId = item.id
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.ai-container {
+  width: 914px;
+  box-sizing: border-box;
+  padding: 13px 0;
+  background: $color-white;
+  .ai-header {
+    display: flex;
+    padding-bottom: 14px;
+    padding-left: 20px;
+    border-bottom: 1px solid $color-background-l;
+    .show-info-title {
+      width: 50%;
+      color: $color-text-d;
+      font-size: $font-size-medium;
+      font-weight: bold;
+      display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+      span {
+        display: block;
+        width: 2px;
+        height: 14px;
+        margin-right: 8px;
+        background: $color-text-d;
+      }
+      i {
+        color: #f48b58;
+        font-size: $font-size-small;
+        font-weight: 400;
+      }
+    }
+    .show-clear {
+      width: 50%;
+      text-align: right;
+      span {
+        color: $color-theme;
+        cursor: pointer;
+        padding-right: 20px;
+      }
+      span:hover {
+        color: $color-button-d-hover;
+      }
+    }
+  }
+  .ai-choose-box {
+    width: 874px;
+    padding: 20px 20px 42px 20px;
+    li {
+      display: inline-block;
+      line-height: 28px;
+      padding: 0 10px;
+      margin-right: 10px;
+      margin-bottom: 5px;
+      background: #ebf2fb;
+      border-radius: 16px;
+      i {
+        font-size: 10px;
+        margin-left: 15px;
+      }
+    }
+    li:hover {
+      cursor: pointer;
+      background: #dce9fb;
+      i {
+        color: $color-theme;
+      }
+    }
+  }
+  .ai-select-box {
+    padding: 24px 24px 50px 24px;
+    :deep(.select-item) {
+      margin-right: 136px;
+      label {
+        line-height: 32px;
+        color: $color-text;
+        padding-right: 15px;
+      }
+      .el-select {
+        .el-input__inner {
+          width: 150px;
+          height: 30px;
+          line-height: 30px !important;
+          border: 1px solid #e2e2e2;
+          border-radius: 4px;
+          &:focus {
+            border: 1px solid $color-theme;
+          }
+        }
+        .el-select__caret {
+          height: 30px;
+          line-height: 30px;
+        }
+      }
+    }
+  }
+  .ai-setting-box {
+    padding: 24px 8px 28px 30px;
+    :deep(.setting-item) {
+      display: inline-block;
+      width: 268px;
+      margin-right: 22px;
+      margin-bottom: 12px;
+      height: 50px;
+      line-height: 50px;
+      background-color: #f7f7f7;
+      text-align: right;
+      label {
+        color: $color-text;
+        padding-right: 15px;
+
+        display: inline-block;
+        max-width: 110px;
+        overflow: hidden;
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+      }
+      .el-input-number {
+        width: 120px;
+        line-height: 30px;
+        margin-right: 12px;
+        .el-input__inner {
+          height: 30px;
+          border-radius: 4px;
+          line-height: 30px;
+          padding-left: 45px;
+          padding-right: 45px;
+        }
+        .el-input-number__increase {
+          display: inline-block;
+          box-sizing: border-box;
+          width: 30px;
+          height: 28px;
+          /*line-height: 28px;*/
+          background: $color-white;
+        }
+        .el-input-number__decrease {
+          display: inline-block;
+          box-sizing: border-box;
+          width: 30px;
+          height: 28px;
+          background: $color-white;
+        }
+      }
+    }
+  }
+  .btn-box {
+    text-align: center;
+    padding-bottom: 27px;
+    .product-paper {
+      width: 130px;
+      height: 40px;
+      background: $color-button-d;
+      // box-shadow:0px 4px 6px 0px rgba(42,77,138,0.2);
+      border-radius: 20px;
+      font-size: $font-size-medium;
+      &:hover {
+        background: $color-button-d-hover;
+        border: 1px solid $color-button-d-hover;
+      }
+    }
+  }
+}
+.gray-line {
+  width: 914px;
+  height: 16px;
+  background: $color-background-l;
+}
+.paper-container {
+  width: 914px;
+  margin-bottom: 20px;
+  background: $color-white;
+  padding-bottom: 20px;
+}
+.paper-sort {
+  height: 46px;
+  line-height: 46px;
+  padding: 0 20px;
+  border-bottom: 1px solid $color-background-l;
+  margin-bottom: 20px;
+  .paper-total {
+    margin-right: 25px;
+    .num {
+      padding: 0 2px;
+      color: $color-text-d;
+      font-size: $font-size-medium;
+    }
+  }
+  .paper-show-answer {
+    display: inline-block;
+    margin-right: 45px;
+  }
+  .paper-add-black {
+    display: inline-block;
+    padding-left: 450px;
+    .add-btn {
+      cursor: pointer;
+      padding: 7px 13px;
+      border-radius: 13px;
+      color: $color-theme;
+      border: 1px solid $color-theme;
+      .iconfont {
+        font-size: 13px;
+        margin-right: 6px;
+      }
+    }
+  }
+}
+.paper-content {
+  padding: 0 20px;
+}
+.type-big {
+  font-size: 16px;
+  line-height: 30px;
+  height: 30px;
+  text-indent: 15px;
+  color: $color-white;
+  background: $color-theme;
+}
+</style>

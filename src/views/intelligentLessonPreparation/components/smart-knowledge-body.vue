@@ -1,0 +1,1014 @@
+<template>
+  <div class="paper-body f-usn">
+    <!-- 试卷大题部分 -->
+    <div
+      v-for="(part, i) in knowledgeData"
+      :key="part.chapterId"
+      class="paper-part"
+    >
+      <div class="div_knowTitle">
+        <!-- 一、集合的概念 -->
+        {{ convertToChinaNum(i + 1) }}、{{ part.name }}
+        <div class="div_label">
+          {{ formatTeach(part.teachingTarget+'') }}
+          |
+          {{
+            formatKeynote(part.keyDifficultPoints+'')
+          }}
+        </div>
+      </div>
+      <!--题模标签以及操作区显示 -->
+      <div
+        v-for="(item, idx) in part.children"
+        :key="item.chapterId"
+        class="paper-section"
+      >
+        <div class="div_quesTemplate">
+          <div class="div_template_title">
+            <!-- 1.集合的分类 -->
+            {{ idx + 1 }}.{{ item.name }}
+            <!-- <div class="div_label2">
+              {{
+                part.knowledgeTags &&
+                formatExamination(part.knowledgeTags.examinationCode)
+              }}
+            </div> -->
+          </div>
+          <!-- :visible-arrow="false" -->
+          <div class="div_template_right">
+            <span
+              class="operate-btn check-btn"
+              @click="addQuesEvent(item)"
+            ><i class="el-icon-plus" /> 增加题
+            </span>
+            <el-popover
+              popper-class="my-know-popover"
+              placement="bottom"
+              title=""
+              width="200"
+              trigger="click"
+            >
+              <template #default>
+                <div>
+                  <div class="popover_title">
+                    一、{{ part.name }}
+                  </div>
+                  <div
+                    v-if="childKnowledge.length"
+                    class="popover_list"
+                  >
+                    <div
+                      v-for="sub in childKnowledge"
+                      :key="sub.chapterId"
+                      class="popover_item"
+                      @click="changeKnowledgeHandle(sub)"
+                    >
+                      {{ sub.name }}
+                    </div>
+                  </div>
+                  <div
+                    v-else
+                    class="popoverEmpty"
+                  >
+                    暂无数据
+                  </div>
+                </div>
+              </template>
+              <template #reference>
+                <span
+                
+                  class="operate-btn check-btn"
+                  @click="changeKnowledge(part, item)"
+                ><i class="el-icon-refresh" /> 换考点
+                </span>
+              </template>
+            </el-popover>
+            <span
+              class="operate-btn check-btn"
+              @click="delKnowledge(part, item)"
+            ><i class="el-icon-delete" /> 删除考点
+            </span>
+          </div>
+        </div>
+        <div v-if="item.quesList && item.quesList.length">
+          <div
+            v-for="(subItem, qindex) in item.quesList"
+            :key="subItem.questionId"
+            class="dragClass question-item-block"
+            :data-qid="subItem.questionId"
+            :data-type="item.questionType"
+          >
+            <SmartKnowQuesMaker
+              :ref="'questionItem' + subItem.questionId"
+              :question-item="subItem"
+              :childrenlen="item.quesList.length"
+              :qindex="qindex"
+              v-bind="$attrs"
+              @set-item-score="
+                (event, questionItem) => {
+                  onSetItemScore(
+                    event,
+                    qindex,
+                    index,
+                    questionItem,
+                    part.ordinal,
+                  )
+                }
+              "
+              @check-question-detail="onCheckQuestionDetail"
+              @check-question-up="
+                (event) => {
+                  onCheckQuestionUp(event, item)
+                }
+              "
+              @check-question-down="
+                (event) => {
+                  onCheckQuestionDown(event, item)
+                }
+              "
+              @check-edit-question="onCheckEditQuestion"
+              @check-change-question="
+                (event) => {
+                  onCheckChangeQuestion(event)
+                }
+              "
+              @show-delete-dialog="(e) => onShowDeleteDialog(e)"
+              @manual-change="(e) => onManualChange(subItem, e)"
+              v-on="$listeners"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <CheckQuestionDia
+      ref="checkQuesDia"
+      :dialog-title="dialogTitle"
+      v-on="$listeners"
+      @change-question-box="changeQuestionBox"
+    />
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import { dealDecimal } from '@/common/js/util'
+import SmartKnowQuesMaker from './SmartKnowQuesMaker.vue'
+import setPaperOptionsMixin from '@/common/mixins/setPaperOptionsMixin'
+import scrollIntoView from 'scroll-into-view'
+import { addClass, removeClass } from '@/common/js/dom'
+import Draggable from 'vuedraggable'
+import CpWarningDialog from '@/components/AuthorityVip/CpWarningDialog'
+import CheckQuestionDia from './CheckQuestionDia'
+export default {
+  name: 'SmartKnowledgeBody',
+  components: {
+    SmartKnowQuesMaker,
+    Draggable,
+    CheckQuestionDia,
+  },
+  mixins: [setPaperOptionsMixin],
+  inject: ['context'],
+  props: {
+    // questionsData: {
+    //   type: Array,
+    //   default: () => [],
+    // },
+    questionTypes: {
+      type: Array,
+      default: () => [],
+    },
+    paperData: {
+      type: Object,
+      default: () => { },
+    },
+  },
+  data() {
+    return {
+      paperTreeProps: {
+        children: 'list',
+      },
+      simpleQuestionList: [],
+      dragOptions: {
+        animation: 0,
+        delay: 10,
+        direction: 'vertical',
+        ghostClass: 'ghost-item',
+        chosenClass: 'chosen-item', // 选中项的类名
+        dragClass: 'drag-item', // 拖动项的类名
+        // emptyInsertThreshold: 20, // 鼠标距离目标元素位置
+        scroll: true,
+        forceFallback: false,
+      },
+      oldData: [],
+      dialogTitle: '手动换题',
+      quesDataDia: {
+        pageSize: 10,
+        currPage: 1,
+        totalCount: 0,
+        list: [],
+      },
+      knowledgeData: [],
+      knowledgeCode: '',
+      childKnowledge: [],
+      curCode: '',
+      type: '1',
+    }
+  },
+  watch: {
+    'context.knowledgeData': {
+      handler(val) {
+        this.knowledgeData = val
+      },
+    },
+  },
+  computed: {
+    ...mapState(['currSubject', 'fullpath']),
+    formatTeach() {
+      return function (code) {
+        let str = '-'
+        switch (code) {
+          case '1':
+            str = '应用'
+            break;
+          case '2':
+            str = '掌握'
+            break;
+          case '3':
+            str = '理解'
+            break;
+          case '4':
+            str = '知道'
+            break;
+          case '5':
+            str = '了解'
+            break;
+          default:
+            break;
+        }
+        return str
+      }
+    },
+    formatKeynote() {
+      return function (code) {
+        let str = '-'
+        switch (code) {
+          case '1':
+            str = '重难点'
+            break;
+          case '2':
+            str = '重点'
+            break;
+          case '3':
+            str = '难点'
+            break;
+          case '4':
+            str = '普通'
+            break;
+          case '5':
+            str = '选学'
+            break;
+          default:
+            break;
+        }
+        return str
+      }
+    },
+    formatExamination() {
+      return function (code) {
+        let str = ''
+        switch (code) {
+          case '1':
+            str = '必考'
+            break;
+          case '2':
+            str = '常考'
+            break;
+          case '3':
+            str = '选考'
+            break;
+          case '4':
+            str = '少考'
+            break;
+          case '5':
+            str = '不考'
+            break;
+          default:
+            break;
+        }
+        return str
+      }
+    },
+  },
+  async created() {
+    const type = sessionStorage.getItem('pathType')
+    this.type = type
+  },
+  mounted() {
+    if (!this.knowledgeData.length) {
+      this.knowledgeData = this.context.knowledgeData
+    }
+    // 监听点击试题定位
+    this.Bus.$on('scrollToElement', this.onScrollToElement)
+    // this.oldData = JSON.parse(JSON.stringify(this.questionsData))
+  },
+
+  unmounted() {
+    this.Bus.$off('scrollToElement')
+  },
+  methods: {
+    // 数字转汉字
+    convertToChinaNum(num) {
+      var arr1 = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+      var arr2 = ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千', '万', '十', '百', '千', '亿'];//可继续追加更高位转换值
+      if (!num || isNaN(num)) {
+        return "零";
+      }
+      var english = num.toString().split("")
+      var result = "";
+      for (var i = 0; i < english.length; i++) {
+        var des_i = english.length - 1 - i;//倒序排列设值
+        result = arr2[i] + result;
+        var arr1_index = english[des_i];
+        result = arr1[arr1_index] + result;
+      }
+      result = result.replace(/零(千|百|十)/g, '零').replace(/十零/g, '十');
+      result = result.replace(/零+/g, '零');
+      result = result.replace(/零亿/g, '亿').replace(/零万/g, '万');
+      result = result.replace(/亿万/g, '亿');
+      result = result.replace(/零+$/, '')
+      result = result.replace(/^一十/g, '十');
+      return result;
+    },
+    replaceQuesEvent() { },
+    //加题
+    addQuesEvent(item) {
+      console.log(item)
+      this.dialogTitle = '加题'
+      this.context.changeType = 1
+      this.knowledgeCode = item.id
+      this.$refs.checkQuesDia.show()
+    },
+    // 加题
+    async changeQuestionBox(ques) {
+      await this.context.questionChange('', 4, ques, this.knowledgeCode)
+      this.$refs.checkQuesDia.closed()
+    },
+    renderDom(dom) {
+      let arr = []
+      for (let i = 0; i < dom.length; i++) {
+        arr.push({
+          questionId: dom[i].getAttribute('data-qid'),
+          ordinal: i + 1,
+        })
+      }
+      return arr
+    },
+    renderItemDom(dom) {
+      return {
+        questionId: dom.getAttribute('data-qid'),
+        type: dom.getAttribute('data-type'),
+      }
+    },
+    addDrag(e, ordinal, type) {
+      let list = this.renderDom(e.target.childNodes)
+      let item = this.renderItemDom(e.item)
+      let params = {
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: item.type,
+        paramsJson: JSON.stringify(list),
+        sectionId: ordinal,
+        isCross: 1,
+        crossType: type,
+        questionId: item.questionId,
+      }
+      this.updateQuestionOrderHttp(params)
+    },
+    updateDrag(e, ordinal, type) {
+      let list = this.renderDom(e.target.childNodes)
+      let item = this.renderItemDom(e.item)
+      let params = {
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: item.type,
+        paramsJson: JSON.stringify(list),
+        sectionId: ordinal,
+        isCross: 0,
+        crossType: type,
+        questionId: item.questionId,
+      }
+      this.updateQuestionOrderHttp(params)
+    },
+    updateQuestionOrderHttp(params) {
+      this.apiPost(API.QUESTION_UPDATE_ORDER, params).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$emit('refreshPaperData', params)
+        } else {
+          this.$emit('refreshPaper', params)
+        }
+      })
+    },
+    onCheckQuestionUp(questionItem, questionType) {
+      let queslist = [...questionType.list]
+      // questionType.list 重新排序
+      let index = queslist.findIndex(
+        item => item.questionId == questionItem.questionId,
+      )
+      //  如果是没查询到 index 为0  或者 长度 只有一个 处理不了
+      if (index == -1 || index == 0 || queslist.length <= 1) return
+
+      let tempItem = queslist[index]
+      queslist[index] = queslist[index - 1]
+      queslist[index - 1] = tempItem
+      console
+      let list = []
+      queslist.forEach((item, i) => {
+        list.push({
+          questionId: item.questionId,
+          ordinal: i + 1,
+        })
+      })
+      //
+      let params = {
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: questionType.questionType,
+        paramsJson: JSON.stringify(list),
+        sectionId: questionType.pordinal,
+        isCross: 0,
+        crossType: questionType.questionType,
+        questionId: questionItem.questionId,
+      }
+      this.updateQuestionOrderHttp(params)
+    },
+    onCheckQuestionDown(questionItem, questionType) {
+      let queslist = [...questionType.list]
+      // questionType.list 重新排序
+      let index = queslist.findIndex(
+        item => item.questionId == questionItem.questionId,
+      )
+      //  如果是没查询到 index 为0  或者 长度 只有一个 处理不了
+      if (index == -1 || index >= queslist.length - 1 || queslist.length <= 1) {
+        return
+      }
+
+      let tempItem = queslist[index]
+      queslist[index] = queslist[index + 1]
+      queslist[index + 1] = tempItem
+      let list = []
+      queslist.forEach((item, i) => {
+        list.push({
+          questionId: item.questionId,
+          ordinal: i + 1,
+        })
+      })
+      let params = {
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: questionType.questionType,
+        paramsJson: JSON.stringify(list),
+        sectionId: questionType.pordinal,
+        isCross: 0,
+        crossType: questionType.questionType,
+        questionId: questionItem.questionId,
+      }
+      this.updateQuestionOrderHttp(params)
+    },
+    // 监听拖拽更新小题排序
+    endQuestionOrder(dragObj, orderItem) {
+      console.log(dragObj)
+      console.log(orderItem)
+      if (dragObj.newIndex !== dragObj.oldIndex) {
+      }
+    },
+    // 更新小题排序
+    updateQuestionOrder(orderItem, partIndex, index) {
+      console.log(orderItem, this.questionsData, this.oldData)
+      // [partIndex][index]
+
+      let questionListOrder = []
+      let oldQuestionListOrder = []
+      let oldItem = this.oldData[partIndex].list[index]
+      const newOrderItem = orderItem.slice(0).sort((order1, order2) => {
+        return order1.questionNum - order2.questionNum
+      })
+      const minQuestionNum = newOrderItem[0].questionNum
+      orderItem.forEach((item, index) => {
+        questionListOrder.push({
+          questionId: item.questionId,
+          ordinal: minQuestionNum + index,
+        })
+      })
+      oldQuestionListOrder = oldItem.list.map((sub, index) => {
+        return {
+          questionId: sub.questionId,
+          ordinal: minQuestionNum + index,
+        }
+      })
+      if (
+        JSON.stringify(questionListOrder) ===
+        JSON.stringify(oldQuestionListOrder)
+      ) {
+        return
+      }
+      let parms = {
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: orderItem[0].questionType,
+        paramsJson: JSON.stringify(questionListOrder),
+      }
+      this.apiPost(API.QUESTION_UPDATE_ORDER, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$emit('refreshPaper')
+        }
+      })
+    },
+    // 每道题分值设置
+    onSetItemScore(event, subIndex, index, questionItem, ordinal) {
+      const currScrore = event.target.value.trim()
+      for (let item of this.questionsData) {
+        let listItem = item.list
+        for (let it of listItem) {
+          it.numPaper = item.ordinal
+        }
+      }
+      let simpleQuestionList = [
+        ...this.questionsData[0].list,
+        ...this.questionsData[1].list,
+      ]
+
+      let oldScrore = questionItem.oldscore
+      let typeTotalScore = 0
+      if (!currScrore && oldScrore === 0) {
+        return
+      }
+      // if (!CTS.constant.scoreReg.test(currScrore)) {
+      //   this.$message.error('请输入正确分数值！')
+      //   return
+      // }
+      if (Number(currScrore) === oldScrore) {
+        return
+      }
+      if (currScrore > 100) {
+        this.$message.error('分数值不能大于100！')
+        return
+      }
+      this.paperData.totalScore = 0
+      // simpleQuestionList[index].list[subIndex].score = currScrore
+      if (ordinal === 1) {
+        simpleQuestionList[index].list[subIndex].score = currScrore
+        simpleQuestionList[index].list.forEach(item => {
+          typeTotalScore += parseFloat(item.score)
+        })
+        simpleQuestionList[index].score = typeTotalScore
+
+        simpleQuestionList.forEach(item => {
+          this.paperData.totalScore += item.score
+        })
+      } else {
+        let newArr = simpleQuestionList.slice(
+          this.questionsData[0].list.length,
+          simpleQuestionList.length,
+        )
+        newArr[index].list[subIndex].score = currScrore
+        newArr[index].list.forEach(item => {
+          typeTotalScore += parseFloat(item.score)
+        })
+        newArr[index].score = typeTotalScore
+        simpleQuestionList.forEach(item => {
+          this.paperData.totalScore += item.score
+        })
+      }
+
+      this.paperData.totalScore = dealDecimal(this.paperData.totalScore, 1)
+
+      this.simpleQuestionList = simpleQuestionList
+      this.commitScore()
+    },
+    // 提交分值设置分数
+    commitScore() {
+      let scoreList = {
+        totalScore: this.paperData.totalScore,
+        questionTypeScoreDtoList: [],
+        questionScoreDtoList: [],
+      }
+      this.simpleQuestionList.forEach(item => {
+        scoreList.questionTypeScoreDtoList.push({
+          questionType: item.questionType,
+          score: parseFloat(item.score),
+          ordinal: item.numPaper,
+        })
+        item.list.forEach(subItem => {
+          scoreList.questionScoreDtoList.push({
+            questionId: subItem.questionId,
+            score: parseFloat(subItem.score),
+            ordinal: item.numPaper,
+          })
+        })
+      })
+      let parms = {
+        period: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        paramsJson: JSON.stringify(scoreList),
+      }
+      this.apiPost(API.QUESTION_SETTING_SCORE, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$emit('refreshPaper')
+        }
+      })
+    },
+    // 监听点击试题定位
+    onScrollToElement(questionId) {
+      if (
+        !(
+          this.$refs['questionItem' + questionId] &&
+          this.$refs['questionItem' + questionId].length > 0
+        )
+      ) {
+        return
+      }
+      this.$nextTick(() => {
+        const element = this.$refs['questionItem' + questionId][0].$el
+        scrollIntoView(
+          element,
+          {
+            time: 500,
+          },
+          () => {
+            // arrow_box_animation question-active
+            addClass(element, 'arrow_box_animation')
+            setTimeout(() => {
+              removeClass(element, 'arrow_box_animation')
+            }, 2400)
+          },
+        )
+      })
+    },
+    // 监听查看试题详情
+    onCheckQuestionDetail(questionItem) {
+      let queryStr =
+        '?questionId=' +
+        questionItem.questionId +
+        '&source=1'
+      window.open(this.$router.resolve('/question/detail').href+queryStr)
+      // this.openWindowLink(
+      //   import.meta.env.VITE_SRC + 'question/info' + queryStr,
+      // )
+    },
+    onCheckChangeQuestion(questionItem) {
+      // console.log('vmmm',this.context)
+      this.context.questionChange(questionItem, 1)
+    },
+    onManualChange(oldData, newData) {
+      this.context.questionChange(oldData, 2, newData)
+      // this.$emit('onCheckChangeQuestion', {questionItem, type: 1})
+    },
+    async changeKnowledge(part, item) {
+      console.log('part: ', part);
+      console.log('item: ', item);
+      this.curCode = item.id
+      let url = ''
+      let codes = ''
+      let pId = ''
+      // if (this.type === '2') {
+      //   this.curCode = item.code
+      //   url = '/paper-generator/textBookTree/getNewChildTextbookChapter'
+      //   pId = item.parentId
+      //   codes = part.children.map((v) => v.code)
+      // } else if (this.type === '1') {
+      //   this.curCode = item.code
+      //   url = '/paper-generator/knowledgeTree/getNewChildKnowledge'
+      //   pId = item.parentId
+      //   codes = part.children.map((v) => v.code)
+      // } else {
+      //   this.curCode = item.code
+      //   url = '/paper-generator/subjectCatalogueTree/getNewChildSubjectCatalogue'
+      //   pId = item.parentId
+      //   codes = part.children.map((v) => v.code)
+      // }
+      const params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        catalogId: part.id,
+        catalogueType: +this.type + 9,
+        // excludeCodes: codes.join(',')
+      }
+      this.childKnowledge = []
+      const exclude = part.children&&part.children.map((v) => v.id) || []
+      const res = await this.apiGet({ urlPath: '/paper-builder/catalogue/getNextCatalogueTree' }, params)
+      if (res.code === CTS.constant.SUCCESS_CODE) {
+        const arr = res.data&&res.data[0].children&&res.data[0].children || []
+        console.log(exclude, arr)
+        this.childKnowledge = arr.filter((v) => !exclude.includes(v.uuid))
+      }
+    },
+
+    onShowDeleteDialog(questionItem) {
+      this.$confirm('确认删除试题？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.context.questionChange(questionItem, 3)
+      }).catch();
+    },
+    changeKnowledgeHandle(item) {
+      // console.log('this.curCode: ', this.curCode);
+      // console.log('item: ', item);
+      this.context.questionChange(this.curCode, 5, item.uuid)
+      // if (this.type === '3') {
+      //   this.context.questionChange(this.curCode, 5, item.id)
+      // } else {
+      //   this.context.questionChange(this.curCode, 5, item.chapterCode)
+      // }
+    },
+    delKnowledge(part, item) {
+      console.log('part: ', part);
+      if (part.children.length <= 1) {
+        this.$message.error('至少需要一个知识点!')
+      } else {
+        this.context.questionChange(item.id, 6)
+      }
+    },
+    async onCheckEditQuestion(questionItem) {
+      // 判断是否 还有编辑的次数
+      if (questionItem.questionInfo.editType == 1) {
+        let code = await this.apiGet(
+          API.RESOURCE_EDIT_CANADAPTED,
+          {},
+          { authCode: 1 },
+        ).then(
+          res => {
+            if (res.code === CTS.constant.SUCCESS_CODE) {
+              return 1
+            } else {
+              return res.code
+            }
+          },
+          err => {
+            console.log(err)
+            return '1011'
+          },
+        )
+
+        if (code == '1010' || code == '1011') {
+          CpWarningDialog.install({
+            code: code + '',
+            onBuyVip: v => {
+              if (v === 2) {
+                this.$router.push({
+                  path: '/open/campus/service',
+                })
+              } else {
+                // CpBuyVip.install({})
+              }
+            },
+          })
+          return
+        }
+      }
+      let questionSource = ''
+      let grade = ''
+      let year = ''
+
+      if (questionItem.questionInfo.questionSource) {
+        questionSource = questionItem.questionInfo.questionSource.code
+      }
+      if (questionItem.questionInfo.grade) {
+        grade = questionItem.questionInfo.grade.code
+      }
+      if (questionItem.questionInfo.year) {
+        year = questionItem.questionInfo.year.code
+      }
+      let queryparam = {
+        source: questionItem.questionInfo.source,
+        qid: questionItem.questionInfo.questionId,
+        et: questionItem.questionInfo.editType,
+        qs: questionSource,
+        gr: grade,
+        year: year,
+        paper: 1,
+      }
+      this.$router.push({ path: '/question/edit', query: queryparam })
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.paper-part {
+  .paper-section {
+    &.active {
+      background: #fbfbfb;
+    }
+  }
+  .paper-title {
+    position: relative;
+    margin: 24px 0;
+    .title {
+      height: 42px;
+      line-height: 42px;
+      margin-bottom: 5px;
+      background: #f6f6f6;
+      text-align: center;
+      .edit-input {
+        padding: 11px 0;
+        font-size: $font-size-medium-x;
+      }
+    }
+    .paper-rule {
+      height: 28px;
+      line-height: 28px;
+      .edit-input {
+        text-align: left;
+      }
+    }
+  }
+  .question-type {
+    position: relative;
+    max-height: 88px;
+    margin-bottom: 4px;
+    display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+    align-items: center;
+    .score-table {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 8px;
+      margin-right: 22px;
+      tr,
+      td {
+        height: 35px;
+      }
+      th,
+      td {
+        width: 70px;
+        border: 1px solid $color-border;
+        font-size: $font-size-small;
+        text-align: center;
+        font-weight: 400;
+      }
+    }
+    .type-title {
+      line-height: 30px;
+      margin-left: 8px;
+      .edit-input {
+        width: 80px;
+        margin-left: 5px;
+        padding: 3px;
+      }
+    }
+  }
+  .edit-text {
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s;
+    &:hover {
+      background: $color-menu-l-hover;
+      border: 1px solid $color-border;
+    }
+  }
+  .edit-input {
+    width: 100%;
+    background: $color-menu-l-hover;
+    border: 1px solid $color-border;
+    padding: 6px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+}
+
+.paper-body :deep(.el-tree-node__content > .el-tree-node__expand-icon) {
+    display: none;
+  }
+  .el-tree-node__content {
+    height: auto;
+    cursor: default;
+  }
+  .el-tree-node__content:hover {
+    background-color: #ffffff;
+  }
+}
+.question-item-block {
+  padding-bottom: 10px;
+}
+.div_knowTitle {
+  font-weight: bold;
+  color: #333333;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  .div_label {
+    width: 92px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background: #fef2ee;
+    border-radius: 4px;
+    border: 1px solid #fbe0c7;
+    font-size: 12px;
+    color: #ff822e;
+    margin-left: 10px;
+  }
+}
+.div_quesTemplate {
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0px;
+  padding: 0px 20px;
+  // quesTemplate  src/assets/images/quesTemplate.png
+  background: url('~@/assets/images/quesTemplate.png') no-repeat;
+  background-size: cover;
+  border-radius: 6px 6px 6px 6px;
+
+  .div_template_title {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #4b8ff5;
+    font-size: 16px;
+    margin-right: 10px;
+    z-index: 10;
+  }
+  .div_template_right {
+    .check-btn {
+      font-size: 14px;
+      color: #4b8ff5;
+      padding-right: 40px;
+      cursor: pointer;
+      &:nth-child(3) {
+        padding-right: 0px;
+      }
+    }
+  }
+  .div_label2 {
+    width: 45px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background: #ff6e5d;
+    border-radius: 6px 6px 6px 0px;
+    margin-left: 10px;
+    color: #ffffff;
+    font-size: 12px;
+  }
+}
+</style>
+
+<style>
+.el-popover.my-know-popover {
+  width: 600px !important;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 0px 0px 16px 1px rgba(156, 156, 156, 0.28);
+  border-radius: 4px 4px 4px 4px;
+  opacity: 1;
+  border: 1px solid #4b8ff5;
+  position: absolute;
+  left: 755px !important;
+}
+.popover_title {
+  font-weight: bold;
+  color: #333333;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+.popover_list {
+  display: flex;
+  flex-wrap: wrap;
+}
+.popover_item {
+  min-width: 90px;
+  height: 26px;
+  text-align: center;
+  line-height: 18px;
+  padding: 4px 12px;
+  font-size: 14px;
+  border: 1px solid #ffcec8;
+  background: rgba(255, 110, 93, 0.05);
+  font-family: Microsoft YaHei, Microsoft YaHei;
+  font-weight: bold;
+  color: #ff6e5d;
+  margin-right: 10px;
+  border-radius: 4px 4px 4px 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.popoverEmpty {
+  text-align: center;
+  color: #ccc;
+}
+
+.el-popover[x-placement^='bottom'] .popper__arrow {
+  /*el-popover上边三角下层的颜色---也就是视觉上的边框*/
+  border-bottom-color: #4b8ff5;
+}
+</style>

@@ -1,0 +1,276 @@
+<template>
+  <div class="user-content-right">
+    <div class="item-content">
+      <div class="top-box">
+        <div class="my-title">
+          我的细目表
+        </div>
+        <top-pagintion
+          v-model:current-page="pageData.pageNum" @update:current-page="pageData.pageNum = $event"
+          suffix="份细目表"
+          :total="pageData.totalRows"
+          :page-size="pageData.pageSize"
+          @change-page="handleCurrentChange"
+        />
+      </div>
+      <div
+        v-loading="loading"
+        class="paper-content"
+      >
+        <ul class="paper-list">
+          <paper-item
+            v-for="item in pageData.list"
+            :key="item.id"
+            :paper-item="item"
+            :is-my-paper="true"
+            @show-download-dialog="OnShowDownloadDialog"
+            @show-edit-paper-dialog="OnShowEditPaperDialog"
+            @show-delete-dialog="OnShowDeleteDialog"
+          />
+        </ul>
+        <pagination
+          v-if="pageData.list.length > 0"
+          :page-data="pageData"
+          @page-curr-change="handleCurrentChange"
+        />
+        <!-- <div class="pagination-container" v-if="pageData.list.length">
+         <el-pagination @current-change="handleCurrentChange" background :current-page="pageData.pageNum" @update:current-page="pageData.pageNum = $event"
+            :page-size="pageData.pageSize" layout="prev, pager, next, jumper" :total="pageData.totalRows">
+          </el-pagination>
+        </div> -->
+        <noresult-common
+          v-else
+          v-slot:empty
+          text="很遗憾，没有找到您要的试卷"
+        />
+      </div>
+      <!-- <p class="wen-tip">温馨提示：组卷仅保留1年内的组卷，请尽快下载使用。</p> -->
+    </div>
+
+    <!-- 删除弹窗 -->
+    <base-dialog
+      ref="comfirmDialog"
+      top="35vh"
+      @comfirm="onDeleteBasket"
+    >
+      <template #dialogTips>
+        <div class="dialog-tips">
+          细目表删除后，不可恢复，请谨慎操作，仍要删除细目表？
+        </div>
+      </template>
+    </base-dialog>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+  import CTS from '@/common/js/constant'
+  // import { API } from '@/api/config'
+  import { mapState } from 'vuex'
+  import NoresultCommon from '@/components/Noresult/Noresult-common'
+  import GeneralTime from '@/components/Category/Time'
+  import BaseDialog from '@/components/BaseDialog/BaseDialog'
+  import PaperItem from '@/components/PaperItem/PaperItemXimu'
+  import { TopPagination } from '@/components/CpFan/index.js'
+  import paperShareMixin from '@/common/mixins/paperShareMixin'
+  import paperPayMixin from '@/common/mixins/paperPayMixin'
+
+  export default {
+    components: {
+      BaseDialog,
+      NoresultCommon,
+      GeneralTime,
+      PaperItem,
+      TopPagination,
+    },
+    mixins: [paperShareMixin, paperPayMixin],
+    data() {
+      return {
+        loading: true,
+        // ok------------------------------------------------------------
+        pageData: {
+          list: [],
+          pageSize: 15, // pageSize: 15,
+          pageNum: 1, // currPage
+          totalRows: 0, // totalCount
+        },
+        timeData: {
+          timeBegin: 0,
+          timeEnd: 0,
+        },
+        currPaperItem: {},
+        currPaper: {},
+      }
+    },
+    mounted() {
+      // 监听删除组卷
+      this.Bus.$on('deleteMyPaper', this.getPaperList)
+    },
+    // ok------------------------------------------
+    computed: {
+      ...mapState(['currSubject']),
+    },
+    created() {
+      this.getPaperList()
+    },
+    methods: {
+      updateListEvent() {
+        this.getPaperList()
+      },
+      // 获取细目表list ok----------------------------------------------
+      getPaperList() {
+        let url = {
+          urlPath:
+            import.meta.env.VITE_PAPER_GENERATOR +
+            '/paperGroupCatalogue/queryCatalogueList',
+        }
+        let parms = {
+          pageSize: this.pageData.pageSize,
+          pageNum: this.pageData.pageNum,
+          stageSubject: this.currSubject.subjectCode,
+        }
+        this.apiGet(url, parms).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            this.loading = false
+            this.pageData = res.data
+            // console.log('886',this.pageData)
+          } else {
+            this.loading = false
+          }
+        })
+      },
+      // 编辑组卷
+      OnShowEditPaperDialog(paperItem) {
+        // 监听下载试卷
+        this.$router.push({
+          path: './editbreakdowngroup',
+          query: {
+            id: paperItem.id,
+          },
+        })
+      },
+
+      // 删除下载
+      OnShowDeleteDialog(paperItem) {
+        this.currentId = paperItem.id
+        this.$refs.comfirmDialog.show()
+      },
+      // 确认删除
+      onDeleteBasket() {
+        let url = {
+          urlPath:
+            import.meta.env.VITE_PAPER_GENERATOR +
+            '/paperGroupCatalogue/delCatalogue',
+        }
+        let parms = {
+          id: this.currentId,
+        }
+        this.apiGet(url, parms).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            this.$message.success('删除成功!')
+            this.$refs.comfirmDialog.hide()
+            this.currentId = null
+            this.getPaperList()
+          }
+        })
+      },
+
+      // 下载组卷
+      OnShowDownloadDialog(paperItem) {
+        let url = {
+          urlPath:
+            import.meta.env.VITE_PAPER_GENERATOR +
+            '/paperGroupCatalogue/downLoadCatalogue',
+        }
+        let parms = {
+          id: paperItem.id,
+        }
+        this.apiPost(url, parms, { responseType: 'blob' }).then((res) => {
+          // if(res.code === CTS.constant.SYSTEM_ERROR_CODE){
+          //   this.$message.error('下载失败!')
+          // }else{
+          //   this.$message.success('下载成功!')
+          // }
+          let a = document.createElement('a')
+          let blob = res.data
+          let objectUrl = URL.createObjectURL(blob)
+          a.setAttribute('href', objectUrl)
+          a.setAttribute('download', paperItem.paperName + '.xls')
+          a.click()
+        })
+      },
+
+      // 分页
+      handleCurrentChange(pageNum) {
+        this.pageData.pageNum = pageNum
+        this.pageData.list = []
+        this.getPaperList()
+      },
+    },
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .user-content-right {
+    width: 1200px;
+    background-color: $color-white;
+    margin: 0 auto;
+    margin-top: 20px;
+    .item-content {
+      .top-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 80px;
+        border-bottom: 1px solid #eeeeee;
+        padding: 0 30px;
+
+        .my-title {
+          font-size: 20px;
+          font-weight: 700;
+          font-family: 'MicrosoftYaHei-Bold';
+          color: #333333;
+        }
+      }
+
+      .show-info-title {
+        width: 50%;
+        color: $color-text-d;
+        font-size: $font-size-medium;
+        font-weight: bold;
+        margin-bottom: 24px;
+        display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+
+        span {
+          display: block;
+          width: 2px;
+          height: 14px;
+          margin-right: 20px;
+          background: rgba(102, 102, 102, 1);
+        }
+      }
+    }
+  }
+
+  .el-pagination {
+    padding: 4px 5px 20px;
+  }
+  .pagination-container {
+    text-align: center;
+  }
+  .wen-tip {
+    margin-top: 20px;
+  }
+
+  .paper-content {
+    padding: 0 30px 20px 30px;
+    margin-top: 16px;
+    margin-bottom: 70px;
+    background: rgb(255, 255, 255);
+    min-height: 450px;
+  }
+</style>

@@ -1,0 +1,161 @@
+<template>
+  <!--考点展示区-->
+  <div
+    v-if="showKnowledge"
+    class="ques-knowledge"
+  >
+    <div class="ques-knowledge-box">
+      <div class="ques-knowledge-cell knowledge-border-bottom">
+        <div class="knowledge-title knowledge-height-28">
+          【考点】
+        </div>
+        <div
+          v-if="knowledgesData.length > 0"
+          class="knowledge-content"
+        >
+          <span
+            v-for="(item, index) in knowledgesData"
+            :key="index"
+            class="knowledge-item"
+            v-html="item.name"
+          />
+        </div>
+        <div
+          v-else
+          class="knowledge-content"
+        >
+          <span class="knowledge-text">暂无考点</span>
+        </div>
+      </div>
+      <div
+        v-if="showLogin"
+        class="ques-knowledge-cell knowledge-border-bottom"
+      >
+        <div class="knowledge-title">
+          【答案】
+        </div>
+        <div class="knowledge-content">
+          请<span
+            class="knowledge-login"
+            @click="onLogin"
+          >登录</span>后查看
+        </div>
+      </div>
+      <div
+        v-if="showLogin"
+        class="ques-knowledge-cell"
+      >
+        <div class="knowledge-title">
+          【解析】
+        </div>
+        <div class="knowledge-content">
+          请<span
+            class="knowledge-login"
+            @click="onLogin"
+          >登录</span>后查看
+        </div>
+      </div>
+    </div>
+    <!-- 登录弹窗 -->
+    <app-login ref="appLogin" />
+  </div>
+</template>
+
+<script>
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    name: 'QuestionKnowledge',
+    props: {
+      showLogin: {
+        type: Boolean,
+        default: false,
+      })
+
+    return {
+      showKnowledge: {
+        type: Boolean,
+        default: false,
+      })
+
+    return {
+      knowledgesData: {
+        type: Array,
+        default() {
+          return []
+        })
+
+    return {
+      })
+
+    return {
+      showExplainCode: {
+        type: Number,
+        default: 0,
+      })
+
+    return {
+    })
+
+    return {
+    methods: {
+      onLogin() {
+        this.$refs.appLogin.showLogin()
+      })
+
+    return {
+    })
+
+    return {
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .ques-knowledge {
+    .ques-knowledge-box {
+      // padding:10px 0;
+    }
+  }
+  .ques-knowledge-cell {
+    display: flex;
+    line-height: 20px;
+    padding: 10px 0 5px 0;
+    .knowledge-title {
+      width: 60px;
+      color: $color-theme;
+    }
+    .knowledge-content {
+      flex: 1;
+      color: #666666;
+      .knowledge-text {
+        padding-right: 10px;
+        white-space: nowrap; /*强制span不换行*/
+      }
+
+      .knowledge-item {
+        display: inline-block;
+        line-height: 28px;
+        padding: 0 10px;
+        margin-right: 10px;
+        margin-bottom: 5px;
+        white-space: nowrap; /*强制span不换行*/
+        background: #ebf2fb;
+        border-radius: 14px;
+        color: #666666;
+      }
+
+      .knowledge-login {
+        cursor: pointer;
+        color: $color-theme;
+      }
+    }
+  }
+  .knowledge-border-bottom {
+    border-bottom: 1px dashed #bababa;
+  }
+  .knowledge-height-28 {
+    line-height: 28px;
+    font-weight: 700;
+  }
+</style>

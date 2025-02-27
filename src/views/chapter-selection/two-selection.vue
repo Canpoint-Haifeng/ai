@@ -1,0 +1,341 @@
+<template>
+  <div>
+    <div class="chapter-category-container">
+      <paper-type
+        :volume-current-code="volumeCurrentCode"
+        :default-type-code="currTypeCode"
+        @select-type="onSelectType"
+      />
+      <!-- <CategoryList
+        categoryLabel="难度"
+        @selectCategory="onSelectDiff"
+        :categoryList="difficultyList"
+      ></CategoryList> -->
+    </div>
+    <div class="gray-line" />
+    <div class="paper-container min-height750">
+      <div class="paper-content">
+        <paper-sort
+          :paper-count="paperData.totalCount"
+          :page-size="paperData.pageSize"
+          :current-page="paperData.currPage"
+          @change-page="onPageCurrChange"
+          @select-sort="onSelectSort"
+        />
+      </div>
+      <div
+        v-if="paperData.list.length > 0"
+        class="paper-content"
+      >
+        <!-- <paper-sort
+          :paperCount="paperData.list.length"
+          @selectSort="onSelectSort">
+        </paper-sort> -->
+
+        <hr
+          width="914px"
+          color="#ECEFF3"
+          size="0.5"
+        >
+        <ul class="paper-list min-height600">
+          <paper-item
+            v-for="item in paperData.list"
+            :key="item.paperId"
+            :paper-item="item"
+            :show-paper-view="true"
+            @on-show-down-load-paper="onShowDownLoadPaper"
+            @check-paper-detail="onCheckPaperDetail"
+            @on-show-collect-dialog="onShowCollectDialog"
+            @show-analysis-dialog="onShowAnalysisDialog"
+          />
+        </ul>
+        <pagination
+          v-if="paperData.list.length > 0"
+          :page-data="paperData"
+          @page-curr-change="onPageCurrChange"
+        />
+      </div>
+      <noresult-common
+        v-else
+        class="min-height750"
+        text="很遗憾，没有找到您要的试卷"
+      />
+    </div>
+    <!-- 下载组卷 -->
+    <download-dialog
+      ref="downloadDialog"
+      @download-paper="onDownloadPaper"
+    />
+    <!-- 支付提示框 -->
+    <pay-dialog
+      v-if="payData.weChatQrcode"
+      ref="payDialog"
+      :pay-data="payData"
+      @change-pay-type="onChangePayType"
+      @balance-pay="onBalancePay"
+      @entry-my-wallet="onEntryMyWallet"
+      @close-pay-dialog="onClosePayDialog"
+    />
+    <!-- <router-view></router-view> -->
+    <app-tool-basket />
+    <!-- 试卷分析 -->
+    <analysis-dialog
+      ref="analysisDialog"
+      :question-analysis="questionAnalysis"
+    />
+    <!-- 取消收藏成功提示框 -->
+    <collect-message
+      ref="collectMessagePaper"
+      :collect-status="1"
+    />
+    <!-- 登录弹窗 -->
+    <app-login ref="appLogin" />
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+  import CTS from '@/common/js/constant'
+  import { mapState } from 'vuex'
+  import { API } from '@/api/config'
+  import { isLogin } from '@/common/js/util'
+  import paperCategoryMixin from '@/common/mixins/paperCategoryMixin'
+  import paperAnalysisMixin from '@/common/mixins/paperAnalysisMixin'
+  import paperPayMixin from '@/common/mixins/paperPayMixin'
+
+  import CollectMessage from '@/components/CollectMessage/CollectMessage'
+  import PaperSort from '@/components/CpFan/Category/PaperSort'
+  import PaperItem from '@/components/PaperItem/PaperItemWork'
+
+  import NoresultCommon from '@/components/Noresult/Noresult-common'
+  import CpWarningDialog from '@/components/AuthorityVip/CpWarningDialog'
+
+  export default {
+    components: {
+      PaperSort,
+      PaperItem,
+      NoresultCommon,
+      CollectMessage,
+    },
+    mixins: [paperCategoryMixin, paperAnalysisMixin, paperPayMixin],
+    props: {
+      teachCurrentCode: String,
+      volumeCurrentCode: String,
+      checkNodeCode: String, // 获取章节
+      checkNodeCodeLevel: String,
+      versionGradeCode: String,
+    },
+    data() {
+      return {
+        crumbsData: [
+          {
+            path: '',
+            isLink: false,
+            text: '试卷中心',
+          },
+        ],
+        currSort: 1, // 排序 1-按最新更新 2-按最多浏览 3-按最多下载
+        paperData: {
+          pageSize: 10,
+          currPage: 1,
+          totalPage: 0,
+          list: [],
+        },
+        difficultyList: CTS.cfgDict.paperDiffList,
+        paperId: 0,
+      }
+    },
+    computed: {
+      ...mapState(['currSubject']),
+    },
+    watch: {
+      volumeCurrentCode(val, old) {
+        this.paperData.currPage = 1
+        this.getPaperList() // 监听章节选择变化
+      },
+      checkNodeCode(v) {
+        if (v) {
+          this.paperData.currPage = 1
+          this.getPaperList() // 监听章节选择变化
+        }
+      },
+    },
+
+    created() {
+      let query = this.$route.query
+      if (query.paperType) {
+        this.currTypeCode = query.paperType
+      }
+      this.getPaperList()
+    },
+    methods: {
+      onShowDownLoadPaper(paperItem) {
+        this.eventStatistics([
+          '_trackEvent',
+          '试卷列表',
+          '点击下载试卷',
+          '次数',
+        ])
+        this.currPaper = paperItem
+        this.queryOrder(paperItem)
+      },
+      // 取消试卷收藏
+      onShowCollectDialog(val) {
+        if (!isLogin()) {
+          this.$refs.appLogin.showLogin()
+          return
+        }
+        let parms = {
+          period: this.currSubject.periodCode,
+          subject: this.currSubject.subjectCode,
+          paperIdEnc: val.paperIdEnc,
+          status: val.status,
+          source: val.source,
+          grade: val.grade || '',
+          year: val.year || '',
+          paperType: val.typeCode || '',
+        }
+
+        this.apiGet(API.COLLECTION_CANCEL_EXAMPAPER, parms).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            this.getPaperList() // 刷新数据
+            this.$refs.collectMessagePaper.showMessage(val.status)
+          } else {
+            if (res.msg === '1003') {
+              CpWarningDialog.install({
+                code: '1003',
+                onBuyVip: (v) => {
+                  if (v === 2) {
+                    this.$router.push({
+                      path: '/open/campus/service',
+                    })
+                  } else {
+                    // CpBuyVip.install({})
+                  }
+                },
+              })
+            } else {
+              this.$message.error(res.msg)
+            }
+          }
+        })
+      },
+      // // // 选择章节
+      // OnCheckNodeCodeChapter(val) {
+      //   this.checkNodeCode = val.codes
+      //   this.checkNodeCodeLevel = val.levels
+      //   this.getPaperList() // 刷新列表
+      // },
+      // 获取试卷列表数据
+      getPaperList() {
+        if (!this.checkNodeCode) return
+        let parms = {
+          period: this.currSubject.periodCode,
+          subjectCode: this.currSubject.subjectCode,
+          paperName: '',
+          version: this.teachCurrentCode ? this.teachCurrentCode : '',
+          chapterLevel: this.checkNodeCodeLevel ? this.checkNodeCodeLevel : '',
+          chapterCode: this.checkNodeCode ? this.checkNodeCode : '',
+          type: this.currTypeCode ? this.currTypeCode : '', // 当前试卷类型
+          year: this.currYearCode ? this.currYearCode : '', // 当前试卷年份
+          province: this.currAreaCode ? this.currAreaCode : '', // 当前试卷地区
+          difficultyCode: this.currDiffCode || '',
+          sort: this.currSort, // 排序
+          currPage: this.paperData.currPage, // 当前试卷页数
+          pageSize: this.paperData.pageSize, // 当前试卷每页条数
+        }
+
+        if (this.currSubject.periodCode == '13') {
+          parms.grade = this.versionGradeCode || ''
+        } else {
+          parms.volume = this.volumeCurrentCode || ''
+          parms.grade = this.versionGradeCode || ''
+        }
+
+        this.apiGet(API.MANAGE_PAPER_TONG_LIST, parms).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            if (res.data) {
+              // source = 1
+              if (res.data.list) {
+                let list = res.data.list.map((item) => {
+                  item.source = 2
+                  return item
+                })
+                res.data.list = list
+              }
+
+              this.paperData = res.data
+            }
+          }
+        })
+      },
+      // 监听currPage改变重新调用
+      onPageCurrChange(currPage) {
+        this.paperData.currPage = currPage
+        document.documentElement.scrollTop = 0 // 返回页面顶部
+        this.getPaperList()
+      },
+      // 重置搜索条件
+      resetSearchParam(sort = 1) {
+        this.pageData = {
+          pageSize: 10,
+          currPage: 1,
+          totalPage: 0,
+          list: [],
+        }
+        this.currSort = sort
+        this.getPaperList()
+      },
+      // 监听选择排序
+      onSelectSort(sort) {
+        this.currSort = sort
+        this.resetSearchParam(sort)
+      },
+    },
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .category-container :deep() {
+    padding: 12px 20px 20px 20px;
+    background: $color-white;
+    .category-content {
+      .category-list {
+        width: 855px;
+      }
+    }
+  }
+  .category-container {
+    width: 914px;
+    padding: 20px 20px 8px 20px;
+    background: $color-white;
+  }
+  .gray-line {
+    width: 914px;
+    height: 16px;
+    background: $color-background-l;
+  }
+  .paper-container {
+    width: 914px;
+    margin-bottom: 20px;
+    background: $color-white;
+    padding-bottom: 20px;
+  }
+  .paper-content {
+    padding: 0 20px;
+  }
+  .paper-sort {
+    margin: 0;
+    border: 0;
+  }
+  hr {
+    margin: 0px 0px 20px -20px;
+  }
+  .chapter-category-container {
+    // padding: 12px 20px 20px 20px;
+    padding: 20px 20px 10px 20px;
+    background: $color-white;
+    box-sizing: border-box;
+  }
+</style>

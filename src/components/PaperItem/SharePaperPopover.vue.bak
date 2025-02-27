@@ -1,0 +1,146 @@
+<template>
+  <el-popover
+    v-model="visable"
+    placement="bottom"
+    title=""
+    width="170"
+    trigger="click"
+    @show="onShow"
+  >
+    <div class="cp-share-paper-body">
+      <div class="cp-share-paper-qr">
+        <img
+          v-if="imgUrl"
+          class="cp-share-paper-img"
+          :src="imgUrl"
+          alt=""
+        >
+      </div>
+      <div class="cp-share-paper-title">
+        微信扫码分享
+      </div>
+      <div class="cp-share-paper-tips">
+        5人喜欢即可获得下载券
+      </div>
+    </div>
+    <template #reference>
+      <slot name="reference">
+        <div class="paper-share-block">
+          <span class="iconfont iconhaotifenxiang" />分享
+        </div>
+      </slot>
+    </template>
+  </el-popover>
+</template>
+
+<script>
+  import { API } from '@/api/config'
+  import { isLogin } from '@/common/js/util'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    props: {
+      subjectCode: [String, Number],
+      paperIdEnc: String,
+      shareType: {
+        type: [String, Number],
+        default: 2,
+      }
+
+    return {
+      source: {
+        type: [String, Number],
+        default: 2,
+      }
+
+    return {
+      reloadImgUrl: {
+        type: Boolean,
+        default: false,
+      }
+
+    return {
+    }
+
+    return {
+    setup() {
+      const state = reactive({
+        imgUrl: '',
+        visable: false,
+      }
+    }
+
+    return {
+    methods: {
+      onShow() {
+        console.log('onShow')
+
+        if (!isLogin()) {
+          this.$emit('showAppLogin')
+          this.visable = false
+          return
+        }
+        if (!this.imgUrl || this.reloadImgUrl) {
+          let subject = this.subjectCode + ''
+          let params = {
+            paperIdEnc: this.paperIdEnc,
+            period: subject.substring(0, 2),
+            subjectCode: subject,
+            source: this.source, // 试卷来源：1-题舟，2-试卷管理
+          }
+          this.apiPost(API.FEEDPAPER_SHAREPAPER, params).then((res) => {
+            if (this.checkoutRes(res)) {
+              this.visable = true
+              this.imgUrl = res.data.img
+              this.eventStatistics([
+                '_trackEvent',
+                '试题列表',
+                '点击试题分享',
+                '次数',
+              ])
+              this.eventStatistics([
+                '_trackEvent',
+                '试卷预览',
+                '点击分享',
+                '次数',
+              ])
+            } else {
+              this.visable = false
+              this.showMessage(res.msg)
+            }
+          }
+        } else {
+          this.visable = true
+        }
+      }
+
+    return {
+    }
+
+    return {
+  }
+})
+</script>
+
+<style scoped lang="scss">
+  .cp-share-paper-body {
+    .cp-share-paper-title {
+      text-align: center;
+      color: #000000;
+    }
+    .cp-share-paper-tips {
+      text-align: center;
+      color: #000000;
+    }
+    .cp-share-paper-qr {
+      padding: 10px 0;
+      height: 160px;
+      text-align: center;
+      .cp-share-paper-img {
+        width: 160px;
+        display: inline-block;
+      }
+    }
+  }
+})
+</style>

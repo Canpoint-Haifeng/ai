@@ -1,0 +1,237 @@
+<template>
+  <li class="r-paper-item">
+    <div
+      class="r-paper-content deleteStyle"
+      @click="checkPaperDetail(paperItem)"
+    >
+      <div class="paper-info">
+        <div class="info-left color-9 font-12">
+          <h3 class="paper-title color-3">
+            {{ paperItem.paperName ? paperItem.paperName : '2023年湖北省-鄂州市九年级中考真题初中-数学人教版'
+            }}
+          </h3>
+          <div>
+            <span class="item">题量<em
+              v-if="paperItem.questionNum"
+              class="text"
+            >{{ paperItem.questionNum }}</em>
+              <em
+                v-else
+                class="text"
+              >-</em></span>
+            <span class="item">{{ paperItem.timeDownload | datetime('YYYY/MM/DD') }}组卷</span>
+          </div>
+        </div>
+        <div class="paper-operate">
+          <span
+            class="operate-item"
+            @click.stop="OnShowDownloadDialog(paperItem)"
+          >
+            <i class="icon iconfont icon-plus-download" />
+            <div class="t">下载</div>
+          </span>
+        </div>
+      </div>
+    </div>
+    <i
+      class="icon iconfont icon-guanbi"
+      @click.stop="deletePaper(paperItem)"
+    />
+  </li>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  props: {
+    paperItem: {
+      type: Object,
+      require: true,
+      default: () => { })
+
+    return {
+    })
+
+    return {
+  })
+
+    return {
+  created() { })
+
+    return {
+  methods: {
+    // 删除组卷
+    deletePaper(paperItem) {
+      this.$emit('showDeleteDialog', paperItem)
+    })
+
+    return {
+    OnShowDownloadDialog(paperItem) {
+      this.$emit('OnShowDownloadDialog', paperItem)
+    })
+
+    return {
+    checkPaperDetail(paperItem) {
+      // this.$router.push({
+      //   name: 'paperView',
+      //   query: {
+      //     paperIdEnc: paperItem.paperIdEnc,
+      //     source: paperItem.source,
+      //   })
+
+    return {
+      // })
+      this.$emit('checkPaperDetail', paperItem)
+    })
+
+    return {
+  })
+
+    return {
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.r-paper-download {
+  line-height: 38px;
+  background: #f6f6f6;
+  border-radius: 6px 6px 0px 0px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-family: Microsoft YaHei;
+  font-weight: 400;
+  color: #666666;
+}
+
+.r-paper-content {
+  padding: 26px 20px;
+}
+
+.r-paper-item {
+  border: 1px solid $color-border;
+  box-sizing: border-box;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  position: relative;
+
+  .delete-item {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    color: #ff6e5d;
+    font-size: 20px;
+    display: none;
+    cursor: pointer;
+  }
+
+  &:hover {
+    border: 1px solid #487FFF;
+    box-shadow: 0 0px 0px #ccc;
+
+    .delete-item {
+      display: inline-block !important;
+    }
+  }
+
+  .paper-title {
+    width: 500px;
+    line-height: 20px;
+    margin-bottom: 26px;
+    cursor: pointer;
+    font-size: $font-size-medium;
+    font-weight: 400;
+    transition: 0.2s;
+
+    &:hover {
+      color: $color-theme;
+    }
+  }
+
+  .paper-info {
+    display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+    justify-content: space-between;
+
+    .info-left {
+      .item {
+        margin-right: 10px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        padding: 3px 5px;
+
+        .text {
+          color: #ff7e3d;
+          margin-left: 5px;
+        }
+      }
+    }
+
+    .paper-operate {
+      .operate-item.gray {
+        color: #999999;
+
+        &>i {
+          background-color: #f2f2f0;
+          color: #bababa;
+
+          &:hover {
+            color: #bababa;
+          }
+        }
+      }
+
+      .operate-item {
+        text-align: center;
+        color: $color-text-d;
+        cursor: pointer;
+        width: 65px;
+        display: inline-block;
+
+        &>i {
+          background: #487FFF22;
+          border-radius: 6px;
+          padding: 8px;
+          font-size: 24px;
+          color: #487FFF;
+          display: inline-block;
+
+          &:hover {
+            color: #3e73cd;
+          }
+        }
+
+        .t {
+          font-size: 12px;
+          padding-top: 7px;
+          color: #666666;
+          font-weight: normal;
+        }
+      }
+
+      .operate-item:not(:last-child) {
+        padding-right: 5px;
+      }
+    }
+  }
+
+  .icon-guanbi {
+    position: absolute;
+    color: $color-theme-l;
+    font-size: 16px;
+    top: 0;
+    right: 0;
+    display: none;
+  }
+
+  &:hover {
+    .icon-guanbi {
+      display: block;
+    }
+  }
+}
+</style>

@@ -1,0 +1,311 @@
+{
+  "questionId": "65afb499-4bac-4034-820b-ea66102542ef",
+  "subjective": {
+    "code": false,
+    "name": "客观题"
+  },
+  "year": {
+    "code": "2019",
+    "name": "2019年"
+  },
+  "quesStruct": {
+    "code": "17",
+    "name": "多小题模版（同一知识点）"
+  },
+  "coreAbility": [],
+  "updateTime": 1.59882082E9,
+  "solvingMethod": [],
+  "questionStatus": {
+    "code": 1.0,
+    "name": "启用"
+  },
+  "difficulty": {
+    "code": "3",
+    "name": "中等"
+  },
+  "processQuesType": {
+    "code": "1714",
+    "name": "判断题"
+  },
+  "children": [
+    {
+      "explain": [
+        {
+          "questionId": "12dd111c-4d5e-42e1-965a-0b006fd04d0d",
+          "answers": [
+            [
+              "0"
+            ]
+          ],
+          "analysis": ""
+        }
+      ],
+      "questionId": "12dd111c-4d5e-42e1-965a-0b006fd04d0d",
+      "subjective": {
+        "code": false,
+        "name": "客观题"
+      },
+      "parentQid": "65afb499-4bac-4034-820b-ea66102542ef",
+      "year": {},
+      "coreAbility": [],
+      "updateTime": 1.598820821E9,
+      "solvingMethod": [],
+      "questionStatus": {
+        "code": 1.0,
+        "name": "启用"
+      },
+      "difficulty": {
+        "code": "3",
+        "name": "中等"
+      },
+      "children": [],
+      "grade": {},
+      "context": {
+        "stem": "<img class=\"math-tex\" latexdata=\"a\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/0cc175b9c0f1b6a831c399e269772661.svg\" />∶<img class=\"math-tex\" latexdata=\"b\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/92eb5ffee6ae2fec3ad71c777531578f.svg\" />∶<img class=\"math-tex\" latexdata=\"c%3D1\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/27071423b9a403c9ffa1895ef3fefb6e.svg\" />∶<img class=\"math-tex\" latexdata=\"2\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/c81e728d9d4c2f636f067f89cc14862c.svg\" />∶<img class=\"math-tex\" latexdata=\"3\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/eccbc87e4b5ce2fe28308fd9f2a7baf3.svg\" />；"
+      },
+      "questionSource": {},
+      "location": {},
+      "useCount": 0.0,
+      "thinkingMethod": [],
+      "status": "已入库",
+      "quesType": {
+        "code": "14",
+        "name": "判断题"
+      },
+      "knowledge": [
+        {
+          "code": "14468521536",
+          "name": "三角形三边之间的关系"
+        }
+      ]
+    },
+    {
+      "explain": [
+        {
+          "questionId": "1c6f05ad-b188-4ce4-b16c-359f51ee5b38",
+          "answers": [
+            [
+              "0"
+            ]
+          ],
+          "analysis": ""
+        }
+      ],
+      "questionId": "1c6f05ad-b188-4ce4-b16c-359f51ee5b38",
+      "subjective": {
+        "code": false,
+        "name": "客观题"
+      },
+      "parentQid": "65afb499-4bac-4034-820b-ea66102542ef",
+      "year": {},
+      "coreAbility": [],
+      "updateTime": 1.598820821E9,
+      "solvingMethod": [],
+      "questionStatus": {
+        "code": 1.0,
+        "name": "启用"
+      },
+      "difficulty": {
+        "code": "3",
+        "name": "中等"
+      },
+      "children": [],
+      "grade": {},
+      "context": {
+        "stem": "<img class=\"math-tex\" latexdata=\"a%3D3\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/3d7b566aaed7713dfc5583dfc4b9c386.svg\" />，<img class=\"math-tex\" latexdata=\"b%3D5\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/f1e5d335f8f4bde5006a29e447072a3e.svg\" />，<img class=\"math-tex\" latexdata=\"c%3D2\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/4847acef124418c705153576282ebd02.svg\" />；"
+      },
+      "questionSource": {},
+      "location": {},
+      "useCount": 0.0,
+      "thinkingMethod": [],
+      "status": "已入库",
+      "quesType": {
+        "code": "14",
+        "name": "判断题"
+      },
+      "knowledge": [
+        {
+          "code": "14468521536",
+          "name": "三角形三边之间的关系"
+        }
+      ]
+    },
+    {
+      "explain": [
+        {
+          "questionId": "ac2e3a2b-122f-407e-a759-f0eb3b37ade6",
+          "answers": [
+            [
+              "1"
+            ]
+          ],
+          "analysis": ""
+        }
+      ],
+      "questionId": "ac2e3a2b-122f-407e-a759-f0eb3b37ade6",
+      "subjective": {
+        "code": false,
+        "name": "客观题"
+      },
+      "parentQid": "65afb499-4bac-4034-820b-ea66102542ef",
+      "year": {},
+      "coreAbility": [],
+      "updateTime": 1.598820821E9,
+      "solvingMethod": [],
+      "questionStatus": {
+        "code": 1.0,
+        "name": "启用"
+      },
+      "difficulty": {
+        "code": "3",
+        "name": "中等"
+      },
+      "children": [],
+      "grade": {},
+      "context": {
+        "stem": "<img class=\"math-tex\" latexdata=\"a%3Dm%2B1\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/f866ead37113aff5dc95839a46a56593.svg\" />，<img class=\"math-tex\" latexdata=\"b%3Dm%2B2\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/590d3f581c5b733a99c062047809e89c.svg\" />，<img class=\"math-tex\" latexdata=\"c%3D2m(m%20%3E%202)\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/a674c7774ba6f0815245a03aa7b331bc.svg\" />"
+      },
+      "questionSource": {},
+      "location": {},
+      "useCount": 0.0,
+      "thinkingMethod": [],
+      "status": "已入库",
+      "quesType": {
+        "code": "14",
+        "name": "判断题"
+      },
+      "knowledge": [
+        {
+          "code": "14468521536",
+          "name": "三角形三边之间的关系"
+        }
+      ]
+    },
+    {
+      "explain": [
+        {
+          "questionId": "f7009731-0890-4162-a376-9bd1c1c1efc8",
+          "answers": [
+            [
+              "1"
+            ]
+          ],
+          "analysis": ""
+        }
+      ],
+      "questionId": "f7009731-0890-4162-a376-9bd1c1c1efc8",
+      "subjective": {
+        "code": false,
+        "name": "客观题"
+      },
+      "parentQid": "65afb499-4bac-4034-820b-ea66102542ef",
+      "year": {},
+      "coreAbility": [],
+      "updateTime": 1.598820822E9,
+      "solvingMethod": [],
+      "questionStatus": {
+        "code": 1.0,
+        "name": "启用"
+      },
+      "difficulty": {
+        "code": "3",
+        "name": "中等"
+      },
+      "children": [],
+      "grade": {},
+      "context": {
+        "stem": "<img class=\"math-tex\" latexdata=\"a%3D1\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/3872c9ae3f427af0be0ead09d07ae2cf.svg\" />，<img class=\"math-tex\" latexdata=\"b%3D%7B%5Csqrt%7B2%7D%7D\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/ac3b73cc910ecfb51120d1bd524b3fbc.svg\" />，<img class=\"math-tex\" latexdata=\"c%3D3\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/2df112896cb252b1a2b333525b4bd05d.svg\" />；"
+      },
+      "questionSource": {},
+      "location": {},
+      "useCount": 0.0,
+      "thinkingMethod": [],
+      "status": "已入库",
+      "quesType": {
+        "code": "14",
+        "name": "判断题"
+      },
+      "knowledge": [
+        {
+          "code": "14468521536",
+          "name": "三角形三边之间的关系"
+        }
+      ]
+    },
+    {
+      "explain": [
+        {
+          "questionId": "ff4fc25a-5931-4aea-9129-7972d7dcacbe",
+          "answers": [
+            [
+              "1"
+            ]
+          ],
+          "analysis": ""
+        }
+      ],
+      "questionId": "ff4fc25a-5931-4aea-9129-7972d7dcacbe",
+      "subjective": {
+        "code": false,
+        "name": "客观题"
+      },
+      "parentQid": "65afb499-4bac-4034-820b-ea66102542ef",
+      "year": {},
+      "coreAbility": [],
+      "updateTime": 1.598820822E9,
+      "solvingMethod": [],
+      "questionStatus": {
+        "code": 1.0,
+        "name": "启用"
+      },
+      "difficulty": {
+        "code": "3",
+        "name": "中等"
+      },
+      "children": [],
+      "grade": {},
+      "context": {
+        "stem": "<img class=\"math-tex\" latexdata=\"a%3D2\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/83a88ab12cf3296e031df84985733d33.svg\" />，<img class=\"math-tex\" latexdata=\"b%3D3\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/55a126c3d77ecdcb094e57308188d40d.svg\" />，<img class=\"math-tex\" latexdata=\"c%3D4\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/481e8d86ebf3cbf0a4f5da7201833788.svg\" />；"
+      },
+      "questionSource": {},
+      "location": {},
+      "useCount": 0.0,
+      "thinkingMethod": [],
+      "status": "已入库",
+      "quesType": {
+        "code": "14",
+        "name": "判断题"
+      },
+      "knowledge": [
+        {
+          "code": "14468521536",
+          "name": "三角形三边之间的关系"
+        }
+      ]
+    }
+  ],
+  "grade": {
+    "code": "1219",
+    "name": "九年级"
+  },
+  "context": {
+    "stem": "判断满足下列条件的三条线段<img class=\"math-tex\" latexdata=\"a\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/0cc175b9c0f1b6a831c399e269772661.svg\" />，<img class=\"math-tex\" latexdata=\"b\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/92eb5ffee6ae2fec3ad71c777531578f.svg\" />，<img class=\"math-tex\" latexdata=\"c\" style=\"vertical-align: middle;\" src=\"http://qp-tiku.oss-cn-beijing.aliyuncs.com/latex2svg/4a8a08f09d37b73795649038408b5f33.svg\" />能组成三角形吗？"
+  },
+  "questionSource": {
+    "code": "15",
+    "name": "期中考试"
+  },
+  "useCount": 0.0,
+  "thinkingMethod": [],
+  "status": "已入库",
+  "quesType": {
+    "code": "14",
+    "name": "判断题"
+  },
+  "knowledge": [
+    {
+      "code": "14468521536",
+      "name": "三角形三边之间的关系"
+    }
+  ]
+}

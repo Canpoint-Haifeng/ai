@@ -1,0 +1,266 @@
+<template>
+  <div>
+    <el-dialog
+      v-model:visible="visible"
+      title="下载教案"
+      width="600px"
+    >
+      <div class="download_content">
+        <div class="item">
+          <div class="label">
+            <span>下载版本：</span>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.downloadType">
+              <el-radio :label="1">
+                教师版
+              </el-radio>
+              <el-radio :label="2">
+                学生版（答案解析统一放置在卷尾）
+              </el-radio>
+            </el-radio-group>
+            <!-- <div class="tip"></div> -->
+          </div>
+        </div>
+        <!-- <div class="item">
+                    <div class="label">
+                        <span>是否显示答案解析：</span>
+                    </div>
+                    <div>
+                        <el-radio-group v-model="formData.showAnswer">
+                            <el-radio :label="true">是</el-radio>
+                            <el-radio :label="false">否</el-radio>
+                        </el-radio-group>
+                    </div>
+                </div> -->
+        <div class="item">
+          <div class="label">
+            <span>知识讲解模板：</span>
+            <p @click="viewExample('1' + formData.knowledgeType)">
+              查看样例
+            </p>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.knowledgeType">
+              <el-radio :label="1">
+                聚合式（知识梳理汇总在一起）
+              </el-radio>
+              <el-radio :label="2">
+                分散式（知识梳理分散在各知识点内）
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="item">
+          <div class="label">
+            <span>文件类型：</span>
+          </div>
+          <div>
+            <!-- <el-checkbox-group v-model="formData.fileType" style="margin-bottom: 8px;">
+                            <el-checkbox label="word">Word</el-checkbox>
+                            <el-checkbox label="pdf">PDF</el-checkbox>
+                            <el-checkbox label="ppt" v-show="formData.downloadType === 1">PPT</el-checkbox>
+                        </el-checkbox-group> -->
+            <el-radio-group
+              v-model="formData.fileType"
+              style="margin-bottom: 8px;"
+            >
+              <el-radio label="doc">
+                Word2003
+              </el-radio>
+              <el-radio label="docx">
+                Word2010
+              </el-radio>
+              <el-radio label="pdf">
+                PDF
+              </el-radio>
+            </el-radio-group>
+
+            <!-- <el-radio-group v-show="formData.fileType.includes('word')" v-model="formData.word">
+                        </el-radio-group> -->
+          </div>
+        </div>
+        <div class="item">
+          <div class="label">
+            <span>文档模板样式：</span>
+            <p @click="viewExample('2' + formData.fileTempStyle)">
+              查看样例
+            </p>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.fileTempStyle">
+              <el-radio :label="1">
+                样式一
+              </el-radio>
+              <el-radio :label="2">
+                样式二
+              </el-radio>
+              <el-radio :label="3">
+                样式三
+              </el-radio>
+              <el-radio :label="4">
+                样式四
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <!-- <div class="item" v-show="formData.fileType.includes('ppt') && formData.downloadType === 1">
+                    <div class="label">
+                        <span>PPT模板样式：</span>
+                        <p>查看样例</p>
+                    </div>
+                    <div>
+                        <el-radio-group v-model="formData.ppt">
+                            <el-radio :label="1">样式一</el-radio>
+                            <el-radio :label="2">样式二</el-radio>
+                            <el-radio :label="3">样式三</el-radio>
+                            <el-radio :label="4">样式四</el-radio>
+                        </el-radio-group>
+                    </div>
+                </div> -->
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="visible = false">取 消</el-button>
+          <el-button
+            type="primary"
+            :loading="loading"
+            @click="confirm"
+          >下 载</el-button>
+        </span>
+      </template>
+      <el-image
+        ref="img"
+        style="width: 0; height: 0"
+        :src="img"
+        :preview-src-list="[img]"
+      />
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import question from './question.vue'
+export default {
+  components: {
+    question,
+  },
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
+    info: {
+      default: () => {},
+    },
+    source: {
+      default: '',
+    },
+  },
+  data() {
+    return {
+      formData: {
+        downloadType: 1,
+        // showAnswer: true,
+        knowledgeType: 1,
+        fileType: 'doc',
+        word: 'doc',
+        fileTempStyle: 1,
+        ppt: 1,
+      },
+      img: '',
+      loading: false,
+    }
+  },
+  computed: {
+    visible: {
+      get() {
+        return this.value
+      },
+      set(val) {
+        this.$emit('input', val)
+      },
+    },
+    oldQuestion() {
+      return this.currentObj.generalQuestionVo || {}
+    },
+  },
+  watch: {
+    value(v) {},
+  },
+  mounted() {
+    // this.getList();
+  },
+  methods: {
+    viewExample(i) {
+      this.img = require(`./img/${i}.jpg`)
+      this.$refs.img.clickHandler()
+    },
+    confirm() {
+      this.loading = true
+      let params = {
+        ...this.formData,
+        // fileType: this.formData.fileType === 'word' ? this.formData.word : this.formData.fileType,
+        lessonInfoId: this.info.id,
+        source: this.source || this.$route.query.source || 2,
+        lessonType: this.info.lessonType,
+        showAnswer: this.formData.downloadType === 1,
+      }
+      const urlPath = `/lesson-app/myLesson/downloadWithOSS`
+      this.newPost({ urlPath }, params)
+        .then(res => {
+          if (res.code == 200) {
+            this.download(res.data)
+            this.$emit('input', false)
+            this.$message.success('开始下载')
+          } else {
+            this.$message.error(res.msg || '下载失败')
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    download(url) {
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${this.info.title || '教案'}.zip`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+:deep(.el-dialog) {
+  .download_content {
+    padding: 20px 30px 0;
+    .item {
+      .label {
+        display: flex;
+        margin-bottom: 12px;
+        p {
+          color: #487fff;
+          font-size: 12px;
+          cursor: pointer;
+          margin-left: 12px;
+        }
+      }
+      margin-bottom: 16px;
+    }
+  }
+  .el-dialog__footer {
+    padding: 20px;
+    text-align: center;
+  }
+  .el-image {
+    .el-icon-circle-close {
+      color: #fff;
+    }
+  }
+}
+</style>

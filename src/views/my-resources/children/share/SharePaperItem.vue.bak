@@ -1,0 +1,230 @@
+<template>
+  <li class="paper-item">
+    <div class="paper-info">
+      <div class="info-left color-9 font-12">
+        <h3
+          class="paper-title color-3"
+          @click="checkPaperDetail(paperItem)"
+          v-html="paperItem.latexPaperName || paperItem.paperName"
+        />
+        <div class="paper-info-part">
+          <div class="info">
+            <span class="info-item">{{ paperItem.createTime | dateStrBig('YYYY/MM/DD') }}分享</span>
+
+            <span class="info-item">喜欢<em class="text">{{ paperItem.likeCount }}</em></span>
+            <span class="info-item">收藏<em class="text">{{ paperItem.collectCount }}</em></span>
+            <span class="info-item">已获得<em class="text">{{ paperItem.rewardCount }}</em>下载券</span>
+          </div>
+          <div
+            class="cancel-share"
+            @click="cancelShare"
+          >
+            <span class="iconfont iconshiliangzhinengduixiang2-01" />
+            取消分享
+          </div>
+        </div>
+      </div>
+      <div class="paper-operate">
+        <span
+          class="operate-item"
+          @click.stop="DownLoadPaper"
+        >
+          <i class="iconfont iconsoutibaowangyeUIshijueyuansu-15" />
+          <div class="t">下载</div>
+        </span>
+
+        <SharePaperPopover
+          :paper-id-enc="paperItem.paperIdEnc"
+          :source="paperItem.source"
+          :subject-code="subjectCode"
+        >
+          <template #reference>
+            <span class="operate-item">
+              <i class="iconfont iconsoutibaowangyeUIshijueyuansu-34" />
+              <div class="t">分享</div>
+            </span>
+          </template>
+        </SharePaperPopover>
+      </div>
+    </div>
+    <div
+      v-if="showMakeByCanpoint"
+      class="make-by-canpoint"
+    >
+      <img
+        :src="makeByCanpoint"
+        alt=""
+      >
+    </div>
+  </li>
+</template>
+
+<script>
+  import SharePaperPopover from '@/components/PaperItem/SharePaperPopover'
+  export default {
+    components: { SharePaperPopover },
+    props: {
+      paperItem: {
+        type: Object,
+        require: true,
+        default: () => {},
+      },
+      subjectCode: [String, Number],
+      userGuid: Number,
+      isAddBook: {
+        type: Boolean,
+        default: false,
+      },
+      showPaperView: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    data() {
+      return {
+        makeByCanpoint: require('@/assets/images/make_by_canpoint.png'),
+      }
+    },
+    computed: {
+      showMakeByCanpoint() {
+        if (this.paperItem.source == 2 && this.paperItem.period == '11') {
+          return true
+        } else {
+          return false
+        }
+      },
+    },
+    created() {},
+    methods: {
+      cancelShare() {
+        this.$emit('cancelShare', this.paperItem)
+      },
+      onClickPaperShare() {
+        this.$emit('onClickPaperShare', this.paperItem)
+      },
+      DownLoadPaper(paperItem) {
+        this.$emit('onShowDownLoadPaper', this.paperItem)
+      },
+    },
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .paper-item {
+    min-height: 108px;
+    padding: 24px 20px 14px 20px;
+    border: 1px solid $color-border;
+    box-sizing: border-box;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    position: relative;
+    &:hover {
+      box-shadow: 0px 0px 10px 0px rgba(42, 77, 138, 0.2);
+    }
+    .paper-title {
+      display: inline-block;
+      margin-bottom: 26px;
+      max-width: 500px;
+      line-height: 20px;
+      cursor: pointer;
+      font-size: $font-size-medium;
+      font-weight: 400;
+      transition: 0.2s;
+      overflow: hidden;
+      &:hover {
+        color: $color-theme;
+      }
+    }
+    .paper-info {
+      display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+      justify-content: space-between;
+      .info-left {
+        width: 500px;
+        .info-item {
+          display: inline-block;
+          margin-right: 10px;
+          color: #666666;
+          background: #f0f0f0;
+          border-radius: 4px;
+          padding: 3px 7px;
+          margin-bottom: 10px;
+          .text {
+            color: #ff7e3d;
+          }
+        }
+      }
+      .paper-operate {
+        .operate-item.gray {
+          color: #999999;
+          & > i {
+            background-color: #f2f2f0;
+            color: #bababa;
+            &:hover {
+              color: #bababa;
+            }
+          }
+        }
+        .operate-item {
+          text-align: center;
+          color: $color-text-d;
+          cursor: pointer;
+          width: 65px;
+          display: inline-block;
+          & > i {
+            background: #487FFF22;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 30px;
+            color: #487FFF;
+            display: inline-block;
+            &:hover {
+              color: #3e73cd;
+            }
+          }
+          .t {
+            font-size: 12px;
+            padding-top: 8px;
+          }
+        }
+        .operate-item:not(:last-child) {
+          padding-right: 5px;
+        }
+      }
+    }
+  }
+  .make-by-canpoint {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    img {
+      width: 61px;
+      height: 26px;
+    }
+  }
+
+  .paper-info-part {
+    display: flex;
+    .info {
+      width: 400px;
+    }
+    .cancel-share {
+      font-size: 12px;
+      color: #333333;
+      cursor: pointer;
+      user-select: none;
+
+      padding: 3px 7px;
+      margin-bottom: 10px;
+      .iconfont {
+        font-size: 12px;
+        color: #fea600;
+        display: inline-block;
+        padding-right: 5px;
+      }
+    }
+  }
+</style>

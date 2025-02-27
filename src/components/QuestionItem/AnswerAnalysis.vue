@@ -1,0 +1,424 @@
+<!--
+  答案 解析 渲染器
+ -->
+<template>
+  <div>
+    <div
+      v-if="quesAnalysisContent"
+      class="answer-item-part"
+    >
+      <div class="ques-answer clearfix">
+        <div class="ques-title ques-type">
+          【分析】
+        </div>
+        <div
+          class="ques-content"
+          v-html="quesAnalysisContent"
+        />
+      </div>
+    </div>
+    <div class="answer-item-part">
+      <div class="ques-answer clearfix">
+        <div class="ques-title ques-type">
+          【答案】
+        </div>
+        <div class="ques-content">
+          <div
+            v-for="(sub, index) in quesAnswers"
+            :key="index"
+            class="clearfix"
+            v-html="sub"
+          />
+        </div>
+      </div>
+    </div>
+    <!-- 听力题干展示区 -->
+    <div
+      v-if="rule.h"
+      class="answer-item-part"
+    >
+      <div class="ques-answer-original">
+        <div class="ques-title ques-type">
+          【听力原文】
+        </div>
+        <div class="ques-content">
+          <div v-html="getHearing(ques)" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="ques-answer clearfix">
+        <div class="ques-title ques-type">
+          【解析】
+        </div>
+        <div class="ques-content">
+          <div
+            v-for="(sub, index) in quesAnalysis"
+            :key="index"
+            class="clearfix"
+            v-html="sub"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      v-if="quesComment && quesComment.length"
+      class="comment-item-part"
+    >
+      <div class="ques-answer clearfix">
+        <div class="ques-title ques-type">
+          【点评】
+        </div>
+        <div class="ques-content">
+          <div
+            v-for="(sub, index) in quesComment"
+            :key="index"
+            class="clearfix"
+            v-html="sub"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+  import CTS from '@/common/js/constant'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    props: {
+      ques: {
+        type: Object,
+      }
+
+    return {
+      questionNum: {
+        type: Number,
+        default: 1,
+      }
+
+    return {
+    }
+
+    return {
+    setup() {
+      const state = reactive({
+        questionShowPart: CTS.cfgDict.questionShowPart,
+        analysisQuesConfig: CTS.cfgDict.analysisQuesConfig,
+        quesAnswers: [],
+        quesAnalysis: [],
+        quesComment: [],
+        quesAnalysisContent: '',
+        rule: {
+          h: false, // 听力
+        }
+
+    return {
+      }
+    }
+
+    return {
+    watch: {
+      ques(v) {
+        if (v) {
+          this.dealAnalysisAnswer()
+        }
+      }
+
+    return {
+    }
+
+    return {
+    mounted() {
+      if (this.ques) {
+        this.dealAnalysisAnswer()
+      }
+    }
+
+    return {
+    methods: {
+      // 获取听力题干
+      getHearing(ques) {
+        let original_text = ''
+        if (ques && ques.context) {
+          original_text = ques.context.original_text || ''
+        } else {
+          original_text = ''
+        }
+        return original_text
+      }
+
+    return {
+      // 渲染 显示规则 rule
+      renderRule() {
+        let item = this.getQstructItem(this.ques)
+        if (item) {
+          this.rule.h = item.h
+        }
+        // { name: '单选题', h: 0, s: 1, o: 1, c: 0, a: 1, ay: 1, at: 1 }
+      }
+
+    return {
+      getQuesAnalysisContent() {
+        let cques = this.ques
+        if (cques && cques.quesStruct && cques.quesStruct.code) {
+          let qstruct = parseInt(cques.quesStruct.code)
+          if (this.analysisQuesConfig.indexOf(qstruct) != -1) {
+            let explain = cques.explain
+            return this.getAnalysis(explain, '')
+          } else {
+            return ''
+          }
+        } else {
+          return ''
+        }
+      }
+
+    return {
+      getQuestionSuffixNO() {
+        return ''
+      }
+
+    return {
+      // 遍历 显示 答案和解析
+      dealAnalysisAnswer() {
+        // 显示 分析
+        this.renderRule()
+        this.quesAnalysisContent = this.getQuesAnalysisContent()
+        console.log('开始 显示Analysis')
+        let answerlist = []
+        let analysislist = []
+        let commentlist = []
+        let stack = [this.ques]
+        this.ques.level = this.ques.level || 1
+        while (stack.length) {
+          let cques = stack.shift()
+          // 判断 是否有子集
+          let item = this.getQstructItem(cques)
+          if (item.c && cques.children && cques.children.length) {
+            cques.children.forEach((sques, index) => {
+              sques.level = cques.level + 1
+              sques.no_index = index + 1
+            }
+            stack.unshift(...cques.children)
+          }
+
+          // 判断是 是否 有解析 和 答案
+          let explain = cques.explain
+          if (item.a) {
+            let answerItem =
+              this.getQuestionSuffixNO(cques.level, cques.no_index) +
+              ' ' +
+              this.getCheckAnswers(explain, item.ant)
+            if (cques.level === 1) {
+              answerItem = this.getCheckAnswers(explain, item.ant)
+            }
+            answerlist.push(answerItem)
+          } else if (item.c && cques.level > 1) {
+            let answerItem = this.getQuestionSuffixNO(
+              cques.level,
+              cques.no_index,
+            )
+            answerlist.push(answerItem)
+          }
+
+          if (item.ay) {
+            let analysisItem =
+              this.getQuestionSuffixNO(cques.level, cques.no_index) +
+              ' ' +
+              this.getAnalysis(explain)
+            if (cques.level === 1) {
+              if (item.c) {
+                analysisItem = this.getAnalysis(explain, '')
+              } else {
+                analysisItem = this.getAnalysis(explain)
+              }
+            }
+            analysislist.push(analysisItem)
+          } else if (item.c && cques.level > 1) {
+            let analysisItem = this.getQuestionSuffixNO(
+              cques.level,
+              cques.no_index,
+            )
+            analysislist.push(analysisItem)
+          }
+          // 是否 有点评
+          let commentItem = this.getComment(explain)
+          if (commentItem) {
+            if (cques.level > 1) {
+              commentItem =
+                this.getQuestionSuffixNO(cques.level, cques.no_index) +
+                ' ' +
+                commentItem
+            }
+
+            commentlist.push(commentItem)
+          }
+        }
+        this.quesAnswers = answerlist
+        this.quesAnalysis = analysislist
+        this.quesComment = commentlist
+        this.$nextTick(() => {
+          console.log('显示Analysis')
+        }
+      }
+
+    return {
+      getQstructItem(cques) {
+        let defaultItem = {
+          h: false, // 听力
+          s: true, // 题干
+          o: true, // 选项
+          c: false, // 子集
+          a: true, // 答案
+          ay: true, // 解析
+          at: true, // 属性
+          ant: 1,
+        }
+        if (cques && cques.quesStruct && cques.quesStruct.code) {
+          let qstruct = parseInt(cques.quesStruct.code)
+          let item = this.questionShowPart[qstruct] || defaultItem
+          return item
+        } else {
+          return defaultItem
+        }
+      }
+
+    return {
+      getCheckAnswers(value, ant) {
+        if(typeof value[0].answers === 'string'){
+          value[0].answers && (value[0].answers = JSON.parse(value[0].answers))
+        }
+        if (!(value && value[0] && value[0].answers && value[0].answers[0])) {
+          return ''
+        } else {
+          if (ant === 3) {
+            let jval = value[0].answers[0][0]
+            if (jval === '1') {
+              return '对'
+            } else if (jval === '0') {
+              return '错'
+            } else {
+              return ''
+            }
+          } else if (ant !== 0) {
+            let answers = value[0].answers
+            let answerlist = []
+            for (let sub of answers) {
+              let html = ''
+              if (sub && sub.length > 0) {
+                html += sub[0]
+                // 1、备选答案使用中文括号包裹；
+                // 2、每一个备选答案前增加“或”字和一个空格；
+                // 3、多个备选答案间使用中文分号做间隔。
+                let arr = sub.slice(1)
+                if (arr.length > 0) {
+                  arr = arr.map((item) => {
+                    return '或&nbsp;&nbsp;' + item
+                  }
+                  html += '（' + arr.join('；') + '）'
+                }
+              }
+              answerlist.push(html)
+            }
+            return answerlist.join(' ； ')
+          } else {
+            return value[0].answers[0][0]
+          }
+        }
+      }
+
+    return {
+      getAnalysis(value, defaulttext = '略') {
+        if (value && value[0]) {
+          return value[0].analysis || defaulttext
+        } else {
+          return defaulttext
+        }
+      }
+
+    return {
+      getComment(value) {
+        if (value && value[0] && value[0].comment != 'NULL') {
+          return value[0].comment || ''
+        } else {
+          return ''
+        }
+      }
+
+    return {
+      checkAnalysis(value) {
+        if (!(value && value[0])) {
+          return false
+        }
+        value = value[0].analysis
+        if (!value) return false
+        let v = value.trim()
+        if (v === '' || v === '略') {
+          return false
+        } else {
+          return true
+        }
+      }
+
+    return {
+    }
+
+    return {
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .ques-answer {
+    margin: 10px 0;
+    line-height: 24px;
+    color: $color-text;
+    font-size: $font-size-medium;
+    position: relative;
+    .ques-title {
+      position: absolute;
+      width: 60px;
+    }
+    .ques-content {
+      margin-left: 60px;
+      min-height: 24px;
+    }
+  }
+})
+
+  .ques-type {
+    margin-bottom: 10px;
+    color: $color-theme;
+    font-size: $font-size-medium;
+    font-weight: 700;
+  }
+})
+  .ques-title {
+    // margin-left: -8px;
+  }
+})
+  .answer-item-part {
+    border-bottom: 1px dashed #bababa;
+    line-height: 24px;
+  }
+})
+  .comment-item-part {
+    border-top: 1px dashed #bababa;
+    line-height: 24px;
+  }
+})
+  .ques-answer-original {
+    display: flex;
+    .ques-title {
+      width: 90px;
+    }
+    .ques-content {
+      flex: 1;
+    }
+  }
+})
+</style>

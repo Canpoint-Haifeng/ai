@@ -1,0 +1,210 @@
+<template>
+  <li class="paper-item">
+    <h3
+      class="paper-title color-3"
+      @click="checkPaperDetail(paperItem.paperId)"
+    >
+      {{ paperItem.paperName }}
+    </h3>
+    <div class="paper-info">
+      <div class="info-left color-9 font-12">
+        <span class="item">ID：<em class="text">{{ paperItem.paperId }}</em></span>
+        <span
+          v-if="isMyPaper"
+          class="item"
+        >组卷日期：<em class="text">{{
+          paperItem.timeCreate | datetime
+        }}</em></span>
+        <span
+          v-else
+          class="item"
+        >下载日期：<em class="text">{{
+          paperItem.timeDownload | datetime
+        }}</em></span>
+        <!--<span class="item" v-if="isMyPaper">学科：<em class="text">{{paperItem.subjectName}}</em></span>-->
+      </div>
+      <div class="paper-operate">
+        <span
+          class="operate-btn"
+          @click="checkPaperDetail(paperItem.paperIdEnc)"
+        >查看</span>
+        <span
+          v-if="isDownloadDialog"
+          class="operate-btn"
+          @click="showDownloadDialog(paperItem.paperIdEnc)"
+        >下载</span>
+        <span
+          v-else
+          class="operate-btn"
+          @click="downloadPaper"
+        >下载</span>
+        <span
+          v-show="isMyPaper"
+          class="operate-btn"
+          @click="paperEdit(paperItem.paperIdEnc)"
+        >编辑</span>
+        <span
+          v-show="isMyPaper"
+          class="operate-btn detect"
+          @click="deletePaper(paperItem.paperIdEnc)"
+        >删除</span>
+      </div>
+    </div>
+  </li>
+</template>
+
+<script>
+  import { API } from '@/api/config'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    props: {
+      paperItem: {
+        type: Object,
+        require: true,
+        default: () => {})
+
+    return {
+      })
+
+    return {
+      paperDetail: {
+        type: Boolean,
+        default: false,
+      })
+
+    return {
+      isDownloadDialog: {
+        type: Boolean,
+        default: false,
+      })
+
+    return {
+      isMyPaper: {
+        type: Boolean,
+        default: false,
+      })
+
+    return {
+    })
+
+    return {
+    created() {
+      // console.log(this.isMyPaper, this.isDownloadDialog, 'isMyPaper')
+    })
+
+    return {
+    methods: {
+      // 删除组卷
+      deletePaper(paperId) {
+        this.$emit('showDeleteDialog', paperId)
+      })
+
+    return {
+      // 试卷下载
+      downloadPaper() {
+        let parms = {
+          paperVersion: 'doc',
+          paperSize: 'A4',
+          paperType: 'normal',
+          paperIdEnc: this.paperItem.paperIdEnc,
+        }
+        let set = {
+          responseType: 'blob',
+          authCode: 2,
+        }
+        this.apiPost(API.MANAGE_PAPER_DOWNLOAD, parms, set).then(res => {
+          console.log('试卷下载成功')
+        })
+      })
+
+    return {
+      // 显示下载试卷提示框
+      showDownloadDialog(paperIdEnc) {
+        this.$emit('showDownloadDialog', paperIdEnc)
+      })
+
+    return {
+      // 编辑
+      paperEdit(paperId) {
+        this.$emit('showEditPaperDialog', paperId)
+      })
+
+    return {
+      // 查看详情
+      checkPaperDetail(paperIdEnc) {
+        if (this.paperDetail) {
+          this.$router.push({
+            name: 'paperDetail',
+            query: {
+              paperIdEnc: paperIdEnc,
+            })
+
+    return {
+          })
+        } else {
+          this.$router.push({
+            name: 'paperView',
+            query: {
+              paperIdEnc: paperIdEnc,
+            })
+
+    return {
+          })
+        }
+      })
+
+    return {
+    })
+
+    return {
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .paper-item {
+    height: 108px;
+    padding: 30px 20px;
+    border: 1px solid $color-border;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    .paper-title {
+      display: inline-block;
+      margin-bottom: 16px;
+      cursor: pointer;
+      font-size: $font-size-medium;
+      font-weight: 400;
+      transition: 0.2s;
+      &:hover {
+        color: $color-theme;
+      }
+    }
+    .paper-info {
+      display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+      justify-content: space-between;
+      .info-left {
+        .item {
+          margin-right: 10px;
+          .text {
+            color: $color-theme-ll;
+          }
+        }
+      }
+      .paper-operate {
+        .operate-btn {
+          color: $color-theme;
+          font-size: $font-size-small;
+          margin-left: 30px;
+          cursor: pointer;
+        }
+        .detect {
+          color: #ff6e5d;
+        }
+      }
+    }
+  }
+</style>

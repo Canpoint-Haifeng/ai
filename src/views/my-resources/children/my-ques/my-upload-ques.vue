@@ -1,0 +1,315 @@
+<template>
+  <div
+    v-if="typesList.length"
+    class="category-contain"
+  >
+    <item-one
+      :is-chapter="isChapter"
+      :d-tree="treeDataList"
+      :book-id="bookId"
+      :has-chapter-child="hasChapterChild"
+      :check-node-code="checkNodeCode"
+      :version-code="teachCurrentCode"
+      :version-grade-code="gradeCurrentCode"
+      :volume-code="volumeCurrentCode"
+      :is-intersection="componentsIsIntersection"
+      :all-must-know-point-contain="allMustKnowPointContain"
+      :root-know-point="rootKnowPoint"
+    />
+    <!-- <div class="category-content" v-for="typeItem in typesList" :key="typeItem.code">
+            <label class="category-label">{{ typeItem.categoryLabel }}</label>
+            <div class="category-list">
+                <div class="category-item" v-for="item in typeItem.typesList" :key="item.code"
+                    @click="selectType(item, typeItem.code)"
+                    :class="item.code === returnSelectCode(typeItem.code) ? 'active' : ''">
+                    {{ item.name }}
+                </div>
+            </div>
+        </div> -->
+    <!-- <div class="sub-category-list" v-if="currSubType.length > 1">
+            <span class="sub-category-item" v-for="subitem in currSubType" :key="subitem.code"
+                @click="selectType(subitem, 'currSubTypeCode')"
+                :class="subitem.code === currSubTypeCode ? 'active' : ''">
+                {{ subitem.name }}
+            </span>
+        </div> -->
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import ItemOne from './one-selection'
+export default {
+    props: {
+        categoryLabel: {
+            type: String,
+            default: '等级',
+        },
+        // 是否显示全部
+        isShowAll: {
+            type: Boolean,
+            default: true,
+        },
+        defaultTypeCode: {
+            type: [String, Number],
+            default: '',
+        },
+    },
+    data() {
+        return {
+            currLevelCode: 'currLevelCode',
+            currTypeCode: 'currTypeCode',
+            currHardCode: 'currHardCode',
+            currYearCode: 'currYearCode',
+            currSceneCode: 'currSceneCode',
+            currSubTypeCode: 0,
+            typesList:
+                [
+                    {
+                        categoryLabel: '等级',
+                        code: 'currLevelCode',
+                        typesList:
+                            [
+                                { code: 'currLevelCode', name: '全部' },
+                                { code: 'levelone', name: '网络级' },
+                                { code: 'leveltwo', name: '精品级' },
+                                { code: 'levelthree', name: '出版级' },
+                            ]
+                    },
+                    {
+                        categoryLabel: '题型',
+                        code: 'currTypeCode',
+                        typesList:
+                            [
+                                { code: 'currTypeCode', name: '全部' },
+                                { code: 'typeone', name: '单选题' },
+                                { code: 'typetwo', name: '多选题' },
+                                { code: 'typethree', name: '填空题' },
+                                { code: 'typefour', name: '解答题' },
+                                { code: 'typefive', name: '判断题' },
+                            ]
+                    },
+                    {
+                        categoryLabel: '难度',
+                        code: 'currHardCode',
+                        typesList:
+                            [
+                                { code: 'currHardCode', name: '全部' },
+                                { code: 'hardone', name: '易' },
+                                { code: 'hardtwo', name: '较易' },
+                                { code: 'hardthree', name: '中等' },
+                                { code: 'hardfour', name: '较难' },
+                                { code: 'hardfive', name: '难' },
+                            ]
+                    },
+                    {
+                        categoryLabel: '年份',
+                        code: 'currYearCode',
+                        typesList:
+                            [
+                                { code: 'currYearCode', name: '全部' },
+                                { code: 'yearone', name: '2024' },
+                                { code: 'yeartwo', name: '2023' },
+                                { code: 'yearthree', name: '2022' },
+                                { code: 'yearfour', name: '2021' },
+                                { code: 'yearfive', name: '更早' }
+                            ]
+                    },
+                    {
+                        categoryLabel: '场景',
+                        code: 'currSceneCode',
+                        typesList:
+                            [
+                                { code: 'currSceneCode', name: '全部' },
+                                { code: 'sceneone', name: '预习' },
+                                { code: 'scenetwo', name: '作业' },
+                                { code: 'scenethree', name: '单元测' },
+                                { code: 'scenefour', name: '月考' },
+                                { code: 'scenefive', name: '期中' },
+                                { code: 'scenesix', name: '期末' }
+                            ]
+                    }
+                ]
+        }
+    },
+    // computed: {
+    //     ...mapState(['currSubject']),
+    //     currSubType() {
+    //         let children = []
+    //         let child = []
+    //         this.typesList.forEach((item, index) => {
+    //             if (item.code === this.currTypeCode) {
+    //                 let codes = [item.code]
+    //                 if (item.children) {
+    //                     child = [...item.children]
+    //                     child.forEach(items => {
+    //                         codes.push(items.code)
+    //                     })
+    //                     child.unshift({ code: codes.join(','), name: '全部' + item.name })
+    //                 }
+    //                 children = child
+    //             }
+    //         })
+    //         return children
+    //     },
+    // },
+    // created() {
+    // },
+    // watch: {
+    //     currSubject() {
+    //         this.getRelationCategoryId()
+    //     },
+    //     defaultTypeCode() {
+    //         this.reanderTypeCode()
+    //     },
+    // },
+    methods: {
+        //     reanderTypeCode() {
+        //         console.log('this.defaultTypeCode', this.defaultTypeCode)
+        //         if (this.defaultTypeCode) {
+        //             if (this.defaultTypeCode.length >= 4) {
+        //                 this.currTypeCode = this.defaultTypeCode.substring(0, 2)
+        //                 this.currSubTypeCode = this.defaultTypeCode
+        //             } else {
+        //                 this.currTypeCode = this.defaultTypeCode.substring(0, 2)
+        //                 this.currSubTypeCode = 0
+        //             }
+        //         }
+        //     },
+        //     // 获取当前学段试卷类型关联id
+        //     getRelationCategoryId() {
+        //         let parms = {
+        //             categoryId: CTS.cfgDict.CID_QUESTION_PERIOD_SUBJECT_TYPE,
+        //             code: this.currSubject.subjectCode,
+        //             level: '2',
+        //         }
+        //         this.wayGet(API.GET_CHILD_DICT, parms).then(res => {
+        //             if (res.code === CTS.constant.SUCCESS_CODE) {
+        //                 if (res.data.length) {
+        //                     this.getTypesList(res.data[1].relationCategoryId)
+        //                 } else {
+        //                     this.typesList = []
+        //                 }
+        //             }
+        //         })
+        //     },
+        //     // 获取当前学段试卷类型
+        //     getTypesList(relationCategoryId) {
+        //         if (!relationCategoryId) {
+        //             return
+        //         }
+        //         let parms = {
+        //             categoryId: relationCategoryId,
+        //             level: '1,2',
+        //         }
+        //         this.wayGet(API.GET_DICT_BY_LEVEL, parms).then(res => {
+        //             if (res.code === CTS.constant.SUCCESS_CODE) {
+        //                 let arrData = res.data
+        //                 if (this.isShowAll) {
+        //                     arrData.unshift({
+        //                         code: 0,
+        //                         name: '全部',
+        //                     })
+        //                 }
+        //                 this.typesList = arrData
+        //             }
+        //         })
+        //     },
+        returnSelectCode(code) {
+            return this[code]
+        },
+        selectType(item, params) {
+            // this[params] = item.code
+            // this.$emit('selectType', item)
+            // console.log(item, 'code')
+            // 有二级题型，就默认选中一个
+            this[params] = item.code
+            if (item.children && item.children.length) {
+                // this.currSubTypeCode = item.children[0].code
+                this.currSubTypeCode = this.currSubType[0].code
+                this.$emit('selectType', item.children[0])
+            } else {
+                this.$emit('selectType', item)
+            }
+        },
+    },
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.category-contain {
+    background-color: $color-white;
+    padding: 20px;
+}
+
+.category-content {
+    display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+
+    .category-label {
+        line-height: 24px;
+        width: 48px;
+        align-self: flex-start;
+        color: $color-text-d;
+        font-weight: 700;
+    }
+
+    .category-list {
+        width: 855px;
+
+        .category-item {
+            display: inline-block;
+            padding: 5px 16px;
+            margin: 0 4px 10px 4px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+
+            &:hover {
+                color: $color-theme;
+            }
+
+            &.active {
+                background: $color-theme;
+                color: $color-white;
+            }
+        }
+    }
+}
+
+.sub-category-list {
+    background: #f6f6f6;
+    box-sizing: border-box;
+    margin: 0 -30px 10px -30px;
+    padding-left: 70px;
+
+    .sub-category-item {
+        display: inline-block;
+        padding: 4px 16px;
+        margin: 9px 4px 9px 4px;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: $color-text;
+        border: 1px solid transparent;
+        margin-right: 10px;
+
+        &:hover,
+        &.active {
+            color: $color-theme;
+        }
+
+        &.active {
+            color: $color-theme;
+            border: 1px solid #487FFF;
+            border-radius: 16px;
+        }
+    }
+}
+</style>
