@@ -44,7 +44,7 @@ export function useTopSearch(instance) {
   })
   
   onBeforeUnmount(() => {
-    // Remove event listener when component is destroyed
+    // Remove event listener when component is unmounted
     document.removeEventListener('click', handleDocumentClick)
   })
   

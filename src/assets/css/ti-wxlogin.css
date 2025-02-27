@@ -1,0 +1,21 @@
+.impowerBox .info{
+  width: 228px;
+  margin:0 0;
+}
+.impowerBox .qrcode{
+  width: 225px;
+  margin-top: 0px;
+  border-width: 0;
+}
+.impowerBox .title{
+  display: none;
+}
+.impowerBox{
+  text-align:left;
+}
+.impowerBox .status{
+	text-align:center;
+}
+.impowerBox .js_wx_default_tip{
+	display:none;
+}

@@ -1,0 +1,103 @@
+import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
+<template>
+  <div
+    class="noresult"
+    :style="{ minHeight: minHeight + 'px' }"
+  >
+    <div
+      v-if="showImg"
+      class="icon-box"
+      :style="{ marginTop: minHeight - 240 + 'px' }"
+    >
+      <i
+        class="noresult-icon"
+        :style="iconUrl"
+      />
+    </div>
+    <p
+      v-if="isShowText"
+      class="noresult-text"
+    >
+      {{ text }}
+    </p>
+    <slot />
+  </div>
+</template>
+
+<script>
+import noresultIcon from './noresult-search.png'
+
+
+export default defineComponent({
+  name: 'NoresultCommon',
+  props: {
+    text: {
+      type: String,
+      default: '该模块下没有内容！'
+    })
+
+    return {
+    isShowText: {
+      type: Boolean,
+      default: true
+    })
+
+    return {
+    icon: {
+      type: String,
+      default: noresultIcon
+    })
+
+    return {
+    showImg: {
+      type: Boolean,
+      default: true
+    })
+
+    return {
+    minHeight: {
+      type: Number,
+      default: 350
+    }
+  })
+
+    return {
+  setup(props) {
+    const iconUrl = computed(() => ({
+      backgroundImage: `url(${props.icon})`
+    }))
+    
+    const state = reactive({
+      iconUrl
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .noresult {
+    min-width: 130px;
+    margin: 0 auto;
+    text-align: center;
+    color: $color-text-l;
+    .icon-box {
+      display: inline-block;
+      width: 101px;
+      height: 123px;
+      .noresult-icon {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+      }
+    }
+    .noresult-text {
+      color: $color-text-l;
+      font-size: $font-size-small;
+      text-indent: -10px;
+      height: 86px;
+      line-height: 86px;
+    }
+  }
+</style>

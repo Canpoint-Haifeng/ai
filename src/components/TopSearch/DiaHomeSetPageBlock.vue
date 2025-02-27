@@ -82,24 +82,34 @@
 <script>
   import { API } from '@/api/config'
   import { mapState } from 'vuex'
-  export default {
-    data() {
-      return {
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    setup() {
+      const state = reactive({
         messageDialog: {
           width: '850px',
           visible: false,
           title: '订阅选题路径',
-        },
-        checklist: {},
+        }
+
+    return {
+        checklist: {})
+
+    return {
         userAllConfig: [],
         boxList: [],
         loading: false,
         flagUpdate: false,
       }
-    },
+    }
+
+    return {
     computed: {
       ...mapState(['currSubject']),
-    },
+    }
+
+    return {
     methods: {
       resetBoxList() {
         let params = {
@@ -108,13 +118,15 @@
         }
         this.apiPost(API.MY_HOMEPAGECONFIG_USER_RESUMEDEFAULT, params, {
           showLoading: true,
-        }).then((res) => {
+        }.then((res) => {
           if (this.checkoutRes(res)) {
             this.flagUpdate = true
             this.getDefaultConfigs()
           }
-        })
-      },
+        }
+      }
+
+    return {
       async getDefaultConfigs() {
         let params = {
           stage: this.currSubject.periodCode,
@@ -122,17 +134,19 @@
         }
         await this.apiGet(API.MY_HOMEPAGECONFIG_USER_DEFAULTCONFIGS, params, {
           showLoading: true,
-        }).then((res) => {
+        }.then((res) => {
           if (this.checkoutRes(res)) {
             this.boxList = res.data
             let checklistlib = {}
             this.boxList.forEach((item) => {
               checklistlib[item.id] = true
-            })
+            }
             this.checklist = checklistlib
           }
-        })
-      },
+        }
+      }
+
+    return {
       onSelectConfig(item) {
         let len = this.getCheckList().length
         if (this.checklist[item.id]) {
@@ -151,7 +165,9 @@
             this.updateUserConfig(item.id, 2, item)
           }
         }
-      },
+      }
+
+    return {
       getCheckList() {
         let list = []
         for (let key in this.checklist) {
@@ -160,7 +176,9 @@
           }
         }
         return list
-      },
+      }
+
+    return {
       updateUserConfig(id, type, item) {
         let params = {
           stage: this.currSubject.periodCode,
@@ -177,8 +195,10 @@
             this.flagUpdate = true
             this.changeBoxList(item, type)
           }
-        })
-      },
+        }
+      }
+
+    return {
       changeBoxList(item, configId) {
         if (configId == 1) {
           // 移除 item
@@ -193,12 +213,16 @@
           // 添加 item
           this.boxList.push(item)
         }
-      },
+      }
+
+    return {
       onClose() {
         if (this.flagUpdate) {
           this.$emit('changeSuccess')
         }
-      },
+      }
+
+    return {
       async getUserAllConfigsHttp() {
         let params = {
           stage: this.currSubject.periodCode,
@@ -211,25 +235,37 @@
               this.userAllConfig = res.data
             }
             return ''
-          },
+          }
+
+    return {
           () => {
             return ''
-          },
+          }
+
+    return {
         )
         this.loading = false
-      },
+      }
+
+    return {
       show(list, boxlist) {
         this.checklist = list
         this.boxList = boxlist
         this.flagUpdate = false
         this.getUserAllConfigsHttp()
         this.messageDialog.visible = true
-      },
-    },
+      }
+
+    return {
+    }
+
+    return {
   }
+})
 </script>
 
 <style scoped lang="scss">
+  @use "@/assets/css/variables" as *;
   .select-home-block-segment {
     padding: 10px 0;
     height: 500px;
@@ -282,6 +318,7 @@
       }
     }
   }
+})
 
   .select-home-title {
     font-size: 16px;
@@ -289,10 +326,12 @@
     color: #666666;
     padding: 20px 27px 10px 27px;
   }
+})
   .set-page-block-footer {
     padding: 20px 20px 30px 20px;
     text-align: center;
   }
+})
   .cp-btn {
     display: inline-block;
     cursor: pointer;
@@ -319,4 +358,5 @@
       }
     }
   }
+})
 </style>

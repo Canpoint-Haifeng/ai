@@ -1,39 +1,47 @@
 <template>
   <div class="skeleton-container">
     <div class="skeleton-header">
-      <div class="skeleton-logo"></div>
+      <div class="skeleton-logo" />
       <div class="skeleton-nav">
-        <div class="skeleton-nav-item"></div>
-        <div class="skeleton-nav-item"></div>
-        <div class="skeleton-nav-item"></div>
+        <div class="skeleton-nav-item" />
+        <div class="skeleton-nav-item" />
+        <div class="skeleton-nav-item" />
       </div>
-      <div class="skeleton-user"></div>
+      <div class="skeleton-user" />
     </div>
     <div class="skeleton-content">
       <div class="skeleton-breadcrumb">
-        <div class="skeleton-breadcrumb-item"></div>
-        <div class="skeleton-breadcrumb-item"></div>
+        <div class="skeleton-breadcrumb-item" />
+        <div class="skeleton-breadcrumb-item" />
       </div>
       <div class="skeleton-paper-info">
-        <div class="skeleton-paper-title"></div>
+        <div class="skeleton-paper-title" />
         <div class="skeleton-paper-meta">
-          <div class="skeleton-meta-item"></div>
-          <div class="skeleton-meta-item"></div>
-          <div class="skeleton-meta-item"></div>
+          <div class="skeleton-meta-item" />
+          <div class="skeleton-meta-item" />
+          <div class="skeleton-meta-item" />
         </div>
       </div>
       <div class="skeleton-tabs">
-        <div class="skeleton-tab-item"></div>
-        <div class="skeleton-tab-item"></div>
-        <div class="skeleton-tab-item"></div>
+        <div class="skeleton-tab-item" />
+        <div class="skeleton-tab-item" />
+        <div class="skeleton-tab-item" />
       </div>
       <div class="skeleton-paper-content">
-        <div class="skeleton-section" v-for="i in 3" :key="i">
-          <div class="skeleton-section-title"></div>
-          <div class="skeleton-question" v-for="j in 2" :key="`${i}-${j}`">
-            <div class="skeleton-question-title"></div>
-            <div class="skeleton-question-content"></div>
-            <div class="skeleton-question-answer"></div>
+        <div
+          v-for="i in 3"
+          :key="i"
+          class="skeleton-section"
+        >
+          <div class="skeleton-section-title" />
+          <div
+            v-for="j in 2"
+            :key="`${i}-${j}`"
+            class="skeleton-question"
+          >
+            <div class="skeleton-question-title" />
+            <div class="skeleton-question-content" />
+            <div class="skeleton-question-answer" />
           </div>
         </div>
       </div>
@@ -42,7 +50,9 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
   name: 'PaperDetailSkeleton'
 }
 </script>

@@ -1,7 +1,7 @@
-import { createApp, nextTick } from 'vue'
+import { createApp } from 'vue'
 import Topbar from './Topbar.vue'
 
-let instance = null
+let instance
 
 Topbar.install = function (data) {
   if (instance) {
@@ -10,12 +10,19 @@ Topbar.install = function (data) {
       instance[sub] = data[sub] || initDate[sub]
     }
   } else {
-    const app = createApp(Topbar, { data })
-    const container = document.createElement('div')
-    document.body.appendChild(container)
-    instance = app.mount(container)
+    // Create a div to mount our component
+    const mountNode = document.createElement('div')
+    document.body.appendChild(mountNode)
+    
+    // Create the app instance
+    const app = createApp(Topbar, { ...data })
+    
+    // Mount the app
+    instance = app.mount(mountNode)
   }
-  nextTick(() => {
+  
+  // Use nextTick from Vue 3
+  Promise.resolve().then(() => {
     instance.loginStatus = false
   })
 }

@@ -1,0 +1,42 @@
+// Element Plus compatibility fixes
+@use '../variables' as *;
+
+// Fix for Element Plus styles that differ from Element UI
+.el-button--primary {
+  background-color: $color-theme;
+  border-color: $color-theme;
+  
+  &:hover, &:focus {
+    background-color: $color-theme-d;
+    border-color: $color-theme-d;
+  }
+}
+
+// Fix for dialog styles
+.el-dialog {
+  border-radius: 4px;
+  
+  .el-dialog__header {
+    padding: 20px;
+    border-bottom: 1px solid $color-border;
+  }
+  
+  .el-dialog__body {
+    padding: 20px;
+  }
+  
+  .el-dialog__footer {
+    padding: 10px 20px 20px;
+    text-align: right;
+  }
+}
+
+// Fix for form styles
+.el-form-item__label {
+  color: $color-text;
+}
+
+// Fix for input styles
+.el-input__inner {
+  color: $color-text-d;
+}

@@ -32,7 +32,7 @@
           onGoAgreement: () => {
             router.push({ name: 'agreement' })
           },
-        })
+        }
       }
       
       return {
@@ -40,7 +40,8 @@
         openRegister
       }
     }
-  })
+  }
+})
 </script>
 
 <style scoped lang="scss">
@@ -51,4 +52,5 @@
     width: 100px;
     height: 40px;
   }
+})
 </style>

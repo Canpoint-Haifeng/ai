@@ -25,6 +25,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  
   .app-top-back-part {
     position: absolute;
     right: 10px;

@@ -54,6 +54,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .user-center-popover {
   position: absolute;
   top: 45px;

@@ -64,6 +64,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
   .three-broad-side {
     position: fixed;
     right: 0px;

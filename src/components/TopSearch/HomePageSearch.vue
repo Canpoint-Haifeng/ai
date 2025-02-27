@@ -1,3 +1,4 @@
+import { computed, defineComponent, inject, onMounted, onUnmounted, reactive, ref, watch }, { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated }, { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
 <template>
   <div
     class="home-page-search-position"
@@ -36,7 +37,7 @@
               maxlength="100"
               class="search-input"
               :placeholder="searchPlaceholder"
-              @keyup.enter.native="search"
+              @keyup.enter="search"
               @focus="handleFocus"
               @blur="blurEvent"
             />
@@ -99,7 +100,6 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted, watch, inject } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import CTS from '@/common/js/constant'
@@ -110,13 +110,17 @@ import DiaHomeSetPageBlock from './DiaHomeSetPageBlock.vue'
 import DiaSetUserTheme from './DiaSetUserTheme.vue'
 import HistoryMessageList from './HistoryMessageList.vue'
 
-export default {
+
+export default defineComponent({
   components: {
     HomePageBoxs,
     DiaHomeSetPageBlock,
     DiaSetUserTheme,
     HistoryMessageList,
-  },
+  }
+})
+
+    return {
   setup() {
     const store = useStore()
     const router = useRouter()
@@ -141,7 +145,9 @@ export default {
         name: '找教案',
         className: 'btn-paper',
         placeholder: '可输入教案名称搜索',
-      },
+      }
+
+    return {
     ])
     const showSearchOptions = ref(false)
     const sendEventFlag = ref(true) // 第一次 变化时 发出 事件
@@ -158,7 +164,7 @@ export default {
       } else {
         return ''
       }
-    })
+    }
     
     // Watchers
     watch(() => currSubject.value, () => {
@@ -166,7 +172,7 @@ export default {
       if (!(userTheme.value && userTheme.value.themeUrl)) {
         getDefaultUserTheme()
       }
-    })
+    }
     
     // Lifecycle hooks
     onMounted(() => {
@@ -176,11 +182,11 @@ export default {
         getDefaultUserTheme()
       }
       renderScrollFixed()
-    })
+    }
     
     onUnmounted(() => {
-      destroyedWindowsEvent()
-    });
+      unmountedWindowsEvent()
+    };
     
     // Methods
     const changeHisText = (item) => {
@@ -248,7 +254,7 @@ export default {
       window.addEventListener('scroll', renderScrollFixed)
     }
     
-    const destroyedWindowsEvent = () => {
+    const unmountedWindowsEvent = () => {
       window.removeEventListener('scroll', renderScrollFixed)
     }
     
@@ -289,7 +295,7 @@ export default {
         let list = {}
         boxList.value.forEach(item => {
           list[item.id] = true
-        })
+        }
         diaHomeSetPageBlockRef.value.show(list, [...boxList.value])
       } else {
         appLogin.value.showLogin()
@@ -312,10 +318,10 @@ export default {
           if (res.code === CTS.constant.SUCCESS_CODE) {
             store.commit('UPDATE_USERTHEME', res.data)
           }
-        })
+        }
         .catch(err => {
           console.error('Failed to get user theme', err)
-        })
+        }
     }
     
     const getDefaultConfigs = async () => {
@@ -338,11 +344,11 @@ export default {
         
         if (res.code === CTS.constant.SUCCESS_CODE) {
           boxList.value = res.data.map(v => {
-            return {
+            const state = reactive({
               ...v,
               url: v.url.replace('ti.canpoint.cn', 'ti-demo.canpoint.cn:8433'),
             }
-          })
+          }
         }
         
         await getSubjectList()
@@ -359,7 +365,7 @@ export default {
           vm: this, 
           type: 2, 
           strParams: {} 
-        })
+        }
         
         listData.value = res || []
       } catch (error) {
@@ -367,7 +373,7 @@ export default {
       }
     }
     
-    return {
+    const state = reactive({
       historyMsgListRef,
       diaHomeSetPageBlockRef,
       diaSetUserThemeRef,
@@ -389,10 +395,12 @@ export default {
       search
     }
   }
+})
 }
 </script>
 
 <style scoped lang="scss">
+  @use "@/assets/css/variables" as *;
 .home-top-body {
   position: relative;
   height: 446px;
@@ -415,6 +423,7 @@ export default {
     width: 500px;
     height: 46px;
   }
+})
   .subject-block {
     width: 240px;
     height: 48px;
@@ -426,6 +435,7 @@ export default {
     cursor: pointer;
     user-select: none;
   }
+})
 }
 .subject-block {
   width: 240px;
@@ -446,7 +456,10 @@ export default {
 .home-search-form {
   position: relative;
   z-index: 99;
-  @include flex();
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
   width: 628px;
   height: 46px;
   margin-right: 25px;
@@ -456,7 +469,10 @@ export default {
   background-color: white;
 
   .home-search-input {
-    @include flex();
+    display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
     width: 528px;
     border: 1px solid #c1c9cd;
     border-right-width: 0;
@@ -501,6 +517,7 @@ export default {
       }
     }
   }
+})
   .search-btn {
     width: 110px;
     height: 46px;
@@ -518,6 +535,7 @@ export default {
       font-size: 22px;
     }
   }
+})
 }
 
 .home-top-set-config {
@@ -532,6 +550,7 @@ export default {
     padding-right: 19px;
     padding-left: 5px;
   }
+})
 }
 
 .subject-block {
@@ -541,6 +560,7 @@ export default {
     display: inline-block;
     padding-right: 5px;
   }
+})
   .curr-subject {
     font-size: 20px;
     font-weight: bold;
@@ -548,6 +568,7 @@ export default {
     display: inline-block;
     padding-right: 5px;
   }
+})
 
   .tips {
     height: 18px;
@@ -555,6 +576,7 @@ export default {
     font-weight: 400;
     color: #969ca4;
   }
+})
 }
 
 .home-page-search-position {
@@ -643,6 +665,7 @@ export default {
       }
     }
   }
+})
 }
 
 .cp-activity-goodgift-image {
@@ -692,5 +715,6 @@ export default {
       padding-right: 2px;
     }
   }
+})
 }
 </style>

@@ -1,0 +1,94 @@
+<template>
+  <div
+    class="cp-vue-audio-play"
+    @click.stop=""
+  >
+    <div v-if="isLogin && audioRealUrl">
+      <cp-vue-audio
+        :the-url="audioRealUrl"
+        :the-control-list="controlList"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+  import CTS from '@/common/js/constant'
+  import CpVueAudio from './cp-vue-audio.vue'
+  import { isLogin } from '@/common/js/util'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    components: { CpVueAudio })
+
+    return {
+    props: {
+      audiourl: {
+        type: String,
+      }
+
+    return {
+    }
+
+    return {
+    setup() {
+      const state = reactive({
+        audioRealUrl: '',
+        controlList: 'noDownload noSpeed onlyOnePlaying',
+        audioRealName: '',
+        isLogin: isLogin(),
+      }
+    }
+
+    return {
+    watch: {
+      audiourl(v) {
+        if (v) {
+          this.queryAudiosResourceData(v)
+        } else {
+          this.audioRealUrl = ''
+        }
+      }
+
+    return {
+    }
+
+    return {
+    mounted() {
+      if (this.audiourl) {
+        this.queryAudiosResourceData(this.audiourl)
+      }
+    }
+
+    return {
+    methods: {
+      queryAudiosResourceData(id) {
+        // id = '4ddd0cb25fe348b5ab760f63b52c8984'
+        this.apiQueryAudiosData(id).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            if (res.data) {
+              this.audioRealUrl = ''
+              this.$nextTick(() => {
+                this.audioRealUrl = res.data.url
+              }
+              this.audioRealName = res.data.audioName || res.data.title
+            }
+          }
+        }
+      }
+
+    return {
+    }
+
+    return {
+  }
+})
+</script>
+
+<style scoped lang="scss">
+  .cp-vue-audio-play {
+    padding-bottom: 10px;
+  }
+})
+</style>

@@ -1,0 +1,455 @@
+import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
+<template>
+  <div class="footer-bar">
+    <div class="content-container">
+      <div v-if="fullpath === 'paperIndex'">
+        <div class="footer-content footer-content-index">
+          <div class="footer-left">
+            <div class="nth-1">
+              <h3>使用帮助</h3>
+              <p @click="help('znzj')">
+                智能组卷
+              </p>
+              <p @click="help('pxzj')">
+                平行组卷
+              </p>
+              <p @click="help('xmbzj')">
+                细目表组卷
+              </p>
+              <p @click="help('sjsc')">
+                试卷上传
+              </p>
+            </div>
+            <div class="nth-2">
+              <h3>常见问题</h3>
+              <p @click="help('yhqx')">
+                用户权限
+              </p>
+              <p @click="help('hyhq')">
+                会员获取
+              </p>
+              <p @click="help('stsfgz')">
+                试题收费规则
+              </p>
+              <p @click="help('sjfx')">
+                试卷分享
+              </p>
+            </div>
+          </div>
+          <div class="footer-right">
+            <div class="nth-1">
+              <img src="@/assets/images/ewm.png">
+              <div class="t">
+                全品AI教研云公众号
+              </div>
+            </div>
+            <div class="nth-1">
+              <img src="@/assets/images/weChat_code.png">
+              <div class="t">
+                企业微信客服
+              </div>
+            </div>
+            <div class="nth-2">
+              <div class="footer_right_top">
+                <div class="phone_image">
+                  <span class="iconfont icondianhua icont_phone" />
+                </div>
+                <span class="spanAll">客服热线</span>
+              </div>
+              <p class="phone_content">
+                027-6552-6532
+              </p>
+              <div class="footer_email">
+                <div class="phone_email">
+                  <span class="iconfont iconyouxiang icont_email" />
+                </div>
+                <span class="spanAll">联系邮箱</span>
+              </div>
+              <p class="footer_domain">
+                tiku@canpoint.cn
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="footer-line" />
+        <div class="footer-content-segment">
+          <div class="fonter-title">
+            友情链接
+          </div>
+          <ul class="fonter-content">
+            <li
+              v-for="item in friendlyLink"
+              :key="item.id"
+            >
+              <a
+                :href="item.link"
+                target="_blank"
+              >{{ item.name }}</a><br>
+              <!-- {{ item.name }}
+              @click="openFriendly(item)"
+               -->
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div
+        v-else
+        class="footer-content"
+      >
+        <div class="footer-tel">
+          <i class="iconfont icondianhua" />
+          <span class="text">客服电话：027-6552-6532</span>
+        </div>
+        <!-- <div class="footer-link">
+          <span @click="entryPage('aboutUs')">关于我们</span>
+          <em>|</em>
+          <span @click="entryPage('help')">帮助中心</span>
+          <em>|</em>
+          <span @click="entryPage('agreement')">服务协议</span>
+          <em>|</em>
+          <span @click="entryPage('cloud')">全品教育云平台</span>
+        </div> -->
+      </div>
+      <div class="footer-line" />
+      <div class="footer-copyright">
+        <p>
+          Copyright © 2022-2023 Canpoint（全品）. All Rights Reserved
+          京ICP备15050178号-12
+          <!-- Copyright 2010-2020北京全品文教科技股份有限公司 All rights reserved.
+          京ICP备 20004835号-2 -->
+          <!-- Copyright © 2021-2022 武汉全品教育科技有限公司 All Rights Reserved
+          京ICP备15050178号-12 -->
+          <!-- 京ICP证161058 京网文[2017] 2347-233号 -->
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import commonUrl from '@/common/js/project-url'
+
+
+export default defineComponent({
+  name: 'Footer',
+  setup() {
+    const store = useStore()
+    const router = useRouter()
+    
+    const fullpath = computed(() => store.state.fullpath)
+    
+    const friendlyLink = ref([
+      { name: '题库开放平台', link: 'https://tech.canpoint.cn', id: 9 })
+
+    return {
+      { name: '全品文教小学', link: 'http://xx.canpoint.cn/', id: 1 })
+
+    return {
+      {
+        name: '全品文教初中',
+        link: 'http://www.xn--fiqp2fspp8f.cn/',
+        id: 2,
+      })
+
+    return {
+      { name: '全品文教中考', link: 'http://www.canpointzk.cn/', id: 3 })
+
+    return {
+      { name: '全品文教高中', link: 'https://www.canpointgz.cn/', id: 4 })
+
+    return {
+      {
+        name: '全品教育云平台',
+        link: 'http://www.canpoint.cn/',
+        id: 5,
+      })
+
+    return {
+      { name: '全品学堂', link: 'https://www.canpoint.net/', id: 6 })
+
+    return {
+      { name: '智能作业', link: 'http://ai.canpoint.net/', id: 7 })
+
+    return {
+    ])
+    
+    const entryPage = (module) => {
+      if (module === 'aboutUs') {
+        openWindowLink(commonUrl.eduCloudUrl.wwwUrl + '/#/about-us')
+      } else if (module === 'help') {
+        openWindowLink(
+          commonUrl.eduCloudUrl.helpManage.showUrl +
+            '/#/help-doc/detail?lid=26807f49cc77ab14&fid=42aa5c1cd58dff38',
+        )
+      } else if (module === 'agreement') {
+        router.push({ name: module })
+      } else if (module === 'cloud') {
+        openWindowLink(commonUrl.eduCloudUrl.wwwUrl)
+      }
+    }
+    
+    const openFriendly = (item) => {
+      openWindowLink(item.link)
+    }
+    
+    // 使用帮助
+    const help = (type) => {
+      console.log(commonUrl)
+      if (type === 'znzj') {
+        openWindowLink(commonUrl.znzjUrl)
+      } else if (type === 'pxzj') {
+        openWindowLink(commonUrl.pxzjUrl)
+      } else if (type === 'xmbzj') {
+        openWindowLink(commonUrl.xmbzjUrl)
+      } else if (type === 'sjsc') {
+        openWindowLink(commonUrl.sjscUrl)
+      } else if (type === 'yhqx') {
+        openWindowLink(commonUrl.yhqxUrl)
+      } else if (type === 'hyhq') {
+        openWindowLink(commonUrl.hyhqUrl)
+      } else if (type === 'stsfgz') {
+        openWindowLink(commonUrl.stsfgzUrl)
+      } else if (type === 'sjfx') {
+        openWindowLink(commonUrl.sjfxUrl)
+      }
+    }
+    
+    // Assuming openWindowLink is a global utility function
+    const openWindowLink = (url) => {
+      window.open(url)
+    }
+    
+    const state = reactive({
+      fullpath,
+      friendlyLink,
+      entryPage,
+      openFriendly,
+      help
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+  @use "@/assets/css/variables" as *;
+.footer-bar {
+  width: 100%;
+  min-width: 1200px;
+  // min-height: 160px;
+  background: $color-background-d;
+  text-align: center;
+  .footer-content {
+    display: inline-block;
+    // height: 110px;
+    // padding: 32px 0;
+    box-sizing: border-box;
+    color: rgba(255, 255, 255, 0.3);
+    .footer-tel {
+      // margin-bottom: 20px;
+      padding: 30px 0;
+      line-height: 30px;
+      .iconfont {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        background: #ffffff11;
+        border-radius: 50%;
+        font-size: 12px;
+        color: #ffffff;
+      }
+      .text {
+        padding-left: 10px;
+        font-size: 14px;
+        color: #a0a2a7;
+      }
+    }
+    .footer-link {
+      span {
+        padding: 0 32px;
+        transition: 0.2s;
+        cursor: pointer;
+        &:hover {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+      em {
+        font-size: $font-size-small;
+        color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+  .footer-content-index {
+    display: flex;
+    justify-content: space-between;
+    height: auto;
+    padding: 40px;
+    .footer-left {
+      display: flex;
+      .nth-1,
+      .nth-2 {
+        h3 {
+          font-size: 20px;
+          font-weight: 400;
+          text-align: left;
+          color: #ffffff;
+        }
+        p {
+          font-size: 16px;
+          font-weight: 400;
+          color: #a0a2a7;
+          padding-top: 18px;
+          text-align: left;
+          cursor: pointer;
+          &:hover {
+            color: #e0e3ea;
+          }
+        }
+      }
+      .nth-2 {
+        margin-left: 67px;
+      }
+    }
+    .footer-right {
+      display: flex;
+      align-items: center;
+      height: 160px;
+
+      .nth-1 {
+        padding-left: 30px;
+        padding-top: 20px;
+        img {
+          width: 123px;
+          height: 123px;
+          border-radius: 10px;
+        }
+        .t {
+          line-height: 30px;
+          margin-top: 5px;
+          font-size: 14px;
+
+          font-weight: 400;
+          color: #ffffff88;
+        }
+      }
+      .nth-2 {
+        width: 236px;
+        margin-left: 40px;
+        text-align: left;
+        padding-top: 5px;
+        .footer_right_top {
+          width: 236px;
+          display: flex;
+          margin-bottom: 10px;
+          height: 30px;
+          line-height: 30px;
+          .phone_image {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            background-color: rgba($color: #ffffff, $alpha: 0.1);
+            // line-height: 52px;
+            // text-align: center;
+            // opacity: 0.1;
+            border-radius: 50%;
+            margin-right: 10px;
+            .icont_phone {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              font-size: 14px;
+              color: white;
+            }
+          }
+        }
+        .spanAll {
+          font-size: 18px;
+
+          color: #ffffff66;
+        }
+        .phone_content {
+          font-size: 26px;
+
+          font-weight: bold;
+          color: #ffffff;
+        }
+        .footer_email {
+          width: auto;
+          display: flex;
+          height: 30px;
+          line-height: 30px;
+          margin-bottom: 10px;
+          margin-top: 20px;
+          .phone_email {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            background-color: rgba($color: #ffffff, $alpha: 0.1);
+            border-radius: 50%;
+            margin-right: 10px;
+            .icont_email {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              font-size: 14px;
+              color: white;
+            }
+          }
+        }
+        .footer_domain {
+          width: auto;
+          font-size: 26px;
+
+          font-weight: bold;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+  .footer-line {
+    height: 1px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+  .footer-copyright {
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    font-size: $font-size-small;
+    color: #a0a2a7;
+  }
+}
+
+.footer-content-segment {
+  width: 100%;
+  padding: 40px;
+  text-align: left;
+  box-sizing: border-box;
+  .fonter-title {
+    color: #ffffff;
+    height: 20px;
+    font-size: 20px;
+  }
+  .fonter-content {
+    color: #a0a2a7;
+    display: flex;
+    justify-content: space-between;
+    li {
+      display: inline-block;
+    }
+    a {
+      color: #a0a2a7;
+      display: inline-block;
+      cursor: pointer;
+      font-size: 16px;
+      padding-top: 20px;
+      &:hover {
+        color: #e0e3ea;
+      }
+    }
+  }
+}
+</style>

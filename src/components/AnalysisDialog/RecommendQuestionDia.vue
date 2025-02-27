@@ -97,6 +97,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .recommend-dialog {
   :deep(.el-dialog__body) {
     padding: 20px;

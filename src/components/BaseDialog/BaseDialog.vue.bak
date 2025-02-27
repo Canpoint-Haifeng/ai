@@ -1,0 +1,146 @@
+<template>
+  <div class="dialog-wrapper">
+    <el-dialog
+      v-model="visible"
+      :title="title"
+      :top="top"
+      :modal-append-to-body="addbody"
+      :append-to-body="addbody"
+      :show-close="showClose"
+      :width="width"
+    >
+      <div class="dialog-content">
+        <slot name="dialogTips" />
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button
+            v-if="showCancelBtn"
+            class="btn btn-gray"
+            @click="cancel"
+          >
+            {{
+              cancelBtnText
+            }}
+          </el-button>
+          <el-button
+            v-if="showConfirmBtn"
+            class="btn btn-shadow"
+            @click="comfirm"
+          >
+            {{ confirmBtnText }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue'
+
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  name: 'BaseDialog',
+  props: {
+    addbody: {
+      type: Boolean,
+      default: false,
+    })
+
+    return {
+    title: {
+      type: String,
+      default: '提示',
+    })
+
+    return {
+    showClose: {
+      type: Boolean,
+      default: true,
+    })
+
+    return {
+    width: {
+      type: String,
+      default: '500px',
+    })
+
+    return {
+    showConfirmBtn: {
+      type: Boolean,
+      default: true,
+    })
+
+    return {
+    showCancelBtn: {
+      type: Boolean,
+      default: true,
+    })
+
+    return {
+    confirmBtnText: {
+      type: String,
+      default: '确定',
+    })
+
+    return {
+    cancelBtnText: {
+      type: String,
+      default: '取消',
+    })
+
+    return {
+    top: {
+      type: String,
+      default: '15vh',
+    })
+
+    return {
+  })
+
+    return {
+  setup(props, { emit }) {
+    const visible = ref(false)
+    
+    const show = () => {
+      visible.value = true
+    }
+    
+    const hide = () => {
+      visible.value = false
+    }
+    
+    const cancel = () => {
+      hide()
+      emit('cancle')
+    }
+    
+    const comfirm = () => {
+      show()
+      emit('comfirm')
+    }
+    
+    const state = reactive({
+      visible,
+      show,
+      hide,
+      cancel,
+      comfirm
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+  @use "@/assets/css/variables" as *;
+  .dialog-content {
+    text-align: center;
+    .dialog-tips {
+      padding-top: 50px;
+      padding-bottom: 20px;
+      color: $color-text-d;
+    }
+  }
+</style>

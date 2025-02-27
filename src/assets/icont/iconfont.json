@@ -1,0 +1,30 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "85293573",
+      "name": "播放",
+      "font_class": "bofang",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "85293574",
+      "name": "展开",
+      "font_class": "zhankai",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    },
+    {
+      "icon_id": "85293575",
+      "name": "收起",
+      "font_class": "shouqi",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    }
+  ]
+}

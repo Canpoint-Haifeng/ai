@@ -82,31 +82,47 @@
 <script>
 import { API } from '@/api/config'
 import { mapState } from 'vuex'
-export default {
-  data() {
-    return {
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  setup() {
+    const state = reactive({
       messageDialog: {
         width: '940px',
         visible: false,
         title: '主题切换',
-      },
+      }
+
+    return {
       themeList: [],
       tempThemeUrl: '',
     }
-  },
+  }
+})
+
+    return {
   computed: {
     ...mapState(['userTheme']),
     currentThemeUrl() {
       return this.tempThemeUrl || this.userTheme.themeUrl
-    },
-  },
+    }
+
+    return {
+  }
+})
+
+    return {
   methods: {
     onMouseOver(item) {
       this.tempThemeUrl = item.themeUrl
-    },
+    }
+
+    return {
     onMouseOut() {
       this.tempThemeUrl = ''
-    },
+    }
+
+    return {
     onSelectItem(item) {
       this.czcTrackEvent(['_trackEvent', '学科主页', '换主题+选中背景图', '次数'])
       let params = {
@@ -118,8 +134,10 @@ export default {
         } else {
           this.showMessage(res.msg)
         }
-      })
-    },
+      }
+    }
+
+    return {
     resetDefaultTheme() {
       let defaultTheme = null
       for (let item of this.themeList) {
@@ -133,7 +151,9 @@ export default {
       if (defaultTheme) {
         this.onSelectItem(defaultTheme)
       }
-    },
+    }
+
+    return {
 
     // 获取 主题列表
     getThemeConfigList() {
@@ -142,23 +162,33 @@ export default {
           if (this.checkoutRes(res)) {
             this.themeList = res.data
           }
-        })
+        }
       }
-    },
+    }
+
+    return {
     onClose() {
       if (this.flagUpdate) {
         this.$emit('changeSuccess')
       }
-    },
+    }
+
+    return {
     async show() {
       await this.getThemeConfigList()
       this.messageDialog.visible = true
-    },
-  },
+    }
+
+    return {
+  }
+})
+
+    return {
 }
 </script>
 
 <style scoped lang="scss">
+  @use "@/assets/css/variables" as *;
 .set-user-theme-body {
   height: 372px;
   overflow: hidden;
@@ -189,6 +219,7 @@ export default {
       background: #f0f0f0;
     }
   }
+})
 
   &.blue {
     color: #ffffff;
@@ -198,6 +229,7 @@ export default {
       background: $color-button-d-hover;
     }
   }
+})
 }
 
 .free-preview-theme {
@@ -213,6 +245,7 @@ export default {
     overflow-y: auto;
     overflow-x: hidden;
   }
+})
 
   .preview-theme {
     width: 390px;
@@ -245,6 +278,7 @@ export default {
       }
     }
   }
+})
 }
 
 .theme-content {
@@ -320,6 +354,7 @@ export default {
       }
     }
   }
+})
 }
 
 .select-theme-active {
@@ -332,6 +367,7 @@ export default {
     font-size: 17px;
     color: $color-theme;
   }
+})
 }
 
 .preivew-canvas-image {

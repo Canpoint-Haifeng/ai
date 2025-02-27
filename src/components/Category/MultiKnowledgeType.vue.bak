@@ -1,0 +1,364 @@
+<template>
+  <div v-if="knowledgeList && knowledgeList.length">
+    <div class="category-container">
+      <div class="category-knowledge-content">
+        <label class="category-label">
+          <div class="title">{{ categoryLabel }}</div>
+          <MultipleChoiceRadio
+            :is-multi="isMulti"
+            @change="changeMulti"
+          />
+        </label>
+        <div>
+          <div
+            v-if="isMulti === 0"
+            class="category-list"
+          >
+            <div
+              class="category-item"
+              :class="currTypeCode === '' ? 'active' : ''"
+              @click="selectType({ code: '', name: '全部' })
+
+    return { 'currTypeCode')"
+            >
+              全部
+            </div>
+            <div
+              v-for="item in knowledgeList"
+              :key="item.code"
+              class="category-item"
+              :class="item.code === currTypeCode ? 'active' : ''"
+              @click="selectType(item, 'currTypeCode')"
+            >
+              <span v-html="item.name" />
+            </div>
+          </div>
+          <div
+            v-else
+            class="category-list"
+          >
+            <div
+              class="category-item"
+              :class="currTypeCode === '' ? 'active' : ''"
+              @click="selectType({ code: '', name: '全部' })
+
+    return { 'currTypeCode')"
+            >
+              全部
+            </div>
+            <el-checkbox
+              v-for="item in knowledgeList"
+              :key="item.code"
+              class="category-item-ckeck el-cyy-rewrite"
+              :label="item.code"
+              :value="values.indexOf(item.code) != -1"
+              @change="selectTypes(item.code)"
+            >
+              <span v-html="item.name" />
+            </el-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="gray-line" />
+  </div>
+</template>
+
+<script>
+  import CTS from '@/common/js/constant'
+  import { API } from '@/api/config'
+  import { mapState } from 'vuex'
+  import MultipleChoiceRadio from './MultipleChoiceRadio'
+  import { fetchWithAbort } from '@/common/js/util'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    name: 'MultiKnowledgeType',
+    components: { MultipleChoiceRadio })
+
+    return {
+    props: {
+      categoryLabel: {
+        type: String,
+        default: '末级知识点',
+      })
+
+    return {
+      // 是否显示全部
+      isShowAll: {
+        type: Boolean,
+        default: true,
+      })
+
+    return {
+      checkNodeCode: String,
+      hasChapterChild: Boolean,
+      isChapter: Number,
+    })
+
+    return {
+    computed: {
+      ...mapState(['currSubject']),
+    })
+
+    return {
+    watch: {
+      currSubject() {
+        this.getRelationCategoryId(this.currSubject.subjectCode)
+      })
+
+    return {
+      isChapter() {
+        this.knowledgeList = []
+      })
+
+    return {
+      checkNodeCode() {
+        this.isMulti = 0
+        this.values = []
+        this.currTypeCode = ''
+        if (this.hasChapterChild) {
+          // this.getKnowledgeList()
+          this.getLastKnowledge()
+        } else {
+          this.knowledgeList = []
+        }
+      })
+
+    return {
+    })
+
+    return {
+    setup() {
+      const state = reactive({
+        mainPointCid: '',
+        isMulti: 0,
+        knowledgeList: [],
+        values: [],
+        currTypeCode: '',
+      }
+    })
+
+    return {
+    unmounted() {
+      if (this.getKnowAbort) {
+        this.getKnowAbort.abort()
+      }
+      this.getKnowAbort = null
+    })
+
+    return {
+    created() {
+      this.getRelationCategoryId(this.currSubject.subjectCode)
+    })
+
+    return {
+    methods: {
+      async getLastKnowledge() {
+        const url = { urlPath: '/paper-generator/catalogueTree/getHiddenCodeData' }
+        const params = {
+          queryType: this.isChapter + 1,
+          code: this.checkNodeCode,
+          stageSubject: this.currSubject.subjectCode,
+        }
+        console.log('params: ', params);
+        const res = await this.apiGet(url, params)
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.knowledgeList = res.data
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+
+    return {
+      selectTypes(s) {
+        let index = this.values.indexOf(s)
+        if (index !== -1) {
+          // 去掉 s
+          this.values.splice(index, 1)
+        } else {
+          this.values.push(s)
+        }
+        this.currTypeCode = this.values.join(',')
+        this.$emit('selectType', this.currTypeCode)
+      })
+
+    return {
+      selectType(item, params) {
+        if (item.code === '') {
+          this.isMulti = 0
+          this.currTypeCode = ''
+          this.values = []
+        }
+        this.currTypeCode = item.code
+        this.$emit('selectType', this.currTypeCode)
+      })
+
+    return {
+      changeMulti() {
+        if (this.currTypeCode) {
+          this.currTypeCode = ''
+          this.$emit('selectType', this.currTypeCode)
+        }
+
+        this.values = []
+        this.isMulti = this.isMulti == 0 ? 1 : 0
+      })
+
+    return {
+      getRelationCategoryId(isSubjectCode) {
+        return
+        let parms = {
+          categoryId: CTS.cfgDict.CID_KNOWLEDGE_PERIOD_SUBJECT,
+          code: isSubjectCode,
+          level: '2',
+        }
+        this.$store
+          .dispatch('getKnowledgeId', { vm: this, strParams: parms })
+          .then((res) => {
+            if (res.code === CTS.constant.SUCCESS_CODE) {
+              if (res.data && res.data[1]) {
+                this.mainPointCid = res.data[1].relationCategoryId
+                this.getKnowledgeList()
+              } else {
+                this.knowledgeList = []
+              }
+            }
+          })
+      })
+
+    return {
+      // 获取当前章节下的 知识点
+      async getKnowledgeList() {
+        //   bookTextId
+        // checkNodeCode
+        if (!(this.bookTextId && this.checkNodeCode && this.mainPointCid)) return
+
+        if (this.getKnowAbort) {
+          this.getKnowAbort.abort()
+        }
+        this.getKnowAbort = fetchWithAbort(this.getKnowledgeListHttp())
+        this.getKnowAbort
+          .then((res) => {
+            this.knowledgeList = res
+            this.getKnowAbort = null
+          })
+          .catch((err) => {
+            if (err === 'abort') {
+              console.log('=== fetch abort ===', err)
+            }
+          })
+      })
+
+    return {
+      async getKnowledgeListHttp() {
+        let parms = {
+          bookTextId: this.bookTextId,
+          checkNodeCode: this.checkNodeCode,
+        }
+        let res = await this.wayGet(API.GET_LISTKNOWLEDGE, parms)
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          let arrData = res.data
+          if (arrData.length <= 0) {
+            return []
+          }
+          let parmsArr = [
+            { categoryId: this.mainPointCid, codes: arrData.join(',') })
+
+    return {
+          ]
+          let list = await this.getKnowledgeNames(parmsArr)
+          return list
+        }
+        return []
+      })
+
+    return {
+      //  根据 知识点list 获取 名称
+      async getKnowledgeNames(parmsArr) {
+        let res = await this.getNameByCidCodes(parmsArr)
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          return res.data[0].dictData
+        } else {
+          return []
+        }
+      })
+
+    return {
+      getNameByCidCodes(parmsArr) {
+        let apiUrl = 'cfg-dict/biz/v1/dictionaryapi/get-name-by-codes'
+        let parms = {
+          jsonParameter: JSON.stringify(parmsArr),
+        }
+        let apiId = '100100'
+        return this.apiGetData(apiUrl, apiId, parms, 'post')
+      })
+
+    return {
+    })
+
+    return {
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .category-knowledge-content {
+    .category-label {
+      line-height: 24px;
+      align-self: flex-start;
+      color: $color-text-d;
+      font-weight: 700;
+      .title {
+        display: inline-block;
+        margin-right: 20px;
+      }
+      .button {
+        display: inline-block;
+      }
+    }
+    .category-list {
+      width: 855px;
+      .category-item {
+        display: inline-block;
+        padding: 5px 16px;
+        margin: 0 4px 12px 4px;
+        border-radius: 16px;
+        line-height: 16px;
+        cursor: pointer;
+        &:hover {
+          color: $color-theme;
+        }
+        &.active {
+          background: $color-theme;
+          color: $color-white;
+        }
+      }
+      .category-item-ckeck {
+        display: inline-block;
+        padding: 5px 7px;
+        margin: 0 4px 12px 4px;
+        border-radius: 16px;
+        line-height: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .category-knowledge-content :deep(.el-checkbox__label) {
+    line-height: 14px;
+    padding-left: 4px;
+  }
+
+  .category-container {
+    width: 914px;
+    padding: 20px 20px 8px 20px;
+    background: $color-white;
+  }
+  .gray-line {
+    width: 914px;
+    height: 16px;
+    background: $color-background-l;
+  }
+</style>

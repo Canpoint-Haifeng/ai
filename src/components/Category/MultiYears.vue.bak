@@ -1,0 +1,131 @@
+<template>
+  <div
+    v-if="yearsList.length"
+    class="category-content"
+  >
+    <label class="category-label">{{ categoryLabel }}</label>
+    <cp-question-mulit-filtrate
+      :types-list="yearsList"
+      @select-type="selectYear"
+    />
+  </div>
+</template>
+
+<script>
+  import CTS from '@/common/js/constant'
+  import { API } from '@/api/config'
+  import { getNear5YearsList } from '@/common/js/util'
+  import CpQuestionMulitFiltrate from '@/components/CpFan/Category/cp-question-mulit-filtrate'
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+    name: 'MultiYears',
+    components: { CpQuestionMulitFiltrate })
+
+    return {
+    props: {
+      categoryLabel: {
+        type: String,
+        default: '年　　份',
+      })
+
+    return {
+      // 是否显示全部
+      isShowAll: {
+        type: Boolean,
+        default: true,
+      })
+
+    return {
+    })
+
+    return {
+    setup() {
+      const state = reactive({
+        currYearCode: 0,
+        yearsList: [],
+      }
+    })
+
+    return {
+    created() {
+      this.getYearsList()
+    })
+
+    return {
+    methods: {
+      // 获取年份
+      getYearsList() {
+        let parms = {
+          categoryId: CTS.cfgDict.CID_QUESTION_YEARS,
+        }
+        this.wayGet(API.GET_DICT_BY_DICTID, parms).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            // let arrData = res.data.filter((item) => item.code != '2023')
+            this.yearsList = getNear5YearsList(res.data)
+          }
+        })
+      })
+
+    return {
+      selectYear(code) {
+        this.currYearCode = code
+        this.$emit('selectYear', this.currYearCode)
+      })
+
+    return {
+    })
+
+    return {
+  }
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .category-content {
+    display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+    .category-label {
+      width: 75px;
+      line-height: 24px;
+      align-self: flex-start;
+      color: $color-text-d;
+      font-weight: 700;
+    }
+    .category-list {
+      width: 855px;
+      .category-item {
+        display: inline-block;
+        padding: 5px 16px;
+        margin: 0 4px 12px 4px;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+        &:hover {
+          color: $color-theme;
+        }
+        &.active {
+          background: $color-theme;
+          color: $color-white;
+        }
+      }
+      .sub-category-list {
+        width: 100%;
+      }
+      .sub-category-item {
+        display: inline-block;
+        padding: 4px 16px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: $color-text;
+        &:hover,
+        &.active {
+          color: $color-theme;
+        }
+      }
+    }
+  }
+</style>

@@ -61,6 +61,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .history-message-list {
   position: absolute;
   top: 45px;

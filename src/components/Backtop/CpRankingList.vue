@@ -115,7 +115,7 @@
   import { API } from '@/api/config'
   import { isLogin } from '@/common/js/util'
   import CpRankIndex from './components/CpRankIndex.vue'
-  import { defineComponent, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue'
+  import { defineComponent, ref, onMounted, onUnmounted, getCurrentInstance }, { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated }, { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
   
   export default defineComponent({
     name: 'CpRankingList',
@@ -148,11 +148,11 @@
         // Load data
         getUserDownloadRank()
         getUserScoreRank()
-      })
+      }
       
       onUnmounted(() => {
         instance.proxy.Bus.off('sendShowFixedFlag', hideRankList)
-      })
+      }
 
       const openDownload = () => {
         if (isLogin()) {
@@ -184,7 +184,7 @@
           if (instance.proxy.checkoutRes(res)) {
             downLoadRankList.value = res.data.rankList
           }
-        })
+        }
       }
       
       const getUserScoreRank = () => {
@@ -196,7 +196,7 @@
           if (instance.proxy.checkoutRes(res)) {
             scoreRankList.value = res.data.rankList
           }
-        })
+        }
       }
       
       return {
@@ -212,10 +212,12 @@
         getUserScoreRank
       }
     }
-  })
+  }
+})
 </script>
 
 <style scoped lang="scss">
+  @use "@/assets/css/variables" as *;
   .cp-ti-ranking-list {
     position: fixed;
     top: 155px;
@@ -233,6 +235,7 @@
       transform: translateX(210px);
     }
   }
+})
 
   .cp-ti-ranking-box {
     position: relative;
@@ -278,6 +281,7 @@
       background-color: white;
     }
   }
+})
 
   .rank-body {
     .rank-tabs {
@@ -331,6 +335,7 @@
       }
     }
   }
+})
   .home-go-skip {
     text-align: center;
     padding-top: 15px;
@@ -346,10 +351,12 @@
       }
     }
   }
+})
 
   .kenburns-top-movie {
     animation: kenburns-top 20s linear infinite both;
   }
+})
 
   @keyframes kenburns-top {
     0% {
@@ -362,4 +369,5 @@
       transform: translateY(-200px);
     }
   }
+})
 </style>

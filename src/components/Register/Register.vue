@@ -273,12 +273,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+  @use "@/assets/css/variables" as *;
 // .v-modal {
 //   opacity: 0.1;
 // }
 </style>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .login-dialog :deep(.el-dialog) {
   width: 824px;
   height: 540px;
@@ -416,7 +418,10 @@ export default defineComponent({
       }
     }
     .form-item-service {
-      @include flex();
+      display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
       justify-content: space-between;
       .text {
         cursor: pointer;

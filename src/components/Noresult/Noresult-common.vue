@@ -1,41 +1,103 @@
+import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
 <template>
-  <div class="no-result-container">
-    <div class="no-result-content">
-      <img src="@/assets/images/no-result.png" alt="No Result" class="no-result-image" />
-      <p class="no-result-text">{{ message || '暂无数据' }}</p>
+  <div
+    class="noresult"
+    :style="{ minHeight: minHeight + 'px' }"
+  >
+    <div
+      v-if="showImg"
+      class="icon-box"
+      :style="{ marginTop: minHeight - 240 + 'px' }"
+    >
+      <i
+        class="noresult-icon"
+        :style="iconUrl"
+      />
     </div>
+    <p
+      v-if="isShowText"
+      class="noresult-text"
+    >
+      {{ text }}
+    </p>
+    <slot />
   </div>
 </template>
 
 <script>
-export default {
+import noresultIcon from './noresult-search.png'
+
+
+export default defineComponent({
   name: 'NoresultCommon',
   props: {
-    message: {
+    text: {
       type: String,
-      default: ''
+      default: '该模块下没有内容！'
+    })
+
+    return {
+    isShowText: {
+      type: Boolean,
+      default: true
+    })
+
+    return {
+    icon: {
+      type: String,
+      default: noresultIcon
+    })
+
+    return {
+    showImg: {
+      type: Boolean,
+      default: true
+    })
+
+    return {
+    minHeight: {
+      type: Number,
+      default: 350
+    }
+  })
+
+    return {
+  setup(props) {
+    const iconUrl = computed(() => ({
+      backgroundImage: `url(${props.icon})`
+    })
+    
+    const state = reactive({
+      iconUrl
     }
   }
 }
 </script>
 
-<style scoped>
-.no-result-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 30px 0;
-}
-.no-result-content {
-  text-align: center;
-}
-.no-result-image {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 15px;
-}
-.no-result-text {
-  color: #909399;
-  font-size: 14px;
-}
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .noresult {
+    min-width: 130px;
+    margin: 0 auto;
+    text-align: center;
+    color: $color-text-l;
+    .icon-box {
+      display: inline-block;
+      width: 101px;
+      height: 123px;
+      .noresult-icon {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+      }
+    }
+    .noresult-text {
+      color: $color-text-l;
+      font-size: $font-size-small;
+      text-indent: -10px;
+      height: 86px;
+      line-height: 86px;
+    }
+  }
 </style>

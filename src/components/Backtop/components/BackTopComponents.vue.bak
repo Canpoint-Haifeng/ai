@@ -1,0 +1,119 @@
+<template>
+  <div
+    v-show="visible"
+    class="back-top-components"
+    @click="backToTop"
+  >
+    <span class="iconfont iconshiliangzhinengduixiang-08" />
+    <div class="text">
+      顶部
+    </div>
+  </div>
+</template>
+
+<script>
+  import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
+  import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+  
+  const cubic = (value) => Math.pow(value, 3)
+  const easeInOutCubic = (value) => {
+    return value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2
+  }
+
+  export default defineComponent({
+    name: 'BackTopComponents',
+    setup() {
+      // Reactive state
+      const el = ref(null)
+      const visible = ref(false)
+      
+      // Methods from mixin
+      const initWindowsEvent = windowScrollResetMixin.methods.initWindowsEvent
+      const unmountedWindowsEvent = windowScrollResetMixin.methods.unmountedWindowsEvent
+      const getPageScrollTop = windowScrollResetMixin.methods.getPageScrollTop
+      
+      // Component methods
+      const renderScrollFixed = () => {
+        let comparisonTop = getPageScrollTop()
+        if (comparisonTop > 200) {
+          visible.value = true
+        } else {
+          visible.value = false
+        }
+      }
+      
+      const scrollToTop = () => {
+        const element = el.value
+        const beginTime = Date.now()
+        const beginValue = element.scrollTop
+        const rAF =
+          window.requestAnimationFrame || ((func) => setTimeout(func, 16))
+        const frameFunc = () => {
+          const progress = (Date.now() - beginTime) / 500
+          if (progress < 1) {
+            element.scrollTop = beginValue * (1 - easeInOutCubic(progress))
+            rAF(frameFunc)
+          } else {
+            element.scrollTop = 0
+          }
+        }
+        rAF(frameFunc)
+      }
+      
+      const backToTop = () => {
+        scrollToTop()
+      }
+      
+      // Lifecycle hooks
+      onMounted(() => {
+        el.value = document.documentElement
+        initWindowsEvent()
+        renderScrollFixed()
+      })
+      
+      onUnmounted(() => {
+        unmountedWindowsEvent()
+      })
+      
+      return {
+        el,
+        visible,
+        renderScrollFixed,
+        backToTop,
+        scrollToTop
+      }
+    }
+  })
+</script>
+
+<style scoped lang="scss">
+  @use "@/assets/css/variables" as *;
+  .back-top-components {
+    width: 40px;
+    height: 50px;
+    background: #ffffff;
+    box-shadow: 0px 2px 6px 0px rgba(42, 77, 138, 0.27);
+    z-index: 99;
+    border-radius: 4px 0px 0px 4px;
+    text-align: center;
+    padding-top: 3px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    .iconfont {
+      font-size: 28px;
+      color: #666666;
+    }
+    .text {
+      font-size: 10px;
+      color: #666666;
+    }
+    &:hover {
+      background: $color-theme;
+      .text,
+      .iconfont {
+        color: #ffffff;
+      }
+    }
+  }
+</style>

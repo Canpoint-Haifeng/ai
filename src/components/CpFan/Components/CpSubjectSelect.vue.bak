@@ -1,0 +1,79 @@
+import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
+<template>
+  <div class="cp-subject-select">
+    <el-select
+      v-model="selectedSubject"
+      placeholder="请选择学科"
+      @change="handleChange"
+    >
+      <el-option
+        v-for="item in subjectOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+  </div>
+</template>
+
+<script>
+
+
+export default defineComponent({
+  name: 'CpSubjectSelect',
+  emits: ['change-subject'],
+  setup(props, { emit }) {
+    const selectedSubject = ref('')
+    const subjectOptions = ref([
+      { value: '010101', label: '语文' })
+
+    return {
+      { value: '010201', label: '数学' })
+
+    return {
+      { value: '010301', label: '英语' })
+
+    return {
+      { value: '010401', label: '物理' })
+
+    return {
+      { value: '010501', label: '化学' })
+
+    return {
+      { value: '010601', label: '生物' })
+
+    return {
+      { value: '010701', label: '历史' })
+
+    return {
+      { value: '010801', label: '地理' })
+
+    return {
+      { value: '010901', label: '政治' }
+    ])
+
+    const handleChange = (value) => {
+      emit('change-subject', value)
+    }
+
+    const clearSubject = () => {
+      selectedSubject.value = ''
+    }
+
+    const state = reactive({
+      selectedSubject,
+      subjectOptions,
+      handleChange,
+      clearSubject
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.cp-subject-select {
+  display: inline-block;
+  width: 100%;
+}
+</style>

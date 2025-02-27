@@ -1,0 +1,522 @@
+<template>
+  <div class="download-wrapper">
+    <el-dialog
+      v-model="downloadDialog.visible"
+      :title="downloadDialog.title"
+      :modal-append-to-body="false"
+      :lock-scroll="false"
+      :width="payStatus === 0 ? '500px' : downloadDialog.width"
+      @close="clearValidate"
+    >
+      <div
+        class="download-content"
+        :class="payStatus === 0 ? '' : 'content-line'"
+      >
+        <div class="download-main fl">
+          <el-form
+            ref="form"
+            :model="formData"
+            :rules="formRules"
+            label-width="95px"
+          >
+            <el-form-item
+              label="文件格式："
+              prop="paperVersion"
+              class="form-item-radio"
+            >
+              <el-radio-group v-model="formData.paperVersion">
+                <el-radio
+                  v-for="item in paperVersion"
+                  :key="item.label"
+                  :label="item.label"
+                >
+                  {{ item.name }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              label="纸张大小："
+              prop="paperSize"
+              class="form-item-radio"
+            >
+              <el-radio-group v-model="formData.paperSize">
+                <el-radio
+                  v-for="item in paperSize"
+                  :key="item.label"
+                  :label="item.label"
+                >
+                  <span
+                    v-if="item.label === 'A4'"
+                    class="radio-label-item"
+                  >
+                    <span class="name">{{ item.name }}</span>
+                    <img
+                      src="./A4-icon.png"
+                      alt="A4"
+                      class="icon"
+                    >
+                  </span>
+                  <span
+                    v-if="item.label === 'A3'"
+                    class="radio-label-item"
+                  >
+                    <span class="name">{{ item.name }}</span>
+                    <img
+                      src="A3H-icon.png"
+                      alt="A3"
+                      class="icon"
+                    >
+                  </span>
+                  <span
+                    v-if="item.label === 'B4'"
+                    class="radio-label-item"
+                    style="margin-bottom: 0"
+                  >
+                    <span class="name">{{ item.name }}</span>
+                    <img
+                      src="B4H-icon.png"
+                      alt="B4"
+                      class="icon"
+                    >
+                  </span>
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              label="试卷类型："
+              prop="paperType"
+              class="form-item-radio"
+            >
+              <el-radio-group v-model="formData.paperType">
+                <el-radio
+                  v-for="item in paperType"
+                  :key="item.label"
+                  :label="item.label"
+                >
+                  <span class="radio-label-item">
+                    <span class="name">{{ item.name }}</span>
+                    <span class="text">{{ item.text }}</span>
+                  </span>
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div
+          v-if="payStatus !== 0"
+          class="download-side fr"
+        >
+          <!-- 全品币不足扫码支付 -->
+          <div
+            v-if="payStatus === 1"
+            class="pay-box"
+          >
+            <h2 class="pay-title color-3 font-16">
+              下载需支付：<strong class="price">￥3.0</strong>
+            </h2>
+            <div class="pay-qpcoin">
+              <i class="iconfont iconcoin" />账户全品币：
+              <strong class="qpcoin">10</strong>
+            </div>
+            <div class="pay-method color-9 font-12">
+              请使用微信扫码支付或<span class="color-theme">在线充值</span>
+            </div>
+            <div class="pay-qrcode">
+              <img
+                src="./qrcode.png"
+                alt="qrcode"
+                class="qrcode-img"
+              >
+            </div>
+            <div class="pay-tips color-9 font-12">
+              <p class="text">
+                注：1. 支付后点击"确认下载"按钮下载
+              </p>
+              <p class="text">
+                2. 支付后1个月内可重复下载
+              </p>
+              <p class="text">
+                <span class="color-theme">开通校园服务</span>可免费下载
+              </p>
+            </div>
+          </div>
+          <!-- 全品币支付 -->
+          <div
+            v-else-if="payStatus === 2"
+            class="coin-box"
+          >
+            <h2 class="coin-title color-3 font-16">
+              下载需支付：<strong class="price">￥3.0</strong>
+            </h2>
+            <div class="coin-item coin-my">
+              <i class="iconfont iconcoin" />账户全品币：
+              <strong class="qpcoin">10</strong>
+            </div>
+            <div class="coin-item coin-my">
+              <i class="iconfont iconcoin" />本次下载将扣减全品币：
+              <strong class="qpcoin">3</strong>
+            </div>
+            <div class="coin-tips color-9 font-12">
+              <p class="text">
+                注：1. 支付后点击"确认下载"按钮下载
+              </p>
+              <p class="text">
+                2. 支付后1个月内可重复下载
+              </p>
+              <p class="text">
+                <span class="color-theme">开通校园服务</span>可免费下载
+              </p>
+            </div>
+          </div>
+          <!-- 支付成功 -->
+          <div
+            v-if="payStatus === 3"
+            class="succss-box"
+          >
+            <div class="icon-box">
+              <i class="iconfont iconsuccess" />
+            </div>
+            <p class="text1 color-3 font-16 font-b">
+              支付成功！
+            </p>
+            <p class="text2 color-9 font-12">
+              点击"确认下载"按钮开始下载吧
+            </p>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button
+            class="btn btn-gray"
+            @click="downloadDialog.visible = false"
+          >
+            取消
+          </el-button>
+          <el-button
+            class="btn btn-shadow"
+            @click="downloadPaper('form')"
+          >
+            确认下载
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { ref, nextTick } from 'vue'
+
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  name: 'DownloadDialogOld',
+  props: {
+    // downloadDialog: {
+    //   type: Object,
+    //   default: () => {
+    //     const state = reactive({
+    //       title: '下载确认',
+    //       visible: true,
+    //       width: '665px'
+    //     }
+    //   }
+    // }
+  })
+
+    return {
+  emits: ['downloadPaper'],
+  setup(props, { emit, refs }) {
+    const downloadDialog = ref({
+      title: '下载确认',
+      visible: false,
+      width: '665px',
+    })
+    
+    const paperVersion = ref([
+      {
+        label: 'doc',
+        name: 'DOC',
+      })
+
+    return {
+      {
+        label: 'docx',
+        name: 'DOCX(公式可编辑）',
+      })
+
+    return {
+    ])
+    
+    const paperSize = ref([
+      {
+        label: 'A4',
+        name: '',
+      })
+
+    return {
+      {
+        label: 'A3',
+        name: '',
+      })
+
+    return {
+      {
+        label: 'B4',
+        name: '',
+      })
+
+    return {
+    ])
+    
+    const paperType = ref([
+      {
+        label: 'normal',
+        name: '普通试卷',
+        text: '（答案集中在卷尾）',
+      })
+
+    return {
+      {
+        label: 'teacher',
+        name: '教师用卷',
+        text: '（每题后面跟答案）',
+      })
+
+    return {
+      {
+        label: 'student',
+        name: '学生用卷',
+        text: '（无答案）',
+      })
+
+    return {
+    ])
+    
+    const formData = ref({
+      paperVersion: '',
+      paperSize: '',
+      paperType: '',
+    })
+    
+    const formRules = ref({
+      paperVersion: [
+        { required: true, message: '请选择文件格式', trigger: 'change' })
+
+    return {
+      ],
+      paperSize: [
+        { required: true, message: '请选择纸张大小', trigger: 'change' })
+
+    return {
+      ],
+      paperType: [
+        { required: true, message: '请选择试卷类型', trigger: 'change' })
+
+    return {
+      ],
+    })
+    
+    const payStatus = ref(2) // 0-已完成支付，1-微信支付，2-全品支付 3-支付成功
+    
+    const clearValidate = () => {
+      nextTick(() => {
+        refs.form.clearValidate()
+      })
+    }
+    
+    const showDialog = () => {
+      if (refs.form) {
+        refs.form.resetFields()
+      }
+      downloadDialog.value.visible = true
+    }
+    
+    const hideDialog = () => {
+      downloadDialog.value.visible = false
+    }
+    
+    // 下载试卷
+    const downloadPaper = (formName) => {
+      refs[formName].validate((valid) => {
+        if (valid) {
+          emit('downloadPaper', formData.value)
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    }
+    
+    const state = reactive({
+      downloadDialog,
+      paperVersion,
+      paperSize,
+      paperType,
+      formData,
+      formRules,
+      payStatus,
+      clearValidate,
+      showDialog,
+      hideDialog,
+      downloadPaper
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.download-wrapper :deep(.el-dialog__footer) {
+  padding: 20px;
+}
+.download-content {
+  height: 330px;
+  &.content-line {
+    border-bottom: 1px solid $color-background-l;
+  }
+}
+.download-main {
+  width: 398px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.download-side {
+  width: 265px;
+  height: 100%;
+  border-left: 1px solid $color-background-l;
+  padding: 0 22px;
+  box-sizing: border-box;
+}
+.form-item-radio :deep(.el-radio__label) {
+  padding-left: 6px;
+}
+.form-item-radio:nth-child(1) :deep(.el-radio) {
+  margin-right: 12px;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.form-item-radio:nth-child(2) {
+  .radio-label-item {
+    display: inline-block;
+    margin-bottom: 20px;
+    .icon {
+      vertical-align: middle;
+    }
+  }
+}
+.form-item-radio:nth-child(3) {
+  .radio-label-item {
+    display: inline-block;
+    margin-bottom: 14px;
+    .text {
+      color: $color-text-l;
+    }
+  }
+}
+.color-theme {
+  cursor: pointer;
+  &:hover {
+    color: $color-theme-d;
+  }
+}
+.pay-box {
+  text-align: center;
+  .pay-title {
+    margin: 22px 0 15px 0;
+    .price {
+      color: $color-theme-l;
+    }
+  }
+  .pay-qpcoin {
+    margin-bottom: 8px;
+    .iconcoin {
+      margin-right: 8px;
+      font-size: $font-size-medium;
+    }
+    .qpcoin {
+      color: $color-theme-l;
+    }
+  }
+  .pay-method {
+    margin-bottom: 12px;
+  }
+  .pay-qrcode {
+    display: inline-block;
+    width: 140px;
+    height: 140px;
+    border: 1px dashed $color-theme;
+    padding: 10px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    .qrcode-img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .pay-tips {
+    line-height: 20px;
+    .text:last-child {
+      margin-top: 5px;
+    }
+  }
+}
+.coin-box {
+  .coin-title {
+    margin: 22px 0 38px 0;
+    .price {
+      color: $color-theme-l;
+    }
+  }
+  .coin-item {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    background: #f0f5fd;
+    border: 1px dashed $color-theme;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    padding: 0 12px;
+    color: $color-text;
+    .iconcoin {
+      margin-right: 8px;
+      font-size: $font-size-medium;
+    }
+    .qpcoin {
+      color: $color-theme-l;
+    }
+    &:nth-child(2) {
+      background: #fff3f2;
+      border: 1px dashed $color-theme-l;
+    }
+  }
+  .coin-tips {
+    line-height: 20px;
+    .text:nth-child(2) {
+      padding-left: 25px;
+    }
+    .text:last-child {
+      margin-top: 45px;
+    }
+  }
+}
+.succss-box {
+  margin: 80px 18px;
+  text-align: center;
+  .icon-box {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 30px;
+    .iconsuccess {
+      color: #7ac23c;
+      font-size: 40px;
+    }
+  }
+  .text1 {
+    margin-bottom: 15px;
+  }
+}
+</style>

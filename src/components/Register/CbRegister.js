@@ -1,5 +1,5 @@
 import { createVNode, render } from 'vue'
-import Register from './Register.vue.new'
+import Register from './Register.vue'
 
 export default {
   install(app) {

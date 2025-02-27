@@ -127,6 +127,7 @@
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
   .vip-get-basket-wrapper {
     position: fixed;
     top: 0;

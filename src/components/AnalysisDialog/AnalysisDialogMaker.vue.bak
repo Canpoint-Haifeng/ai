@@ -1,0 +1,919 @@
+<template>
+  <div class="analysis-wrapper">
+    <el-dialog
+      v-model:visible="analysisDialog.visible"
+      v-dialogDrag
+      :title="analysisDialog.title"
+      :modal-append-to-body="false"
+      :width="analysisDialog.width"
+      :before-close="handleClose"
+      @close="closeAnalysisDialog"
+    >
+      <div class="analysis-content">
+        <div class="analysis-scroll">
+          <el-tabs
+            v-model="activeName"
+            class="analysis-tabs"
+            @tab-click="handleClick"
+          >
+            <el-tab-pane
+              label="试卷分析"
+              name="first"
+            >
+              <div class="row">
+                <div class="item">
+                  <h6>题量分析</h6>
+                  <div class="total">
+                    <p>总题数：<span>{{ questionAnalysis.paperTotalCount }}</span>题</p>
+                    <p>总分：<span>{{ questionAnalysis.paperTotalScore }}</span>分</p>
+                  </div>
+                  <div class="chart">
+                    <pie-echarts
+                      :options="pieOptions1"
+                      :data="pieData1"
+                    />
+                  </div>
+                </div>
+                <div class="item">
+                  <h6>
+                    知识点分析 <span
+                      style="float: right;"
+                      @click="analysisDialog.visible = false; showFixed = true"
+                    ><i
+                      class="icon iconfont icon-a-zu271"
+                    />详情</span>
+                  </h6>
+                  <div class="title">
+                    知识点&数量
+                  </div>
+                  <div class="chart">
+                    <pie-echarts
+                      :options="pieOptions2"
+                      :data="pieData2"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="item">
+                  <!-- <h6>知识点分析</h6>
+                  <div id="bar" style="height: 230px"></div> -->
+                  <div class="difficultyWrap">
+                    <div class="difficulty_title">
+                      <div class="title_border">
+                        难度分析
+                      </div>
+                      <span>当前试卷难度（整卷的难度）：<i>{{ diffculty }}</i></span>
+                    </div>
+                    <div>
+                      <div class="flex aloneOption">
+                        <div class="sliderAlone">
+                          <el-slider
+                            class="alone"
+                            disabled
+                            :value="100*(1-diffculty)"
+                            :min="0"
+                            :max="100"
+                            :show-tooltip="false"
+                            :marks="marks"
+                            :format-tooltip="forMatToolTip"
+                          />
+                          <div class="textWrap">
+                            <div
+                              v-for="(v, i) in text"
+                              :key="v"
+                            >
+                              {{ v }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="title_border differentiate">
+                      区分度
+                    </p>
+                    <div>
+                      <div class="flex">
+                        <div class="difficultyLevel">
+                          <div class="txt">
+                            <span>高</span>
+                            <span>低</span>
+                          </div>
+                          <div class="bar">
+                            <i :style="{hight: 30*(questionAnalysis.aaaaaaa || 1)+'%'}" />
+                          </div>
+                        </div>
+                        <div class="sliderShell">
+                          <div
+                            v-for="(v, i) in seting"
+                            :key="i"
+                            class="flex sliderWrap"
+                          >
+                            <div class="label">
+                              {{ v.label }}
+                            </div>
+                            <el-slider
+                              disabled
+                              :class="`sliderCom slider${i + 1}`"
+                              :value="v.value"
+                              :show-tooltip="false"
+                            />
+                            <div class="value">
+                              {{ v.value }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="title">
+                    知识点&分数
+                  </div>
+                  <div class="chart">
+                    <pie-echarts
+                      :options="pieOptions3"
+                      :data="pieData3"
+                    />
+                  </div>
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane
+              label="试卷细目表"
+              name="four"
+            >
+              <div
+                v-if="activeName === 'four'"
+                class="analysis-tabs-pane"
+              >
+                <div class="dialog-table analysis-table-top analysis-table-bottom dialog-table-box">
+                  <el-table
+                    v-if="questionAnalysis.paperGroupCatalogue"
+                    :data="questionAnalysis.paperGroupCatalogue.paperQuestionAttr
+                    "
+                    class="customer-no-border-table"
+                    element-loading-text="加载中..."
+                    border
+                    style="width: 100%"
+                  >
+                    <el-table-column
+                      :resizable="false"
+                      width="80px"
+                      type="index"
+                      label="题号"
+                    >
+                      <!-- <template slot-scope="scope">
+                          {{scope.$index+1}}
+                        </template> -->
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      prop="questionName"
+                      label="题型"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      width="300px"
+                      label="知识点"
+                    >
+                      <template #default="scope">
+                        <el-tooltip
+                          placement="top"
+                          effect="light"
+                          popper-class="custom-popover knowledge-popover"
+                        >
+                          <template #content>
+                            <div>
+                              <div v-html="scope.row.knowledgeNameStr" />
+                            </div>
+                          </template>
+                          <div
+                            class="knowledge-popover-content"
+                            v-html="scope.row.knowledgeNameStr"
+                          />
+                        </el-tooltip>
+                        <!-- <div v-html="scope.row.knowledgeNameStr"></div> -->
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      prop="difficultyName"
+                      label="难度"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      show-overflow-tooltip
+                      label="分值"
+                    >
+                      <template #default="scope">
+                        {{ scope.row.score || '-' }}
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+                <div
+                  v-if="questionAnalysis.paperGroupCatalogue"
+                  class="dialog-table-bottom"
+                >
+                  <el-button
+                    class="btn"
+                    @click="useGroupCatelogue"
+                  >
+                    使用细目表
+                  </el-button>
+                </div>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+      </div>
+    </el-dialog>
+    <div
+      v-if="showFixed"
+      class="fixed"
+    >
+      <div class="adadad">
+        <h6>
+          <span
+            style="float: right;font-size: 20px;"
+            @click="showFixed = false"
+          ><i class="el-icon-close" /></span>
+        </h6>
+        <el-table
+          :data="questionAnalysis.questionPointChartList"
+          class="customer-no-border-table"
+          row-class-name="row-nobg"
+          border
+          style="width: 100%"
+        >
+          <el-table-column
+            :resizable="false"
+            width="80px"
+            type="index"
+            label="序号"
+          />
+          <el-table-column
+            prop="questionPointName"
+            min-width="30"
+            label="知识点"
+          >
+            <template #default="scope">
+              <el-tooltip
+                placement="top"
+                effect="light"
+                :content="scope.row.questionPointName"
+                popper-class="custom-popover"
+              >
+                <span class="text-ellipsis">{{
+                  scope.row.questionPointName
+                }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column
+            :resizable="false"
+            prop="score"
+            min-width="30"
+            label="分值"
+          >
+            <template #default="scope">
+              <span v-if="scope.row.score">{{ scope.row.score }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            :resizable="false"
+            prop="scoreScale"
+            min-width="30"
+            label="占比"
+          >
+            <template #default="scope">
+              <span v-if="scope.row.scoreScale">{{
+                scope.row.scoreScale
+              }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            :resizable="false"
+            min-width="50"
+            prop="count"
+            label="题量"
+          />
+        </el-table>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import echarts from 'echarts'
+import PieEcharts from '@/components/ECharts/Pie'
+import { setpieOptions } from '@/common/config/pieOptions'
+import { dealDecimal } from '@/common/js/util'
+import { pieOptions1, pieOptions2, pieOptions3, barOptions } from './options'
+import bar from '@/components/ECharts/line-bar.vue'
+export default {
+  components: {
+    PieEcharts,
+    bar,
+  },
+  props: {
+    questionAnalysis: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+  },
+  data() {
+    return {
+      marks: {
+        0: '1',
+        20: '0.8',
+        40: '0.6',
+        60: '0.4',
+        80: '0.2',
+        100: '0',
+      },
+      text: ['容易', '较易', '中等', '较难', '困难'],
+      seting: [
+        { label: '容易', value: 0, type: 'easy_num' },
+        { label: '较易', value: 0, type: 'little_easy_num' },
+        { label: '中等', value: 0, type: 'middle_num' },
+        { label: '较难', value: 0, type: 'little_hard_num' },
+        { label: '困难', value: 0, type: 'hard_num' },
+      ],
+      analysisDialog: {
+        title: '组卷分析',
+        visible: false,
+        width: '800px',
+      },
+      showFixed: false,
+      activeName: 'first',
+      barOptions: {},
+      pieOptions1,
+      pieOptions2,
+      pieOptions3,
+      pieData1: [],
+      pieData2: [],
+      pieData3: [],
+      pointListTable: [],
+      spanArr: [],
+      diffculty: 0.5,
+    }
+  },
+  watch: {
+    questionAnalysis() {
+      this.initPies()
+      let num = 0
+      this.questionAnalysis.questionDifficultChartList.forEach(v => {
+        this.seting[v.questionDifficult - 1].value = v.count
+        num += v.count*[0.9, 0.7, 0.5, 0.3, 0.1][v.questionDifficult - 1]
+      
+      })
+      this.diffculty = (num / this.questionAnalysis.paperTotalCount).toFixed(2)
+    
+    },
+  },
+  created() {
+    // this.initPies()
+  },
+  mounted() {
+  },
+  methods: {
+    handleClose(done) {
+      done();
+    },
+    useGroupCatelogue() {
+      if (this.questionAnalysis.paperIdEnc && this.questionAnalysis.source) {
+        this.$router.push({
+          path: '/paper/intelligence/paperbreakdowngroup',
+          query: {
+            paperIdEnc: this.questionAnalysis.paperIdEnc,
+            source: this.questionAnalysis.source,
+          },
+        })
+      } else {
+        this.$store.dispatch(
+          'updataPaperGroupCatalogue',
+          this.questionAnalysis.paperGroupCatalogue,
+        )
+        this.$router.push({
+          path: '/paper/intelligence/paperbreakdowngroup',
+          query: { type: 3 },
+        })
+      }
+    },
+    initPies() {
+      const totalCount = this.questionAnalysis.paperTotalCount
+      this.questionAnalysis.paperTotalScore = dealDecimal(
+        this.questionAnalysis.paperTotalScore,
+        1,
+      )
+
+      const totalScore = this.questionAnalysis.paperTotalScore
+      if (this.activeName === 'first') {
+        // this.pieOptions1 = setpieOptions('题型题量分布', '总题数', totalCount)
+        // this.pieOptions2 = setpieOptions('题型分数分布', '总分数', totalScore)
+        this.pieData1 = this.questionAnalysis.questionTypeChartList.map(v => {
+          return {
+            name: v.questionTypeName,
+            // value: (item.count / totalCount) * 100,
+            value: v.count,
+          }
+        })
+        this.pieData2 = this.questionAnalysis.questionPointChartList.map(v => {
+          return {
+            name: v.questionPointName,
+            value: v.count
+          }
+        })
+        this.pieData3 = this.questionAnalysis.questionPointChartList.map(v => {
+          return {
+            name: v.questionPointName,
+            value: v.score
+          }
+        })
+      }
+      // this.initBar()
+      this.$nextTick(() => {
+        const dom = document.querySelector('.sliderAlone .el-slider__button')
+        dom.innerText = this.diffculty
+      })
+    },
+    initBar() {
+      this.barOptions = barOptions
+      this.barOptions.xAxis.data = []
+      this.barOptions.series[0].data = []
+      this.barOptions.series[1].data = []
+      console.log(this.questionAnalysis.questionPointChartList)
+      this.questionAnalysis.questionPointChartList.forEach(v => {
+        this.barOptions.xAxis.data.push(v.questionPointName)
+        this.barOptions.series[0].data.push(v.count)
+        this.barOptions.series[1].data.push(v.score)
+      })
+      this.barOptions.series[1].itemStyle.color = '#22e4ff'
+      this.$nextTick(() => {
+        const chart = echarts.init(document.querySelector('#bar'))
+        chart.setOption(this.barOptions)
+      })
+    },
+    // 处理知识点数据列表
+    handleQuestionPoint() {
+      this.pointListTable = [...this.questionAnalysis.questionPointChartList]
+      // const pointList = this.questionAnalysis.questionPointChartList
+      // pointList.forEach(item => {
+      //   item.list.forEach(subItem => {
+      //     this.pointListTable.push({
+      //       ...subItem,
+      //       count: item.count,
+      //       id: item.id,
+      //       countScale: item.countScale,
+      //       questionPoint: item.questionPoint,
+      //       questionPointName: item.questionPointName,
+      //       score: item.score,
+      //       scoreScale: item.scoreScale,
+      //       questions: item.questions
+      //     })
+      //   })
+      // })
+      // this.loading = false
+      // this.getSpanArr(this.pointListTable)
+    },
+    // 判断单元格合并条件
+    getSpanArr(data) {
+      this.spanArr = []
+      for (let i = 0; i < data.length; i++) {
+        if (i === 0) {
+          this.spanArr.push(1)
+          this.pos = 0
+        } else {
+          // 判断当前元素与上一个元素是否相同
+          if (data[i].questionPointName === data[i - 1].questionPointName) {
+            this.spanArr[this.pos] += 1
+            this.spanArr.push(0)
+          } else {
+            this.spanArr.push(1)
+            this.pos = i
+          }
+        }
+      }
+    },
+    // 合并单元格处理函数
+    arraySpanMethod({ rowIndex, columnIndex }) {
+      if (columnIndex < 5) {
+        const _row = this.spanArr[rowIndex]
+        const _col = _row > 0 ? 1 : 0
+        return {
+          rowspan: _row,
+          colspan: _col,
+        }
+      }
+    },
+    // 显示试卷分析提示框
+    showDialog() {
+      this.analysisDialog.visible = true
+    },
+    // 隐藏试卷分析提示框
+    hideDialog() {
+      this.analysisDialog.visible = false
+    },
+    // 点击tab切换
+    handleClick(tabComp) {
+      if (tabComp.name === 'second' && !tabComp.isFirst) {
+        this.initPies()
+        this.handleQuestionPoint()
+        tabComp.isFirst = true
+      }
+    },
+    // 监听关闭试卷提示框
+    closeAnalysisDialog() {
+      this.activeName = 'first'
+    },
+    forMatToolTip(val) {
+      return val / 100
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+.el-tooltip__popper.custom-popover {
+  display: block;
+  min-width: 120px;
+  border: 1px solid $color-theme;
+  box-shadow: 0px 4px 6px 0px rgba(42, 77, 138, 0.1);
+  color: $color-text;
+  padding: 10px 14px;
+  line-height: 24px;
+
+  &.knowledge-popover {
+    width: 340px;
+  }
+
+  .popper__arrow {
+    border-width: 8px;
+    filter: drop-shadow(0 0 10px rgba(180, 197, 231, 1));
+  }
+
+  &.is-light[x-placement^='top'] .popper__arrow {
+    border-top-color: $color-theme;
+    bottom: -16px;
+  }
+
+  &.is-light[x-placement^='top'] .popper__arrow::after {
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #fff;
+    position: absolute;
+    left: -1px;
+    top: -8px;
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+.analysis-table-top {
+  margin-top: 20px;
+}
+
+.analysis-content {
+  height: 690px;
+  overflow: hidden;
+
+  .analysis-scroll {
+    // padding: 0 20px;
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+
+:deep(.el-dialog) {
+  .el-dialog__header {
+    display: none;
+  }
+
+  .analysis-content {
+    padding: 0 20px;
+
+    .el-tab-pane {
+      .row {
+        display: flex;
+
+        &:not(:last-child) {
+          margin-bottom: 20px;
+        }
+
+        .item {
+          flex: 1;
+
+          h6 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+          }
+
+          .total {
+            display: flex;
+
+            p {
+              margin-right: 55px;
+            }
+
+            span {
+              color: #FF6900;
+              margin: 0 5px;
+            }
+
+          }
+
+          .chart {
+            height: 250px;
+          }
+
+          .difficultyWrap {
+            box-sizing: border-box;
+
+            .flex {
+              display: flex;
+            }
+
+            .difficulty_title {
+              display: flex;
+              align-items: center;
+              margin-bottom: 5px;
+
+              span {
+                font-style: 12px;
+                margin-left: 10px;
+
+                i {
+                  color: #FF6900;
+                }
+              }
+            }
+
+            .aloneOption {
+              align-items: center;
+
+              .sliderAlone {
+                width: 300px;
+
+                .alone {
+                  width: 300px;
+                  padding-left: 2px;
+
+                  .el-slider__marks-text {
+                    margin-top: 24px;
+                    color: #666;
+                    pointer-events: none;
+                  }
+
+                  .el-slider__bar {
+                    background: transparent !important;
+                  }
+
+                  .el-slider__runway {
+                    height: 8px;
+                    background: linear-gradient(to right,
+                        rgba(75, 143, 245, 0.2),
+                        rgba(75, 143, 245, 0.4),
+                        rgba(75, 143, 245, 0.6),
+                        rgba(75, 143, 245, 0.8),
+                        rgba(75, 143, 245, 1)) !important;
+
+                    .el-slider__button {
+                      width: 38px;
+                      height: 18px;
+                      border-radius: 12px 12px 12px 12px;
+                      line-height: 14px;
+                      transition: none;
+                      animation: none;
+                      color: #4B8FF5;
+                    }
+
+                    .el-slider__button-wrapper {
+                      top: -14px;
+                      width: 44px;
+                    }
+                  }
+
+                  .el-slider__marks-stop {
+                    width: 0.5px;
+                    height: 8px;
+                  }
+                }
+
+                .textWrap {
+                  display: flex;
+                  justify-content: space-around;
+
+                  div {
+                    color: #666;
+                  }
+                }
+              }
+            }
+
+            .difficultyLevel {
+              margin: 0 16px;
+              display: flex;
+
+              .txt {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-right: 8px;
+              }
+
+              .bar {
+                width: 27px;
+                background: #f0f0f0;
+                border-radius: 8px;
+                position: relative;
+
+                i {
+                  position: absolute;
+                  bottom: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 40px;
+                  background: linear-gradient(180deg, #487FFF 0%, #D9E5FF 100%);
+                  border-radius: 8px;
+                }
+              }
+            }
+
+            .sliderShell {
+              width: 320px;
+
+              .el-slider__runway {
+                margin: 12px 0;
+              }
+            }
+
+            .sliderWrap {
+              align-items: center;
+
+              .label {
+                margin-right: 20px;
+              }
+
+              .sliderCom {
+                flex: 1;
+              }
+
+              .value {
+                width: 50px;
+                text-align: center;
+              }
+            }
+
+            .title_border {
+              font-weight: bold;
+              font-size: 14px;
+              line-height: 20px;
+              position: relative;
+
+              &.differentiate {
+                margin: 20px 0;
+
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.analysis-tabs :deep() {
+  .el-tabs__nav-wrap::after {
+    height: 1px;
+    background-color: $color-background-l;
+  }
+
+  .el-tabs__header {
+    padding: 0;
+
+    .el-tabs__nav .is-active {
+      color: $color-theme;
+      font-weight: 700;
+    }
+
+    .el-tabs__nav .el-tabs__active-bar {
+      background-color: $color-theme;
+    }
+  }
+
+  .el-tabs__item {
+    padding: 0 20px;
+    text-align: center;
+    color: $color-text;
+  }
+}
+
+.dialog-table :deep() {
+  .el-table {
+    td {
+      padding: 4px 0;
+
+      .cell {
+        line-height: 24px;
+        padding-left: 20px;
+        padding-right: 20px;
+        color: $color-text;
+        font-size: $font-size-small;
+
+        .text-ellipsis {
+          @include textEllipsis();
+        }
+
+        .number {
+          margin-right: 10px;
+        }
+      }
+    }
+
+    th {
+      padding: 4px 0;
+      background: $color-table-bg;
+      font-weight: 400;
+
+      .cell {
+        line-height: 24px;
+        padding-left: 20px;
+        padding-right: 20px;
+        color: $color-text-d;
+        font-size: $font-size-small;
+      }
+    }
+
+    tbody {
+      tr:hover {
+        background: $color-white !important;
+      }
+    }
+  }
+}
+
+.customer-no-border-table {
+  border: 1px solid #ffffff;
+
+  &::after {
+    background-color: #ffffff;
+  }
+}
+
+.analysis-table-bottom {
+  margin-bottom: 20px;
+}
+
+.dialog-table-box {
+  height: 520px;
+  overflow-y: auto;
+}
+
+.dialog-table-bottom {
+  text-align: center;
+}
+
+.knowledge-popover-content {
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 32px;
+
+}
+
+.analysis-wrapper {
+  .fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    padding: 10% 30%;
+    background-color: rgba(153, 153, 153, 0.5);
+    z-index: 9999;
+
+    .adadad {
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff;
+    }
+  }
+
+  .el-dialog__header {
+    display: none;
+  }
+}
+</style>

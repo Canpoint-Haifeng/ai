@@ -105,6 +105,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .messageList {
   position: absolute;
   right: 0px;

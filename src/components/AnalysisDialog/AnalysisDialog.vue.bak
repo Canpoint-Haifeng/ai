@@ -1,0 +1,650 @@
+<template>
+  <div
+    v-if="analysisDialog.visible"
+    class="analysis-wrapper"
+  >
+    <el-dialog
+      v-model:visible="analysisDialog.visible"
+      :title="analysisDialog.title"
+      :modal-append-to-body="false"
+      :width="analysisDialog.width"
+      :lock-scroll="false"
+      @close="closeAnalysisDialog"
+    >
+      <div class="analysis-content">
+        <div class="analysis-scroll">
+          <el-tabs
+            v-model="activeName"
+            class="analysis-tabs"
+            @tab-click="handleClick"
+          >
+            <el-tab-pane
+              label="题型统计"
+              name="first"
+            >
+              <div
+                v-if="activeName === 'first'"
+                class="analysis-tabs-pane"
+              >
+                <div class="analysis-title color-6">
+                  <span class="text">总题数：<em class="total">{{
+                    questionTypeChartList.paperTotalCount
+                  }}</em></span>
+                  <span class="text">总分：<em class="total">{{
+                    questionTypeChartList.paperTotalScore
+                  }}</em><span class="font-b">分</span></span>
+                </div>
+                <div class="dialog-table">
+                  <el-table
+                    :data="questionTypeChartList.typeChartDtoList"
+                    class="customer-no-border-table"
+                    border
+                    style="width: 100%"
+                  >
+                    <el-table-column
+                      prop="questionType"
+                      :resizable="false"
+                      label="题型"
+                    />
+                    <el-table-column
+                      prop="count"
+                      label="题目数"
+                    >
+                      <template #default="scope">
+                        <span v-if="scope.row.count">{{
+                          scope.row.count
+                        }}</span>
+                        <span v-else>-</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      prop="score"
+                      label="分值"
+                    >
+                      <template #default="scope">
+                        <span v-if="scope.row.score">{{
+                          scope.row.score
+                        }}</span>
+                        <span v-else>-</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      prop="scoreScale"
+                      label="分值占比"
+                    >
+                      <template #default="scope">
+                        <span v-if="scope.row.scoreScale">{{
+                          scope.row.scoreScale
+                        }}</span>
+                        <span v-else>-</span>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+                <div class="analysis-charts">
+                  <div class="charts-item">
+                    <pie-echarts
+                      :options="pieOptions1"
+                      :data="pieData1"
+                      :title="title1"
+                    />
+                  </div>
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane
+              label="知识点统计"
+              name="second"
+            >
+              <div
+                v-if="activeName === 'second'"
+                v-loading="loading"
+                class="analysis-tabs-pane"
+                element-loading-text="加载中..."
+              >
+                <div class="dialog-table analysis-table-top">
+                  <el-table
+                    :data="pointListTable"
+                    :span-method="arraySpanMethod"
+                    class="customer-no-border-table"
+                    row-class-name="row-nobg"
+                    border
+                    style="width: 100%"
+                  >
+                    <el-table-column
+                      :resizable="false"
+                      width="80px"
+                      label="序号"
+                    >
+                      <template #default="scope">
+                        {{ scope.$index + 1 }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="point"
+                      min-width="30"
+                      label="知识点"
+                    >
+                      <template #default="scope">
+                        <el-tooltip
+                          placement="top"
+                          effect="light"
+                          :content="scope.row.point"
+                          popper-class="custom-popover"
+                        >
+                          <span class="text-ellipsis">{{
+                            scope.row.point
+                          }}</span>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      prop="score"
+                      min-width="30"
+                      label="分值"
+                    >
+                      <template #default="scope">
+                        <span v-if="scope.row.score">{{
+                          scope.row.score
+                        }}</span>
+                        <span v-else>-</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      prop="scoreScale"
+                      min-width="30"
+                      label="占比"
+                    >
+                      <template #default="scope">
+                        <span v-if="scope.row.scoreScale">{{
+                          scope.row.scoreScale
+                        }}</span>
+                        <span v-else>-</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      min-width="50"
+                      label="小题号"
+                    >
+                      <template #default="scope">
+                        <span
+                          v-for="(item, index) in scope.row.paperQuesDtoList"
+                          :key="index"
+                        >
+                          <span class="number">{{ item.ordinal }} </span>
+                        </span>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane
+              label="难易度统计"
+              name="third"
+            >
+              <div
+                v-if="activeName === 'third'"
+                class="analysis-tabs-pane"
+              >
+                <div class="dialog-table analysis-table-top">
+                  <el-table
+                    v-loading="loading"
+                    :data="questionDifficultChartList.difficultChartDtoList"
+                    class="customer-no-border-table"
+                    element-loading-text="加载中..."
+                    border
+                    style="width: 100%"
+                  >
+                    <el-table-column
+                      :resizable="false"
+                      prop="questionDifficult"
+                      width="180"
+                      show-overflow-tooltip
+                      label="难易程度"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      prop="count"
+                      label="题量"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      prop="countScale"
+                      label="题量占比"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      width="200"
+                      label="小题号"
+                    >
+                      <template #default="scope">
+                        <span
+                          v-for="(item, index) in scope.row.paperQuesDtoList"
+                          :key="index"
+                        >
+                          <span class="number">{{ item.ordinal }}</span>
+                        </span>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane
+              label="试卷细目表"
+              name="four"
+            >
+              <div
+                v-if="activeName === 'four'"
+                class="analysis-tabs-pane"
+              >
+                <div class="dialog-table analysis-table-top">
+                  <el-table
+                    v-loading="loading"
+                    :data="paperCatalogueChartList.paperQuestionAttr"
+                    class="customer-no-border-table"
+                    element-loading-text="加载中..."
+                    border
+                    style="width: 100%"
+                  >
+                    <el-table-column
+                      :resizable="false"
+                      width="80px"
+                      label="题号"
+                    >
+                      <template #default="scope">
+                        {{ scope.$index + 1 }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      :resizable="false"
+                      prop="questionName"
+                      label="题型"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      prop="knowledgeNameStr"
+                      width="300px"
+                      show-overflow-tooltip
+                      label="知识点"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      prop="difficultyName"
+                      label="难度"
+                    />
+                    <el-table-column
+                      :resizable="false"
+                      show-overflow-tooltip
+                      label="分值"
+                    >
+                      <template #default="scope">
+                        {{ scope.row.score || '-' }}
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import PieEcharts from '@/components/ECharts/Pie'
+  import { setpieOptions } from '@/common/config/pieOptions'
+  export default {
+    components: {
+      PieEcharts,
+    },
+    props: {
+      questionTypeChartList: {
+        type: Object,
+        default() {
+          return {}
+        },
+      },
+      questionPointChartList: {
+        type: Object,
+        default() {
+          return {}
+        },
+      },
+      questionDifficultChartList: {
+        type: Object,
+        default() {
+          return {}
+        },
+      },
+      paperCatalogueChartList: {
+        type: Object,
+        default() {
+          return {}
+        },
+      },
+    },
+    data() {
+      return {
+        analysisDialog: {
+          title: '试卷分析',
+          visible: false,
+          width: '800px',
+        },
+        activeName: 'first',
+        loading: true,
+        title1: {
+          show: true,
+          text: '题型题量分布',
+        },
+        title2: {
+          show: true,
+          text: '题型分数分布',
+        },
+        title3: {
+          show: true,
+          text: '知识点模块题量分布',
+        },
+        title4: {
+          show: true,
+          text: '知识点模块分数分布',
+        },
+        pieOptions1: {},
+        pieOptions2: {},
+        pieOptions3: {},
+        pieOptions4: {},
+        pieData1: [],
+        pieData2: [],
+        pieData3: [],
+        pieData4: [],
+        pointListTable: [],
+        spanArr: [],
+      }
+    },
+    watch: {
+      questionTypeChartList() {
+        this.initPies()
+      },
+      questionPointChartList() {
+        this.initPies()
+        this.handleQuestionPoint()
+      },
+      questionDifficultChartList() {
+        this.loading = false
+      },
+      paperCatalogueChartList() {
+        this.loading = false
+      },
+    },
+    created() {
+      // this.initPies()
+    },
+    methods: {
+      initPies() {
+        const totalCount = this.questionTypeChartList.paperTotalCount
+        const totalScore = this.questionTypeChartList.paperTotalScore
+        if (this.activeName === 'first') {
+          this.pieData1 = []
+          this.pieData2 = []
+          this.pieOptions1 = setpieOptions('题型题量分布', '总题数', totalCount)
+          this.pieOptions2 = setpieOptions('题型分数分布', '总分数', totalScore)
+          this.questionTypeChartList.typeChartDtoList.forEach((item) => {
+            this.pieData1.push({
+              name: `${item.questionType}(${item.count})`,
+              value: (item.count / totalCount) * 100,
+            })
+            if (totalScore) {
+              this.pieData2.push({
+                name: `${item.questionType}(${item.score})`,
+                value: (item.score / totalScore) * 100,
+              })
+            } else {
+              this.pieData2 = []
+            }
+          })
+        } else if (this.activeName === 'second') {
+          this.pieData3 = []
+          this.pieData4 = []
+          this.pieOptions3 = setpieOptions(
+            '知识点模块题量分布',
+            '总题数',
+            totalCount,
+          )
+          this.pieOptions4 = setpieOptions(
+            '知识点模块分数分布',
+            '总分数',
+            totalScore,
+          )
+          this.questionPointChartList.pointChartDtoList.forEach((item) => {
+            this.pieData3.push({
+              name: `${item.point}(${item.count})`,
+              value: (item.count / totalCount) * 100,
+            })
+            if (totalScore) {
+              this.pieData4.push({
+                name: `${item.point}(${item.score})`,
+                value: (item.score / totalScore) * 100,
+              })
+            } else {
+              this.pieData4 = []
+            }
+          })
+        }
+      },
+      // 处理知识点数据列表
+      handleQuestionPoint() {
+        this.pointListTable = []
+        const pointList = this.questionPointChartList.pointChartDtoList
+        pointList.forEach((item) => {
+          item.paperQuesDtoList.forEach((subItem) => {
+            this.pointListTable.push({
+              ...subItem,
+              count: item.count,
+              countScale: item.countScale,
+              point: item.point,
+              score: item.score,
+              scoreScale: item.scoreScale,
+            })
+          })
+        })
+        this.loading = false
+        this.getSpanArr(this.pointListTable)
+        // console.log(this.pointListTable)
+      },
+      // 判断单元格合并条件
+      getSpanArr(data) {
+        this.spanArr = []
+        for (let i = 0; i < data.length; i++) {
+          if (i === 0) {
+            this.spanArr.push(1)
+            this.pos = 0
+          } else {
+            // 判断当前元素与上一个元素是否相同
+            if (data[i].point === data[i - 1].point) {
+              this.spanArr[this.pos] += 1
+              this.spanArr.push(0)
+            } else {
+              this.spanArr.push(1)
+              this.pos = i
+            }
+          }
+        }
+      },
+      // 合并单元格处理函数
+      arraySpanMethod({ rowIndex, columnIndex }) {
+        if (columnIndex < 5) {
+          const _row = this.spanArr[rowIndex]
+          const _col = _row > 0 ? 1 : 0
+          return {
+            rowspan: _row,
+            colspan: _col,
+          }
+        }
+      },
+      // 显示试卷分析提示框
+      showDialog() {
+        this.analysisDialog.visible = true
+      },
+      // 点击tab切换
+      handleClick(tabComp) {
+        if (tabComp.index === '1') {
+          this.$emit('paperPoint')
+        } else if (tabComp.index === '2') {
+          this.$emit('paperDifficult')
+        } else if (tabComp.index === '3') {
+          this.$emit('paperGroup')
+        }
+      },
+      // 监听关闭试卷提示框
+      closeAnalysisDialog() {
+        this.activeName = 'first'
+      },
+    },
+  }
+</script>
+
+<style lang="scss">
+  .el-tooltip__popper.custom-popover {
+    display: block;
+    min-width: 120px;
+    border: 1px solid $color-theme;
+    box-shadow: 0px 4px 6px 0px rgba(42, 77, 138, 0.1);
+    color: $color-text;
+    padding: 10px 14px;
+    line-height: 24px;
+    &.knowledge-popover {
+      width: 340px;
+    }
+    .popper__arrow {
+      border-width: 8px;
+      filter: drop-shadow(0 0 10px rgba(180, 197, 231, 1));
+    }
+    &.is-light[x-placement^='top'] .popper__arrow {
+      border-top-color: $color-theme;
+      bottom: -16px;
+    }
+    &.is-light[x-placement^='top'] .popper__arrow::after {
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #fff;
+      position: absolute;
+      left: -1px;
+      top: -8px;
+    }
+  }
+</style>
+
+<style lang="scss" scoped>
+  .analysis-table-top {
+    margin-top: 20px;
+  }
+  .analysis-content {
+    height: 600px;
+    overflow: hidden;
+    .analysis-scroll {
+      padding: 0 20px;
+      height: 100%;
+      overflow-y: auto;
+    }
+  }
+  :deep(.analysis-tabs) {
+    .el-tabs__nav-wrap::after {
+      height: 1px;
+      background-color: $color-background-l;
+    }
+    .el-tabs__header {
+      padding: 0;
+      .el-tabs__nav .is-active {
+        color: $color-theme;
+        font-weight: 700;
+      }
+      .el-tabs__nav .el-tabs__active-bar {
+        background-color: $color-theme;
+      }
+    }
+    .el-tabs__item {
+      padding: 0 20px;
+      text-align: center;
+      color: $color-text;
+    }
+  }
+  .analysis-title {
+    height: 46px;
+    line-height: 46px;
+    .text {
+      &:first-child {
+        margin-right: 60px;
+      }
+      .total {
+        font-size: 18px;
+        color: $color-theme-l;
+        padding-right: 5px;
+        font-weight: bold;
+      }
+    }
+  }
+  :deep(.dialog-table) {
+    .el-table {
+      td {
+        padding: 4px 0;
+        .cell {
+          line-height: 24px;
+          padding-left: 20px;
+          padding-right: 20px;
+          color: $color-text;
+          font-size: $font-size-small;
+          .text-ellipsis {
+            @include textEllipsis();
+          }
+          .number {
+            margin-right: 10px;
+          }
+        }
+      }
+      th {
+        padding: 4px 0;
+        background: $color-table-bg;
+        font-weight: 400;
+        .cell {
+          line-height: 24px;
+          padding-left: 20px;
+          padding-right: 20px;
+          color: $color-text-d;
+          font-size: $font-size-small;
+        }
+      }
+      tbody {
+        tr:hover {
+          background: $color-white !important;
+        }
+      }
+    }
+  }
+  .analysis-charts {
+    margin: 20px 0 30px 0;
+    .charts-item {
+      height: 245px;
+      border-radius: 6px;
+      border: 1px solid $color-background-l;
+      margin-bottom: 20px;
+    }
+  }
+
+  .customer-no-border-table {
+    border: 1px solid #ffffff;
+    &::after {
+      background-color: #ffffff;
+    }
+  }
+</style>

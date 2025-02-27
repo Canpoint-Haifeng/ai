@@ -1,0 +1,111 @@
+<template>
+  <div class="paper-sort font-12">
+    <div class="paper-total color-9 fl">
+      共 <strong class="num">{{ paperCount }}</strong>份试卷
+    </div>
+    <div class="sort-list fl">
+      <span class="text color-9"><i class="icondot" />排序：</span>
+      <span
+        v-for="item in sortList"
+        :key="item.sort"
+        class="sort-item"
+        :class="currSort === item.sort ? 'active' : ''"
+        @click="selectSort(item.sort)"
+      >
+        {{ item.text }}<i class="iconfont iconsort" />
+      </span>
+    </div>
+  </div>
+</template>
+
+<script>
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  name: 'PaperSort',
+  props: {
+    paperCount: {
+      type: Number,
+      default: 0
+    }
+  }
+})
+
+    return {
+  setup() {
+    const state = reactive({
+      currSort: 1, // 排序 1-按最新更新 2-按最多浏览 3-按最多下载
+      sortList: [{
+        sort: 1,
+        text: '最新上传'
+      }
+
+    return { {
+        sort: 2,
+        text: '最多浏览'
+      }
+
+    return { {
+        sort: 3,
+        text: '最多下载'
+      }]
+    }
+  }
+})
+
+    return {
+  methods: {
+    selectSort(sort) {
+      this.currSort = sort
+      this.$emit('selectSort', sort)
+    }
+  }
+})
+}
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+  .paper-sort {
+    height: 46px;
+    line-height: 46px;
+    border-bottom: 1px solid $color-background-l;
+    margin-bottom: 20px;
+    .paper-total {
+      margin-right: 25px;
+      .num {
+        padding: 0 2px;
+        color: $color-text-d;
+        font-size: $font-size-medium;
+      }
+    }
+    .sort-list {
+      .icondot {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 4px;
+        width: 4px;
+        height: 4px;
+        background: $color-theme;
+      }
+      .sort-item {
+        margin: 0 10px;
+        cursor: pointer;
+        transition: 0.2s;
+        .iconsort {
+          display: inline-block;
+          transform: rotate(180deg);
+          color: $color-text-ll;
+          font-size: $font-size-small;
+        }
+        &.active, &:hover {
+          color: $color-theme;
+          .iconsort {
+            color: $color-theme;
+          }
+        }
+      }
+    }
+  }
+})
+</style>

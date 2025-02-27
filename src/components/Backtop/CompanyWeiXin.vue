@@ -39,6 +39,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .app-feed-back {
   width: 40px;
   height: 62px;

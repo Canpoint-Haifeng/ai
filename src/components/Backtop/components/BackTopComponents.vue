@@ -13,12 +13,13 @@
 
 <script>
   import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
-  import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+  import { defineComponent, ref, onMounted, onUnmounted }, { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated }, { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
   
   const cubic = (value) => Math.pow(value, 3)
   const easeInOutCubic = (value) => {
     return value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2
   }
+})
 
   export default defineComponent({
     name: 'BackTopComponents',
@@ -29,7 +30,7 @@
       
       // Methods from mixin
       const initWindowsEvent = windowScrollResetMixin.methods.initWindowsEvent
-      const destroyedWindowsEvent = windowScrollResetMixin.methods.destroyedWindowsEvent
+      const unmountedWindowsEvent = windowScrollResetMixin.methods.unmountedWindowsEvent
       const getPageScrollTop = windowScrollResetMixin.methods.getPageScrollTop
       
       // Component methods
@@ -69,11 +70,11 @@
         el.value = document.documentElement
         initWindowsEvent()
         renderScrollFixed()
-      })
+      }
       
       onUnmounted(() => {
-        destroyedWindowsEvent()
-      })
+        unmountedWindowsEvent()
+      }
       
       return {
         el,
@@ -83,10 +84,12 @@
         scrollToTop
       }
     }
-  })
+  }
+})
 </script>
 
 <style scoped lang="scss">
+  @use "@/assets/css/variables" as *;
   .back-top-components {
     width: 40px;
     height: 50px;
@@ -115,4 +118,5 @@
       }
     }
   }
+})
 </style>

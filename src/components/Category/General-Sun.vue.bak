@@ -1,0 +1,111 @@
+<template>
+  <div
+    v-if="gradesData.length"
+    class="user-category-content"
+  >
+    <label
+      v-if="categoryLabel"
+      :class="
+        categoryLabel && categoryLabel.length >= 4
+          ? 'category-label-4'
+          : 'category-label'
+      "
+    >{{ categoryLabel }}</label>
+    <div
+      v-if="categoryData.length"
+      class="category-list"
+    >
+      <div
+        v-for="item in categoryData"
+        :key="item.gradeId"
+        class="category-item"
+        :class="item.gradeId === currGradeId ? 'active' : ''"
+        @click="selectGrade(item)"
+      >
+        {{ item.gradeName }}
+      </div>
+    </div>
+    <p
+      v-else
+      class="text-empty"
+    >
+      暂无数据!
+    </p>
+  </div>
+</template>
+
+<script>
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  name: 'GeneralSun',
+    props: {
+      categoryLabel: {
+        type: String,
+        default: '',
+      })
+
+    return {
+      categoryData: {
+        type: Array,
+        default: () => [],
+      })
+
+    return {
+    })
+
+    return {
+    setup() {
+      const state = reactive({
+        currGradeId: 0,
+        gradesData: [
+          {
+            gradeId: 0,
+            gradeName: '全部',
+          })
+
+    return {
+          {
+            gradeId: 6,
+            gradeName: '昨天',
+          })
+
+    return {
+          {
+            gradeId: 7,
+            gradeName: '今天',
+          })
+
+    return {
+          {
+            gradeId: 8,
+            gradeName: '本周',
+          })
+
+    return {
+          {
+            gradeId: 9,
+            gradeName: '本月',
+          })
+
+    return {
+        ],
+      }
+    })
+
+    return {
+    methods: {
+      selectGrade(item) {
+        this.currGradeId = item.gradeId
+        this.$emit('selectGeneral', item.gradeId)
+      })
+
+    return {
+    })
+
+    return {
+  }
+</script>
+
+<style lang="scss" scoped></style>
+  @use "@/assets/css/variables" as *;

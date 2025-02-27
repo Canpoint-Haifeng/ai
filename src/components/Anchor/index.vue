@@ -42,6 +42,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .anchor-container {
   position: fixed;
   right: 20px;

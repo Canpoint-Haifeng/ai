@@ -13,18 +13,18 @@ import HomePageSearch from './TopSearch/HomePageSearch.vue'
 import NoresultCommon from '@/components/Noresult/Noresult-common.vue'
 
 export default {
-  install: function (app) {
-    app.component('app-top-bar', Topbar)
-    app.component('app-new-top-bar', NewTopbar)
-    app.component('app-top-search', TopSearch)
-    app.component('app-nav', Nav)
-    app.component('app-login', AppLogin)
-    app.component('app-tool-basket', ToolBasket)
-    app.component('app-backtop', Backtop)
-    app.component('app-broadside-back', appBroadsideBack)
-    app.component('app-footer', Footer)
-    app.component('noresult-common', NoresultCommon)
-    app.component('pagination', Pagination)
+  install: (app) => {
+    app.component('AppTopBar', Topbar)
+    app.component('AppNewTopBar', NewTopbar)
+    app.component('AppTopSearch', TopSearch)
+    app.component('AppNav', Nav)
+    app.component('AppLogin', AppLogin)
+    app.component('AppToolBasket', ToolBasket)
+    app.component('AppBacktop', Backtop)
+    app.component('AppBroadsideBack', appBroadsideBack)
+    app.component('AppFooter', Footer)
+    app.component('NoresultCommon', NoresultCommon)
+    app.component('Pagination', Pagination)
     app.component('VideoPlay', VideoPlay)
     app.component('HomePageSearch', HomePageSearch)
   },

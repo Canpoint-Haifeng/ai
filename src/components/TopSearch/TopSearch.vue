@@ -185,6 +185,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .top-search {
   display: flex;
   align-items: center;

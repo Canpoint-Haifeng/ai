@@ -1,5 +1,5 @@
 import { createVNode, render } from 'vue'
-import Login from './Login.vue.new'
+import Login from './Login.vue'
 
 export default {
   install(app) {

@@ -1,25 +1,31 @@
 <template>
   <div class="skeleton-container">
     <div class="skeleton-header">
-      <div class="skeleton-logo"></div>
+      <div class="skeleton-logo" />
       <div class="skeleton-nav">
-        <div class="skeleton-nav-item"></div>
-        <div class="skeleton-nav-item"></div>
-        <div class="skeleton-nav-item"></div>
+        <div class="skeleton-nav-item" />
+        <div class="skeleton-nav-item" />
+        <div class="skeleton-nav-item" />
       </div>
-      <div class="skeleton-user"></div>
+      <div class="skeleton-user" />
     </div>
     <div class="skeleton-content">
-      <div class="skeleton-banner"></div>
+      <div class="skeleton-banner" />
       <div class="skeleton-cards">
-        <div class="skeleton-card" v-for="i in 6" :key="i"></div>
+        <div
+          v-for="i in 6"
+          :key="i"
+          class="skeleton-card"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
   name: 'IndexSkeleton'
 }
 </script>

@@ -1,0 +1,186 @@
+<template>
+  <el-dialog
+    v-model:visible="visible"
+    v-dialogDrag
+    append-to-body
+    :title="title"
+    :modal-append-to-body="false"
+    :close-on-click-modal="false"
+    width="670px"
+  >
+    <div class="form-body">
+      <div class="add-recommend-info">
+        <div class="subject-question-info l">
+          学段学科:<span class="label-name">{{ currentSubjectName }}</span>
+        </div>
+        <div class="subject-question-info r">
+          试题ID：<span class="label-name">{{ formData.questionId }}</span>
+        </div>
+      </div>
+      <div class="recommend-result">
+        推题理由：<span class="tips">（内容限制30-1000字之间）</span>
+      </div>
+      <el-input
+        v-model="formData.STBReason"
+        class="form-data-comment"
+        type="textarea"
+        maxlength="1000"
+        placeholder=""
+        resize="none"
+        show-word-limit
+      />
+    </div>
+    <template #footer>
+      <div class="dialog-activity-footer">
+        <div
+          class="el-cyy-norm fix-w-button cyy-blue r-20"
+          @click="cancel"
+        >
+          取消
+        </div>
+        <div
+          class="el-cyy-norm fix-w-button cyy-theme"
+          @click="confirm"
+        >
+          确认
+        </div>
+      </div>
+    </template>
+  </el-dialog>
+</template>
+<script>
+  import { API } from '@/api/config'
+  import { mapState } from 'vuex'
+  export default {
+    props: {
+      isToRecommend: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    computed: {
+      ...mapState(['currSubject']),
+      currentSubjectName() {
+        if (this.currSubject) {
+          return this.currSubject.periodName + this.currSubject.subjectName
+        } else {
+          return ''
+        }
+      },
+    },
+    data() {
+      return {
+        visible: false,
+        title: '推荐好题',
+        formData: {
+          id: '',
+          STBReason: '',
+          questionId: '',
+        },
+      }
+    },
+    methods: {
+      show(questionItem) {
+        this.formData = {
+          id: questionItem.id,
+          questionId: questionItem.questionInfo.questionId,
+          stage: this.currSubject.periodCode,
+          subject: this.currSubject.subjectCode,
+          STBReason: '',
+        }
+        this.visible = true
+      },
+      cancel() {
+        this.visible = false
+      },
+      confirm() {
+        //  判断 数量
+        if (this.formData.STBReason.length >= 30) {
+          this.addActivityTalkHttp()
+        } else {
+          this.showMessage('内容限制30-1000字之间')
+        }
+      },
+      addActivityTalkHttp() {
+        let params = {
+          ...this.formData,
+        }
+        this.apiPost(
+          API.PLAZA_GREATQUESTIONRECOMMEND_ADDGREATQUESTION,
+          params,
+          { showLoading: true },
+        ).then((res) => {
+          if (this.checkoutRes(res)) {
+            if (res.data && res.data.length) {
+              this.showCpReceiveReward(res.data)
+            }
+            this.visible = false
+            this.showMessage('推荐成功', 'success')
+            this.$emit('updateSuccess', this.formData)
+            if (this.isToRecommend) {
+              this.openSystemPathLink('paper/plaza/goodQuestion?tabs=2')
+            }
+          } else {
+            this.showMessage(res.msg)
+          }
+        })
+      },
+    },
+  }
+</script>
+<style lang="scss" scoped>
+  .form-body {
+    padding: 20px 20px 0px 20px;
+    :deep(.el-textarea .el-input__count) {
+      background-color: #f5f5f5;
+    }
+  }
+  .form-data-comment :deep() {
+    .el-textarea__inner {
+      height: 265px;
+      background-color: #f5f5f5;
+      border-color: #f5f5f5;
+    }
+  }
+  .dialog-activity-footer {
+    text-align: center;
+  }
+
+  .add-recommend-info {
+    display: flex;
+    .subject-question-info {
+      font-size: 16px;
+      font-weight: 400;
+      color: #666666;
+      line-height: 24px;
+
+      &.l {
+        width: 240px;
+      }
+      &.r {
+        width: 370px;
+      }
+      .label-name {
+        @include textEllipsis();
+        display: inline-block;
+        line-height: 24px;
+        font-size: 16px;
+        font-weight: 400;
+        color: #999999;
+        vertical-align: bottom;
+      }
+    }
+  }
+
+  .recommend-result {
+    padding: 20px 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #666666;
+    line-height: 24px;
+    .tips {
+      font-size: 12px;
+      color: #999999;
+    }
+  }
+</style>

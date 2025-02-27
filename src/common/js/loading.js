@@ -1,0 +1,22 @@
+// import { Toast } from 'vant'
+import { Loading } from 'element-plus'
+
+export default class userLoading {
+  static show(message, target) {
+    let _msg = message || '加载中...'
+    Loading.service({
+      target: target || 'document.body',
+      text: _msg
+    })
+  }
+  static clear() {
+    Loading.service().close()
+  }
+  static networkError() {
+    this.$message({
+      showClose: true,
+      message: '网络错误，请稍后重试',
+      type: 'error'
+    })
+  }
+}

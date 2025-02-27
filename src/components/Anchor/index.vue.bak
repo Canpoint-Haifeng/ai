@@ -1,0 +1,168 @@
+<template>
+  <div class="my-anchor">
+    <div
+      class="anchor-wrapper"
+      :style="{ top: offsetTop + 'px' }"
+    >
+      <div class="anchor-ink">
+        <div
+          class="anchor-ink-ball"
+          :style="{ top: inkTop + 'px' }"
+        />
+      </div>
+      <div class="anchor-links">
+        <el-tree
+          :data="treeData"
+          :props="defaultProps"
+          :highlight-current="true"
+          :expand-on-click-node="false"
+          default-expand-all
+          @node-click="handleNodeClick"
+        >
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <span>{{ node.label }}</span>
+            </span>
+          </template>
+        </el-tree>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'MyAnchor',
+  props: {
+    offsetTop: {
+      type: Number,
+      default: 0,
+    },
+    treeData: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  data() {
+    return {
+      inkTop: 0,
+      activeId: '',
+      scrollContainer: null,
+      observer: null,
+      defaultProps: {
+        children: 'children',
+        label: 'name',
+      },
+    }
+  },
+  methods: {
+    handleNodeClick(data) {
+      const target = document.getElementById(`t${data.id}`)
+      if (target) {
+        const top =
+          target.getBoundingClientRect().top +
+          window.pageYOffset -
+          this.offsetTop
+        window.scrollTo({
+          top,
+          behavior: 'smooth',
+        })
+      }
+    },
+    handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      let activeElement = null
+      let minDistance = Number.MAX_VALUE
+
+      const checkElements = items => {
+        items.forEach(item => {
+          const element = document.getElementById(`t${item.id}`)
+          if (element) {
+            const distance = Math.abs(
+              element.getBoundingClientRect().top - this.offsetTop,
+            )
+            if (distance < minDistance) {
+              minDistance = distance
+              activeElement = element
+              this.activeId = item.id
+            }
+          }
+          if (item.children && item.children.length) {
+            checkElements(item.children)
+          }
+        })
+      }
+
+      checkElements(this.treeData)
+
+      if (activeElement) {
+        const allElements = document.querySelectorAll('[id^="t"]')
+        const index = Array.from(allElements).indexOf(activeElement)
+        this.inkTop = index * 28 + 8
+      }
+    },
+    observeLinks() {
+      this.observer = new MutationObserver(() => {
+        this.init()
+      })
+
+      this.observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      })
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.my-anchor {
+  position: relative;
+  padding-left: 2px;
+
+  .anchor-wrapper {
+    position: sticky;
+    background-color: #fff;
+  }
+
+  .anchor-ink {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    border-left: 2px solid #e8e8e8;
+  }
+
+  .anchor-ink-ball {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border: 2px solid #1890ff;
+    border-radius: 50%;
+    transition: top 0.3s ease-in-out;
+    transform: translateX(-50%);
+  }
+
+  .anchor-links {
+    padding-left: 16px;
+
+    :deep(.el-tree) {
+      background: transparent;
+
+      .el-tree-node__content {
+        height: 32px;
+
+        &:hover {
+          background-color: transparent;
+        }
+      }
+
+      .el-tree-node.is-current > .el-tree-node__content {
+        color: #1890ff;
+        background-color: transparent;
+      }
+    }
+  }
+}
+</style>

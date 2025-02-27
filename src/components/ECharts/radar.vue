@@ -1,0 +1,110 @@
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import parentChart from './ECharts'
+import color from "./config/color"
+import grid from "./config/grid"
+import radarC from "./config/radar"
+import radarSeries from "./config/radarSeries"
+import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
+  name: "app-radar-chart",
+  extends: parentChart,
+  setup() {
+    const state = reactive({}
+  }
+})
+
+    return {
+  methods: {
+    /**
+     * 父类 mounted方法 和 watch data 都自动进行调用
+     * @param chart echart实例
+     */
+    createChart(chart) {
+      if (!chart) return
+      // 判断数据
+      this.emptyData = false
+      if (!this.data || !this.data.length) {
+        return (this.emptyData = true)
+      }
+      const defaultOptions = {
+        grid: grid,
+        tooltip: {
+          show: true,
+          confine: true
+        }
+
+    return {
+        color: color
+      }
+      // 克隆
+      let options = JSON.parse(JSON.stringify(defaultOptions))
+
+      // 设置x轴
+      this.setRadar(options)
+      // 设置数据
+      this.setSeries(options)
+
+      // 绘制chart (调用父类的render函数)
+      this.render(options)
+    }
+
+    return {
+    setRadar(options) {
+      const radar = JSON.parse(JSON.stringify(radarC))
+      radar.indicator = this.getIndicators()
+      options.radar = radar
+    }
+
+    return {
+    getIndicators() {
+      let data = []
+      if (Array.isArray(this.data) && this.data.length) {
+        data = this.data[0].data.map(d => {
+          let newParamsName = ""
+          if(d.name){
+            let paramsNameNumber = d.name.length
+            let provideNumber = 6
+            let rowNumber = Math.ceil(paramsNameNumber / provideNumber)
+            if (paramsNameNumber > provideNumber) {
+              for (let p = 0 p < rowNumber p++) {
+                let tempStr = ""
+                let start = p * provideNumber
+                let end = start + provideNumber
+                if (p === rowNumber - 1) {
+                  tempStr = d.name.substring(start, paramsNameNumber)
+                } else {
+                  tempStr = d.name.substring(start, end) + "\n"
+                }
+                newParamsName += tempStr
+              }
+            } else {
+              newParamsName = d.name
+            }
+          }else {
+            newParamsName = d.name
+          }
+          const state = reactive({ name: newParamsName,max: 1,min: 0}
+        }
+      }
+      return data
+    }
+
+    return {
+    setSeries(options) {
+      if (Array.isArray(this.data)) {
+        const s = JSON.parse(JSON.stringify(radarSeries))
+        s.data = this.data.map(d => {
+          const state = reactive({
+            name: d.name,
+            value: d.data.map(v => v.value)
+          }
+        }
+        options.series = [s]
+      }
+    }
+  }
+})
+}
+</script>

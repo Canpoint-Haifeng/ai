@@ -26,13 +26,19 @@
 <script>
   import { isLogin } from '@/common/js/util'
   
-  export default {
+  import { defineComponent, ref, reactive, computed, onMounted, watch } from "vue"
+
+export default defineComponent({
     props: {
       list: {
         type: Array,
         default: () => []
-      },
-    },
+      })
+
+    return {
+    })
+
+    return {
     emits: ['show-login'],
     setup(props, { emit }) {
       const onOpenBlock = (item) => {
@@ -47,7 +53,7 @@
         // }
       }
       
-      return {
+      const state = reactive({
         onOpenBlock
       }
     }

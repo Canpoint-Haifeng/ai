@@ -136,6 +136,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .analysis-dialog {
   :deep(.el-dialog__body) {
     padding: 0;

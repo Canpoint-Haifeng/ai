@@ -338,6 +338,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+  @use "@/assets/css/variables" as *;
 .weui_msg {
   padding-top: 0;
   width: 198px;
@@ -349,6 +350,7 @@ export default defineComponent({
 </style>
 
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 .login-dialog :deep(.el-dialog) {
   width: 824px;
   padding: 0px;
@@ -378,7 +380,10 @@ export default defineComponent({
     font-size: 18px;
   }
   .login-tabs {
-    @include flex();
+    display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
     justify-content: space-around;
     margin: 26px 0 38px 0;
     .tabs-text {
@@ -521,7 +526,10 @@ export default defineComponent({
     }
     .form-item-service {
       margin-bottom: 50px;
-      @include flex();
+      display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
       justify-content: space-between;
       .text {
         cursor: pointer;
