@@ -1,36 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
 
-// Import route modules
-import componentRoutes from '@/views/components/routes'
-import searchResultRoutes from '@/views/search-result/routes'
-import smartPaperRoutes from '@/views/smartPaper/routes'
-import resourceUploadRoutes from '@/views/resource-upload/routes'
+// Import all route modules from centralized location
+import routes from './modules'
 
 // Import AppStb component
 const AppStb = () => import('@/views/components/appstb.vue')
 
-const routes = [
-  {
-    path: '/',
-    component: AppStb,
-    redirect: { name: 'paperIndex' },
-    children: [
-      ...componentRoutes,
-      ...searchResultRoutes,
-      ...smartPaperRoutes,
-      ...resourceUploadRoutes
-    ]
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: { name: 'paperIndex' }
-  }
-]
-
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes: [
+    {
+      path: '/',
+      component: AppStb,
+      redirect: { name: 'paperIndex' },
+      children: routes
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: { name: 'paperIndex' }
+    }
+  ]
 })
 
 router.beforeEach((to, from, next) => {
