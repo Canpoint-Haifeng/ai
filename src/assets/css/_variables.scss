@@ -1,39 +1,48 @@
-// 颜色定义规范
-$color-theme: #487FFF;
-$color-theme-l: #FF6E5D;
-$color-theme-l-hover: #FF4B36;
-$color-theme-ll: #F4986A;
-$color-theme-d: #3E73CD;
-$color-theme-nav-d: #4783EA;
-$color-background-d: #202A3B;
-$color-background-l: #ECEFF3;
-$color-menu-l-hover: #F3F7FB;
-$color-button-d: #487FFF;
-$color-button-d-hover: #3E73CD;
-$color-button-l: #66D7DD;
-$color-button-l-hover: #36c3ca;
-$color-button-l-disabled: #BBF2F5;
-$color-border: #E2E2E2;
-$color-list-title: #f5f5f5;
-$color-table-border: #e4ecfd;
-$color-list-content: #fafbfd;
-$color-table-bg: #F6F6F6;
-$color-table-hover: #f3f6fd;
-$color-dialog: #f8fafd;
-$color-disabled: #c2dbff;
+// Colors
+$primary-color: #487FFF;
+$secondary-color: #409EFF;
+$success-color: #67C23A;
+$warning-color: #E6A23C;
+$danger-color: #F56C6C;
+$info-color: #909399;
+$text-color: #303133;
+$text-color-secondary: #606266;
+$text-color-placeholder: #C0C4CC;
+$border-color: #DCDFE6;
+$border-color-light: #E4E7ED;
+$background-color: #F5F7FA;
 
-//字体颜色定义规范
-$color-text-d: #333;
-$color-text: #666;
-$color-text-l: #999;
-$color-text-ll: #BABABA;
-$color-white: #fff;
-
-//字体大小定义规范
-$font-size-small-s: 10px;
+// Font sizes
+$font-size-base: 14px;
 $font-size-small: 12px;
-$font-size-medium: 14px;
-$font-size-medium-x: 16px;
-$font-size-large: 18px;
-$font-size-large-x: 20px;
-$font-size-large-4x: 28px;
+$font-size-large: 16px;
+$font-size-extra-large: 18px;
+
+// Spacing
+$spacing-mini: 4px;
+$spacing-small: 8px;
+$spacing-base: 16px;
+$spacing-large: 24px;
+$spacing-extra-large: 32px;
+
+// Border radius
+$border-radius-small: 2px;
+$border-radius-base: 4px;
+$border-radius-large: 8px;
+
+// Breakpoints
+$screen-xs: 480px;
+$screen-sm: 768px;
+$screen-md: 992px;
+$screen-lg: 1200px;
+$screen-xl: 1600px;
+
+// Z-index
+$z-index-normal: 1;
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;

@@ -19,7 +19,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .layered-level {
   .level-name {
     font-size: 14px;

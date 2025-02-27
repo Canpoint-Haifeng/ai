@@ -1,25 +1,12 @@
-import { h, Suspense, defineAsyncComponent } from 'vue'
+import { h, Suspense } from 'vue'
 
-/**
- * Wraps a component with Suspense and provides a loading component
- * @param {Function} componentImport - Dynamic import function for the component
- * @param {Object} loadingComponent - Component to show while loading
- * @returns {Function} - Wrapped component function
- */
-export function withSuspense(componentImport, LoadingComponent) {
-  const AsyncComponent = defineAsyncComponent({
-    loader: componentImport,
-    loadingComponent: LoadingComponent,
-    delay: 200,
-    timeout: 10000
-  })
-
-  return (props) => ({
+export function wrapInSuspense(component) {
+  return {
     setup() {
       return () => h(Suspense, null, {
-        default: () => h(AsyncComponent, props),
-        fallback: () => h(LoadingComponent)
+        default: h(component),
+        fallback: h('div', { class: 'loading' }, 'Loading...')
       })
     }
-  })
+  }
 }

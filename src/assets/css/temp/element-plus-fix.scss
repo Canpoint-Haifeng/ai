@@ -1,42 +1,32 @@
 // Element Plus compatibility fixes
-@use '../variables' as *;
+// This file provides compatibility for Element Plus in Vue 3
 
-// Fix for Element Plus styles that differ from Element UI
+// Fix for deep selectors
+:deep() {
+  // This is intentionally empty, just to provide the selector
+}
+
+// Fix for element-plus theme variables
 .el-button--primary {
-  background-color: $color-theme;
-  border-color: $color-theme;
-  
-  &:hover, &:focus {
-    background-color: $color-theme-d;
-    border-color: $color-theme-d;
-  }
+  --el-button-bg-color: #487FFF;
+  --el-button-border-color: #487FFF;
+  --el-button-hover-bg-color: #5a8bff;
+  --el-button-hover-border-color: #5a8bff;
+  --el-button-active-bg-color: #3a6ce6;
+  --el-button-active-border-color: #3a6ce6;
 }
 
-// Fix for dialog styles
+// Fix for dialog z-index
 .el-dialog {
-  border-radius: 4px;
-  
-  .el-dialog__header {
-    padding: 20px;
-    border-bottom: 1px solid $color-border;
-  }
-  
-  .el-dialog__body {
-    padding: 20px;
-  }
-  
-  .el-dialog__footer {
-    padding: 10px 20px 20px;
-    text-align: right;
-  }
+  --el-dialog-z-index: 2000;
 }
 
-// Fix for form styles
-.el-form-item__label {
-  color: $color-text;
+// Fix for dropdown z-index
+.el-dropdown-menu {
+  --el-dropdown-menu-z-index: 2050;
 }
 
-// Fix for input styles
-.el-input__inner {
-  color: $color-text-d;
+// Fix for tooltip z-index
+.el-tooltip__popper {
+  --el-tooltip-z-index: 2060;
 }

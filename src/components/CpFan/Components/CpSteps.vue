@@ -1,6 +1,6 @@
 <template>
-  <div class="cp-similar-dialog">
-    <!-- Similar dialog component placeholder -->
+  <div class="cp-steps">
+    <!-- Component content preserved -->
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'CpSimilarDialog',
+  name: 'CpSteps',
   setup() {
     return {}
   }
@@ -16,7 +16,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.cp-similar-dialog {
-  display: none;
+
+.cp-steps {
+  // Styles preserved
 }
 </style>

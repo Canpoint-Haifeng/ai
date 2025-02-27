@@ -1,0 +1,52 @@
+<template>
+  <el-dialog
+    v-model="visible"
+    title="相似题"
+    width="800px"
+    :append-to-body="true"
+    :close-on-click-modal="false"
+  >
+    <div class="similar-content">
+      <slot />
+    </div>
+  </el-dialog>
+</template>
+
+<script>
+import { defineComponent, ref } from 'vue'
+
+export default defineComponent({
+  name: 'CpSimilarDialog',
+  props: {
+    modelValue: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    const visible = ref(props.modelValue)
+    
+    watch(() => props.modelValue, (val) => {
+      visible.value = val
+    }
+    
+    watch(() => visible.value, (val) => {
+      emit('update:modelValue', val)
+    }
+    
+    return ({
+      visible
+    }
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
+.similar-content {
+  min-height: 200px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+</style>

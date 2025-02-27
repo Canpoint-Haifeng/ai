@@ -19,7 +19,7 @@ export default defineComponent({
       emit('invite')
     }
     
-    return {
+    return ({
       onInvite
     }
   }

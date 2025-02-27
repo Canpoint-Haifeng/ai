@@ -1,296 +1,147 @@
-@use './normalize.css';
-@use './variables' as *;
+/* Base styles */
+$color-theme: #487FFF;
+$color-theme-hover: #3A66CC;
+$color-theme-active: #2D4D99;
+$color-theme-disabled: #A6C2FF;
+$color-theme-bg: #EBF2FF;
+$color-theme-border: #D6E4FF;
 
-fieldset {
+$color-success: #67C23A;
+$color-success-hover: #529A2E;
+$color-success-active: #3E7423;
+$color-success-disabled: #B3E19D;
+$color-success-bg: #F0F9EB;
+$color-success-border: #E1F3D8;
+
+$color-warning: #E6A23C;
+$color-warning-hover: #B88230;
+$color-warning-active: #8A6225;
+$color-warning-disabled: #F3D19E;
+$color-warning-bg: #FDF6EC;
+$color-warning-border: #FAECD8;
+
+$color-danger: #F56C6C;
+$color-danger-hover: #C45656;
+$color-danger-active: #934141;
+$color-danger-disabled: #FAB6B6;
+$color-danger-bg: #FEF0F0;
+$color-danger-border: #FDE2E2;
+
+$color-info: #909399;
+$color-info-hover: #73767A;
+$color-info-active: #575A5C;
+$color-info-disabled: #C8C9CC;
+$color-info-bg: #F4F4F5;
+$color-info-border: #E9E9EB;
+
+$color-text-primary: #303133;
+$color-text-regular: #606266;
+$color-text-secondary: #909399;
+$color-text-placeholder: #C0C4CC;
+
+$border-color-base: #DCDFE6;
+$border-color-light: #E4E7ED;
+$border-color-lighter: #EBEEF5;
+$border-color-extra-light: #F2F6FC;
+
+$background-color-base: #F5F7FA;
+
+/* Reset styles */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  outline: 0;
-  font-weight: normal;
-  font-style: normal;
   font-size: 100%;
-  font-family: inherit;
+  font: inherit;
   vertical-align: baseline;
-  user-select: text;
 }
-a {
-  text-decoration: none;
-  color: $color-text;
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
 }
-em,
-i {
-  font-style: normal;
+
+body {
+  line-height: 1;
 }
-p,
-blockquote {
-  margin: 0;
-  padding: 0;
-}
-ol,
-ul,
-li {
-  margin: 0;
-  padding: 0;
+
+ol, ul {
   list-style: none;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
+
+blockquote, q {
+  quotes: none;
 }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-input,
-textarea {
-  margin: 0;
-  padding: 0;
-}
-input {
-  border: 0;
-  background: none;
-}
-textarea {
-  resize: none;
-}
-input::placeholder,
-textarea::placeholder {
-  color: $color-text-ll !important;
-}
-input,
-textarea,
-select,
-button {
-  font-family: '\5FAE\8F6F\96C5\9ED1', '\5b8b\4f53', Tahoma, Arial,
-    'Helvetica Neue', 'Hiragino Sans GB', sans-self;
-}
-:focus {
-  outline: 0;
-}
-html {
+
+/* Common styles */
+html, body {
   height: 100%;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  color: #333;
 }
-html,
-body {
-  line-height: 1;
-  // -webkit-tap-highlight-color: transparent;
-  color: $color-text-d;
-  font-size: $font-size-medium;
-  font-family: Tahoma, Arial, 'Helvetica Neue', 'Hiragino Sans GB',
-    '\5FAE\8F6F\96C5\9ED1', '\5b8b\4f53', sans-self;
-  * {
-    box-sizing: border-box;
-  }
-}
-// 颜色
-.color-3 {
-  color: $color-text-d;
-}
-.color-6 {
-  color: $color-text;
-}
-.color-9 {
-  color: $color-text-l;
-}
-.color-f {
-  color: $color-white;
-}
-.color-theme {
+
+a {
+  text-decoration: none;
   color: $color-theme;
 }
-// 字体
-.font-b {
-  font-weight: 700;
+
+.clearfix:after {
+  content: "";
+  display: block;
+  clear: both;
 }
-.font-12 {
-  font-size: $font-size-small;
-}
-.font-14 {
-  font-size: $font-size-medium;
-}
-.font-16 {
-  font-size: $font-size-medium-x;
-}
-.font-18 {
-  font-size: $font-size-large;
-}
-.font-20 {
-  font-size: $font-size-large-x;
-}
-.tc {
-  text-align: center;
-}
-.f-usn {
-  user-select: none;
-}
-// 布局
+
 .fl {
   float: left;
 }
+
 .fr {
   float: right;
 }
-.db {
-  display: inline-block;
+
+.text-left {
+  text-align: left;
 }
-.clearfix:after,
-.clearfix:before {
-  clear: both;
-  overflow: hidden;
-  content: '';
-  display: table;
-  zoom: 1;
-  visibility: hidden;
-}
-.bg {
-  background: $color-background-l;
-}
-.content-container {
-  width: 1200px;
-  min-width: 1200px;
-  margin: 0 auto;
-}
-.pd10 {
-  padding-bottom: 10px;
-}
-.pd20 {
-  padding-bottom: 20px;
-}
-.btn {
-  cursor: pointer;
-  padding: 8px 0px;
-  min-width: 100px;
-  background: $color-button-d;
-  border-radius: 4px;
-  border: 1px solid $color-button-d;
-  font-size: $font-size-small;
-  color: #fff;
+
+.text-center {
   text-align: center;
-  line-height: 1;
-  display: inline-block;
-  &.el-button--default {
-    background: $color-button-d;
-    color: #fff;
-  }
-}
-.btn:hover {
-  background: $color-button-d-hover;
-  border: 1px solid $color-button-d-hover;
-  color: #fff;
-}
-.btn.btn-shadow {
-  // box-shadow: 0px 2px 6px 0px rgba(42,77,138,0.18);
-}
-.btn.btn-light {
-  background: $color-button-l;
-  border: 1px solid $color-button-l;
-}
-.btn.btn-light:hover {
-  background: $color-button-l-hover;
-  border: 1px solid $color-button-l-hover;
-}
-.btn.btn-gray {
-  background: #fff;
-  border: 1px solid $color-text-ll;
-  color: $color-text;
-}
-.btn.btn-gray:hover {
-  background: $color-table-bg;
-  border: 1px solid $color-text-ll;
-}
-.btn.light-gray-btn {
-  background: rgba(0,0,0,0);
-  border: 1px solid $color-text-ll;
-  color: $color-text;
-}
-.btn.light-gray-btn:hover {
-  border: 1px solid $color-theme;
-  color: $color-theme;
-}
-.btn.line-theme-btn {
-  color: $color-theme;
-  background-color: white;
-  border: 1px solid $color-theme;
-  &:hover {
-    color: $color-theme-d;
-    border: 1px solid $color-theme-d;
-  }
 }
 
-.btn.btn-border {
-  background: none;
-  color: $color-theme;
-}
-.btn-disabled {
-  border: 1px solid $color-disabled;
-  background: $color-disabled;
-  color: $color-white;
-  cursor: not-allowed;
-  &.el-button--default {
-    background: $color-disabled;
-    color: #fff;
-  }
-  &:focus {
-    border: none;
-  }
-}
-// 优化滚动条
-::-webkit-scrollbar-track-piece {
-  background-color: #fff;
-}
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-thumb {
-  background-color: #c2c2c2;
-  background-clip: padding-box;
-  min-height: 28px;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: #a0a0a0;
+.text-right {
+  text-align: right;
 }
 
-.btn.btn-white.is-disabled:hover {
-  color: $color-text-d;
-  font-size: $font-size-medium;
-  background: $color-white;
-}
-.btn.btn-white:hover {
-  border: 1px solid $color-theme;
-  color: $color-theme;
-}
-.btn.btn-white {
-  color: #333;
-  border: 1px solid #e2e2e2;
-  background-color: white;
+.hidden {
+  display: none;
 }
 
-//   试题渲染的 图片饱和度 设置为 0.5 filter: saturate(0.5);
-//   3.5 产品需求 ，图书的印刷图片 颜色太刺眼
-.question-container {
-  .question-content {
-    .ques-type {
-      img {
-        filter: saturate(0.5);
-      }
-    }
-  }
-}
-
-.text-theme-btn {
-  color: $color-button-d;
-  cursor: pointer;
-  user-select: none;
-  &:hover {
-    color: $color-button-d-hover;
-  }
-}
-.el-button--primary {
-  background-color: #487FFF;
+.visible {
+  display: block;
 }

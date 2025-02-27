@@ -1,38 +1,26 @@
 import { createStore } from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
+import mutations from './mutations'
+import actions from './actions'
+import getters from './getters'
 
+// Create persisted state plugin
+const pluginPersist = createPersistedState({
+  storage: window.localStorage,
+  key: 'lesson-planning-vue-store'
+})
+
+// Create store
 export default createStore({
   state: {
-    user: null,
-    token: localStorage.getItem('token') || '',
-    isAuthenticated: !!localStorage.getItem('token')
+    fullpath: '',
+    currSubject: {},
+    userInfo: {},
+    count: 0,
+    paperGroupCatalogue: []
   },
-  mutations: {
-    SET_TOKEN(state, token) {
-      state.token = token
-      state.isAuthenticated = !!token
-      if (token) {
-        localStorage.setItem('token', token)
-      } else {
-        localStorage.removeItem('token')
-      }
-    },
-    SET_USER(state, user) {
-      state.user = user
-    }
-  },
-  actions: {
-    login({ commit }, { token, user }) {
-      commit('SET_TOKEN', token)
-      commit('SET_USER', user)
-    },
-    logout({ commit }) {
-      commit('SET_TOKEN', '')
-      commit('SET_USER', null)
-    }
-  },
-  getters: {
-    isAuthenticated: state => state.isAuthenticated,
-    user: state => state.user,
-    token: state => state.token
-  }
+  mutations,
+  actions,
+  getters,
+  plugins: [pluginPersist]
 })

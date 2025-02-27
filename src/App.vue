@@ -1,24 +1,15 @@
 <template>
   <div id="app">
-    <h1>Vue 3 + Vite Migration Test</h1>
-    <p>If you see this, the app is working!</p>
-    <button @click="count++">Count: {{ count }}</button>
-    <p>Testing Vue 3 reactivity</p>
+    <h1>备课助手</h1>
+    <p>Vue 3 + Vite Migration Test</p>
   </div>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'App',
-  setup() {
-    const count = ref(0)
-    
-    return {
-      count
-    }
-  }
+  name: 'App'
 })
 </script>
 

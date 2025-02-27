@@ -1,139 +1,71 @@
-// Import variables first
-@use './variables' as *;
+@import './_variables.scss';
+@import './base.scss';
+@import './element-rewrite.scss';
+@import './cp-tiku-ui.scss';
+@import './temp/deep-fix.scss';
+@import './temp/element-plus-fix.scss';
 
-// Import other styles
-@use './base';
-@use './element-rewrite';
-@use './cp-tiku-ui';
-@use './element-variables';
-
-// Import mixins
-@use './temp/mixins';
-@use './temp/deep-fix';
-@use './temp/element-plus-fix';
-
-// 遮罩层透明度修改
-.v-modal {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.1);
+// Global styles
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-size: $font-size-base;
+  color: $text-color;
+  background-color: $background-color;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-// 个人中心 温馨提示
-.wen-tip {
-  font-size: $font-size-small;
-  color: $color-text-l;
+a {
+  color: $primary-color;
+  text-decoration: none;
+  
+  &:hover, &:focus {
+    color: lighten($primary-color, 10%);
+  }
+}
+
+// Common utility classes
+.text-center {
   text-align: center;
-  margin-top: 30px;
 }
 
-// 表格
-.total-box {
-  margin: 20px 0 20px 0;
-  color: $color-text-l;
-  font-size: $font-size-small;
-  .text {
-    color: $color-text-d;
-  }
+.text-right {
+  text-align: right;
 }
-.page-table {
-  .el-table {
-    &:before {
-      height: 0;
-    }
-    tr {
-      border-bottom: 1px solid $color-table-border;
-      &.gray-row {
-        .cell {
-          color: #c0c4cc;
-          .status-text {
-            color: #c0c4cc;
-          }
-        }
-      }
-    }
-    td {
-      padding: 8px 0;
-      &:first-child {
-        padding-left: 30px;
-      }
-      .cell {
-        line-height: 24px;
-        color: $color-text-d;
-        font-size: $font-size-small;
-        .dot {
-          display: inline-block;
-          vertical-align: 2px;
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          margin-right: 4px;
-        }
-        .green {
-          .dot {
-            background: #53e160;
-          }
-        }
-        .red {
-          .dot {
-            background: #f77f5b;
-          }
-        }
-        .gray {
-          color: $color-text-l;
-          .dot {
-            background: $color-text-l;
-          }
-        }
-        .black {
-          .dot {
-            background: $color-text-d;
-          }
-        }
-        .operate-btn {
-          cursor: pointer;
-          color: $color-theme;
-          &:hover {
-            color: $color-theme-d;
-            text-decoration: underline;
-          }
-        }
-        .line {
-          padding: 0 20px;
-          color: #d5e2fd;
-        }
-        .tooltip-text {
-          display: inline-block;
-          width: 90%;
-          line-height: 14px;
-          cursor: pointer;
-        }
-      }
-    }
-    thead {
-      line-height: 40px;
-      color: $color-text;
-      th {
-        padding: 0px 0;
-        background: #f6f6f6;
-        &:first-child {
-          padding-left: 30px;
-        }
-        .cell {
-          font-size: $font-size-small;
-        }
-      }
-    }
-    tbody {
-      tr:nth-child(2n) {
-        background: $color-list-content;
-      }
-      tr:hover {
-        background: $color-table-hover;
-        box-shadow: 0px 0px 10px 0px rgba(182, 203, 253, 0.3);
-      }
-    }
-    .el-table__empty-text {
-      line-height: 0;
-    }
-  }
+
+.text-left {
+  text-align: left;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
 }

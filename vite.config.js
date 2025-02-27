@@ -1,40 +1,40 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import path from 'path'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          // Treat all tags with a dash as custom elements
+          isCustomElement: (tag) => tag.includes('-'),
+          // Enable Vue 2 compatible syntax
+          compatConfig: {
+            MODE: 2
+          }
+        }
+      }
+    })
+  ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, 'src'),
       'vue': 'vue/dist/vue.esm-bundler.js'
-    },
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
+    }
   },
   server: {
-    host: '0.0.0.0',
-    port: 8080,
-    strictPort: true,
-    hmr: {
-      clientPort: 443
-    }
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/assets/css/variables.scss";`
-      }
-    }
+    port: 8080
   },
   define: {
-    'process.env': {}
-  },
-  build: {
-    commonjsOptions: {
-      transformMixedEsModules: true
-    },
-    chunkSizeWarningLimit: 1500,
-    assetsDir: 'assets',
-    outDir: 'dist'
+    'process.env': {
+      ...process.env,
+      VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version),
+      VITE_APP_TITLE: JSON.stringify('备课助手'),
+      VUE_APP_PAPER_GENERATOR: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR),
+      VUE_APP_PAPER_GENERATOR_UPLOAD: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR_UPLOAD),
+      VUE_APP_PAPER_GENERATOR_DOWNLOAD: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR_DOWNLOAD),
+      VUE_APP_PAPER_GENERATOR_PREVIEW: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR_PREVIEW)
+    }
   }
 })

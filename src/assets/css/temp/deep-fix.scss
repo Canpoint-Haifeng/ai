@@ -1,4 +1,10 @@
 // Fix for Vue 3 deep selector syntax
-// This file provides compatibility for the deprecated :deep(selector
+// This file provides compatibility for the deprecated ::v-deep selector
 
-// Use :deep() instead of :deep(or :deep( in Vue 3
+// In Vue 3, use :deep() instead of ::v-deep
+// Example: :deep(.el-input) { ... }
+
+// Global fix for v-deep usage in components
+[class] :deep([class]) {
+  // This is intentionally empty, just to provide the selector
+}

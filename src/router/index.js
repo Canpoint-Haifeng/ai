@@ -1,51 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { withSuspense } from './suspense-helper'
-import IndexSkeleton from '@/components/Skeleton/IndexSkeleton.vue'
-import PaperDetailSkeleton from '@/components/Skeleton/PaperDetailSkeleton.vue'
-import PaperMakerSkeleton from '@/components/Skeleton/PaperMakerSkeleton.vue'
+import store from '@/store'
 
 // Import route modules
-import componentsRoutes from '@/views/components/routes'
-import resourceUploadRoutes from '@/views/resource-upload/routes'
+import componentRoutes from '@/views/components/routes'
 import searchResultRoutes from '@/views/search-result/routes'
 import smartPaperRoutes from '@/views/smartPaper/routes'
+import resourceUploadRoutes from '@/views/resource-upload/routes'
+
+// Import AppStb component
+const AppStb = () => import('@/views/components/appstb.vue')
 
 const routes = [
   {
     path: '/',
-    redirect: '/paper/index'
+    component: AppStb,
+    redirect: { name: 'paperIndex' },
+    children: [
+      ...componentRoutes,
+      ...searchResultRoutes,
+      ...smartPaperRoutes,
+      ...resourceUploadRoutes
+    ]
   },
   {
-    path: '/paper/index',
-    name: 'paperIndex',
-    component: withSuspense(() => import('@/views/paper/index.vue'), IndexSkeleton),
-    meta: {
-      title: '首页',
-      keepAlive: true
-    }
-  },
-  {
-    path: '/paper/detail',
-    name: 'paperDetail',
-    component: withSuspense(() => import('@/views/paper/detail.vue'), PaperDetailSkeleton),
-    meta: {
-      title: '试卷详情',
-      keepAlive: true
-    }
-  },
-  {
-    path: '/paper/maker',
-    name: 'paperMaker',
-    component: withSuspense(() => import('@/views/paper/maker.vue'), PaperMakerSkeleton),
-    meta: {
-      title: '组卷',
-      keepAlive: true
-    }
-  },
-  ...componentsRoutes,
-  ...resourceUploadRoutes,
-  ...searchResultRoutes,
-  ...smartPaperRoutes
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'paperIndex' }
+  }
 ]
 
 const router = createRouter({
@@ -54,9 +34,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
+  // Update fullpath in store
+  store.dispatch('setFullpath', to.name)
   next()
 })
 

@@ -1,37 +1,10 @@
-// CpFan components
 import CpFileDownloads from './CpFileDownloads.vue'
 import CpPageFilter from './Components/CpPageFilter.vue'
-import CpSubjectSelect from './Components/CpSubjectSelect.vue'
 import LayeredLevel from './Components/LayeredLevel.vue'
-import TopPaginationComp from './Components/TopPagination.vue'
-import CpNumberInput from './Components/CpNumberInput.vue'
-import CpSimilarDialogComp from './Components/CpSimilarDialog.vue'
 
-// Export component names for external use
-export const LayeredLevelName = LayeredLevel.name
-
-// Export components for direct use
+// Export components
 export {
   CpFileDownloads,
   CpPageFilter,
-  CpSubjectSelect,
-  LayeredLevel,
-  CpNumberInput,
-  TopPaginationComp as TopPagination,
-  TopPaginationComp as TopPagintion,
-  CpSimilarDialogComp as CpSimilarDialog,
-  CpSimilarDialogComp as CpSimailarDialog
-}
-
-// Default export for Vue plugin installation
-export default {
-  install(app) {
-    app.component(LayeredLevel.name, LayeredLevel)
-    app.component(TopPaginationComp.name, TopPaginationComp)
-    app.component(CpNumberInput.name, CpNumberInput)
-    app.component(CpSimilarDialogComp.name, CpSimilarDialogComp)
-    app.component(CpFileDownloads.name, CpFileDownloads)
-    app.component(CpPageFilter.name, CpPageFilter)
-    app.component(CpSubjectSelect.name, CpSubjectSelect)
-  }
+  LayeredLevel
 }

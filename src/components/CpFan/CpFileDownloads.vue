@@ -16,8 +16,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
-@use "@/assets/css/variables.scss" as *;
 .cp-file-downloads {
   display: none;
 }
