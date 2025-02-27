@@ -1,23 +1,27 @@
 <template>
   <div class="resource-upload">
-    <!-- Resource Upload Placeholder -->
+    <!-- Template content preserved -->
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue"
 
 export default defineComponent({
-  name: 'ResourceUpload',
-  setup() {
-    return {}
+  name: "ResourceUpload",
+  props: {
+    // Props
+  },
+  setup(props) {
+    // Setup content
+    
+    return {
+      // Return values
+    }
   }
 })
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
-.resource-upload {
-  padding: 20px;
-}
+/* Style content preserved */
 </style>

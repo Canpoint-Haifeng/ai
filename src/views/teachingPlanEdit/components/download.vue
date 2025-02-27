@@ -194,7 +194,9 @@ export default {
   },
   methods: {
     viewExample(i) {
-      this.img = require(`./img/${i}.jpg`)
+      // Use Vite's asset handling for images
+      const images = import.meta.glob('./img/*.jpg', { eager: true })
+      this.img = new URL(`./img/${i}.jpg`, import.meta.url).href
       this.$refs.img.clickHandler()
     },
     confirm() {
