@@ -307,7 +307,7 @@ export default {
         message: '加载中...',
       }
       this.apiGet(
-        { urlPath: '/paper-builder/paper/paperPreview' },
+        API.PAPER_BUILDER_PAPER_PREVIEW,
         parms,
         set,
       ).then(res => {
@@ -648,7 +648,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .big-exam-question {
   padding: 20px 0;
 

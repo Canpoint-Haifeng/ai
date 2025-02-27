@@ -12,10 +12,10 @@ import { booksAPI } from './books'
 import { activiyAPI } from './activity'
 import { userTheme } from './userTheme'
 import { plazaAPI } from './plaza'
+import { commonAPI } from './commonApi'
 
-// export const BASE_URL = import.meta.env.VITE_BASE_URL || '//canpoint-cloud-api.canpoint.cn' // 测试服
-export const BASE_URL =
-  import.meta.env.VITE_BASE_URL || '' // 测试服
+// Export the BASE_URL
+export const BASE_URL = import.meta.env.VITE_BASE_URL || '' // 测试服
 
 // const URLINVOKE = import.meta.env.VITE_PAPER_GENERATOR + '/gateway/api/invoke' // 无需token,适用于登录、注册
 const URLINVOKE = '/lesson-app/aaaaaaaaa' // 无需token,适用于登录、注册
@@ -38,6 +38,7 @@ export const API = {
   ...activiyAPI,
   ...userTheme,
   ...plazaAPI,
+  ...commonAPI,
   // ------------------- 注册相关 ------------------------
   // 阿里云滑动验证
   ALIYUN_VERIFY: {

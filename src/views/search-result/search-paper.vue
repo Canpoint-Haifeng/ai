@@ -176,7 +176,7 @@ export default {
       stage: this.currSubject.periodCode,
       subject: this.currSubject.subjectCode,
     }
-    this.apiGet({ urlPath: '/paper-builder/config/getGrades' }, data).then(
+    this.apiGet(API.PAPER_BUILDER_GET_GRADES, data).then(
       res => {
         const list = res.data || []
         list.forEach(item => {
@@ -186,7 +186,7 @@ export default {
         this.filterOptions.splice(0, 1, { ...this.filterOptions[0], list })
       },
     )
-    this.apiGet({ urlPath: '/paper-builder/config/getYears' }).then(res => {
+    this.apiGet(API.PAPER_BUILDER_GET_YEARS).then(res => {
       const list = res.data || []
       list.forEach(item => {
         item.label = item.name
@@ -194,7 +194,7 @@ export default {
       })
       this.filterOptions.splice(1, 1, { ...this.filterOptions[1], list })
     })
-    this.apiGet({ urlPath: '/paper-builder/config/getAreas' }).then(res => {
+    this.apiGet(API.PAPER_BUILDER_GET_AREAS).then(res => {
       const list = res.data || []
       list.forEach(item => {
         item.label = item.name
@@ -230,7 +230,7 @@ export default {
       }
 
       this.newPost(
-        { urlPath: '/paper-builder/personal/paper/collect' },
+        API.PAPER_BUILDER_PAPER_COLLECT,
         parms,
       ).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
@@ -257,7 +257,7 @@ export default {
         pageSize: this.paperData.pageSize, // 当前试卷每页条数
         ...this.params,
       }
-      this.apiGet({ urlPath: '/paper-builder/paper/getAllPaper' }, parms).then(
+      this.apiGet(API.PAPER_BUILDER_GET_ALL_PAPER, parms).then(
         res => {
           if (res.code === CTS.constant.SUCCESS_CODE) {
             this.paperData.list = res.data.records
@@ -300,7 +300,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .paper-top-pagintion {
   padding: 1px 20px;
   border-bottom: 1px #eeeeee solid;

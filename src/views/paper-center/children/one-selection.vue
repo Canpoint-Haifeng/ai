@@ -232,7 +232,7 @@ export default {
       }
 
       this.newPost(
-        { urlPath: '/paper-builder/personal/paper/collect' },
+        API.PAPER_BUILDER_PAPER_COLLECT,
         parms,
       ).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
@@ -395,7 +395,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .category-container :deep() {
   padding: 20px 20px 8px 20px;
   background: $color-white;

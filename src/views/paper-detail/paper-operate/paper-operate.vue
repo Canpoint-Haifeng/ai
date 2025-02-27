@@ -381,7 +381,7 @@ export default {
         source: this.paperData.source,
       }
       this.newPost(
-        { urlPath: '/paper-builder/personal/paper/collect' },
+        API.PAPER_BUILDER_PAPER_COLLECT,
         parms,
       ).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
@@ -419,7 +419,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .paper-operate {
   // height: 280px;
   // height: 224px;

@@ -77,7 +77,7 @@
           />
           <noresult-common
             v-else
-            v-slot:empty
+            #empty
             text="很遗憾，没有找到您要的教案"
           />
         </div>
@@ -311,7 +311,7 @@ export default {
       }
       //
       this.newPost(
-        { urlPath: '/lesson-app/index/queryAllLessons' },
+        API.LESSON_APP_QUERY_ALL_LESSONS,
         parms,
       ).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
@@ -353,7 +353,7 @@ export default {
         status: 2,
       }
       this.apiPost(
-        { urlPath: '/lesson-app/myLesson/lesson/collect' },
+        API.LESSON_APP_LESSON_COLLECT,
         params,
       ).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
@@ -421,7 +421,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .paper-top-pagintion {
   padding: 0px 20px;
   border-bottom: 1px #eeeeee solid;

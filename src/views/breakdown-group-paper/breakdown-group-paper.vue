@@ -674,7 +674,7 @@ export default {
         stage: this.currSubject.periodCode,
         subject: this.currSubject.subjectCode,
       }
-      this.apiGet({ urlPath: '/paper-builder/config/getGrades' }, params).then(
+      this.apiGet(API.PAPER_BUILDER_GET_GRADES, params).then(
         res => {
           if (res.code === CTS.constant.SUCCESS_CODE) {
             this.gradeArr = res.data
@@ -1317,7 +1317,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .breakdown-group-paper {
   width: 1200px;
   min-width: 1200px;
@@ -1736,41 +1736,6 @@ export default {
   }
 }
 </style>
-<style lang="scss">
-  @use "@/assets/css/variables" as *;
-.knowledge-dia,
-.reminder-dia {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: 0 !important;
-  transform: translate(-50%, -49%);
-  max-height: calc(100% - 325px);
-  height: calc(100% - 325px);
-  max-width: calc(100% - 325px);
-  display: flex;
-  flex-direction: column;
-
-  .el-dialog__body {
-    overflow: hidden;
-    height: calc(100% - 56px);
-  }
-}
-
-.bottom-body-fixed-switch {
-  position: relative;
-  height: 80px;
-  box-sizing: border-box;
-
-  .bottom-fixed {
-    position: fixed;
-    bottom: 0;
-    z-index: 10;
-    margin-left: -30px;
-    width: 1200px;
-    background-color: #fff;
-
-    padding-top: 20px;
-  }
-}
+<style lang="scss" scoped>
+/* SCSS styles */
 </style>

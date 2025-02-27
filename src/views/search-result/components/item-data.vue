@@ -147,7 +147,7 @@ export default {
                 lessonInfoId: paperItem.id,
                 lessonType: paperItem.lessonType,
             }
-            this.apiPost({ urlPath: '/lesson-app/lessonPreparation/copyLesson' }, params).then((res) => {
+            this.apiPost(API.LESSON_APP_COPY_LESSON, params).then((res) => {
                 if (res.code == 200) {
                     this.$router.push({
                         path: '/teachingPlanEdit',
@@ -176,7 +176,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .paper-item {
     // width: 874px;
     padding: 20px 20px;

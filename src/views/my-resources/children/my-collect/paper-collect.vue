@@ -13,9 +13,10 @@
     <div class="st-item-content">
       <top-pagintion
         v-if="pageData.totalCount"
-        v-model:current-page="pageData.currPage" @update:current-page="pageData.currPage = $event"
+        v-model:current-page="pageData.currPage"
         :total="pageData.totalCount"
         :page-size="pageData.pageSize"
+        @update:current-page="pageData.currPage = $event"
         @change-page="handleCurrentChange"
       />
     </div>
@@ -53,7 +54,7 @@
         </div> -->
         <noresult-common
           v-else
-          v-slot:empty
+          #empty
           text="很遗憾，没有找到您要的试卷"
         />
       </div>
@@ -268,7 +269,7 @@ export default {
         source: val.paperSource,
       }
       this.newPost(
-        { urlPath: '/paper-builder/personal/paper/collect' },
+        API.PAPER_BUILDER_PAPER_COLLECT,
         parms,
       ).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
@@ -294,7 +295,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
+  
 .user-content-right {
   width: 934px;
   background-color: $color-white;
