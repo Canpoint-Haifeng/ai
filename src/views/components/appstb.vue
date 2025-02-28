@@ -1,107 +1,104 @@
 <template>
-  <div
-    v-if="!testView"
-    v-renderjax
-    class="appstb-wrapper"
-  >
-    <!-- <app-top-bar :isHome="isHome"></app-top-bar> -->
-    <!-- <HomePageSearch v-if="isHome"></HomePageSearch>
-    <app-top-search v-else></app-top-search> -->
-    <!-- <HomePageSearch v-if="isHome"></HomePageSearch> -->
-    <app-top-search />
-    <app-nav :distance-top="isHome ? 140 : 0" />
-    <keep-alive include="BreakdownGroupPaper,chapter,knowledge,special">
-      <router-view v-if="loadView" />
-      <div
-        v-else
-        class="blank-page"
-      />
-    </keep-alive>
-    <!-- <div v-if="loadView">
-      <keep-alive>
-        <router-view v-if="$route.meta.keepAlive"></router-view>
-      </keep-alive>
-      <router-view v-if="!$route.meta.keepAlive"></router-view>
+  <div class="appstb-wrapper">
+    <div class="header">
+      <h1>备课助手</h1>
+      <div class="nav-links">
+        <router-link to="/paper/index">
+          首页
+        </router-link>
+        <router-link to="/test">
+          测试
+        </router-link>
+      </div>
     </div>
-    <div class="blank-page" v-else></div> -->
-
-    <app-footer />
-    <!-- <app-backtop></app-backtop> -->
-    <app-broadside-back />
-  </div>
-  <div
-    v-else
-    class="app-wrapper"
-  >
-    <router-view />
+    <div class="content">
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
-  import { mapState } from 'vuex'
-  export default {
-    // 监听路由进入时
-    beforeRouteEnter(to, from, next) {
-      next((vm) => {
-        vm.currentPath = to.fullPath
-        // console.log(to)
-        if (to.path.indexOf('test') > -1) {
-          vm.testView = true
-        }
-      })
-    },
-    watch: {
-      currSubject(newValue, oldValue) {
-        if ('periodCode' in newValue) {
-          this.loadView = true
-        }
-      },
-      userInfo() {
-        if (this.userInfo.userGuid) {
-          this.initUserInfoData()
-        }
-      },
-    },
-    computed: {
-      ...mapState(['currSubject', 'fullpath', 'userInfo']),
-      isHome() {
-        if (this.fullpath == 'paperIndex') {
-          return true
-        } else {
-          return false
-        }
-      },
-    },
-    data() {
-      return {
-        loadView: true,
-        testView: false, // 临时测试组件
-      }
-    },
-    created() {
-      document.onkeydown = function (event) {
-        var e = event || window.event || arguments.callee.caller.arguments[0]
-        if (e && (e.keyCode == 123 || e.keyCode == 17 || e.keyCode == 18)) {
-          e.returnValue = false
-          return false
-        }
-      }
-      document.oncontextmenu = function (e) {
-        e.preventDefault()
-      }
-  },
-    methods: {
-      initUserInfoData() {
-        // this.$store.dispatch('manageAllVip', { vm: this })
-      },
-    },
+import { defineComponent, ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+
+export default defineComponent({
+  name: 'AppStb',
+  setup() {
+    const router = useRouter()
+    const route = useRoute()
+    const store = useStore()
+    
+    const isLoading = ref(false)
+    
+    const currentPath = computed(() => route.path)
+    
+    const isHomePage = computed(() => {
+      return route.path === '/paper/index'
+    })
+    
+    onMounted(() => {
+      console.log('AppStb component mounted')
+    })
+    
+    const navigateTo = (path) => {
+      router.push(path)
+    }
+    
+    return {
+      isLoading,
+      currentPath,
+      isHomePage,
+      navigateTo
+    }
   }
+})
 </script>
 
 <style lang="scss" scoped>
-  @use "@/assets/css/variables" as *;
-  .blank-page {
-    height: 700px;
+@use '@/assets/css/_variables' as vars;
+
+.appstb-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background-color: vars.$color-theme;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  
+  a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    &.router-link-active {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
   }
+}
 </style>

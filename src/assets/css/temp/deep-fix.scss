@@ -1,5 +1,6 @@
 // Fix for Vue 3 deep selector syntax
 // This file provides compatibility for the deprecated ::v-deep selector
+@use '../_variables' as *;
 
 // In Vue 3, use :deep() instead of ::v-deep
 // Example: :deep(.el-input) { ... }

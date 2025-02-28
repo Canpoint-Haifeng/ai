@@ -1,20 +1,28 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
+  base: '/lesson/',
   plugins: [
     vue({
       template: {
         compilerOptions: {
-          // Treat all tags with a dash as custom elements
           isCustomElement: (tag) => tag.includes('-'),
-          // Enable Vue 2 compatible syntax
           compatConfig: {
             MODE: 2
           }
         }
       }
+    }),
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
     })
   ],
   resolve: {
@@ -24,7 +32,19 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8080
+    port: 8080,
+    hmr: true,
+    fs: {
+      strict: false
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        charset: false,
+        additionalData: `@use "@/assets/css/_variables.scss" as *;`
+      }
+    }
   },
   define: {
     'process.env': {

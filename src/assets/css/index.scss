@@ -1,9 +1,11 @@
-@import './_variables.scss';
-@import './base.scss';
-@import './element-rewrite.scss';
-@import './cp-tiku-ui.scss';
-@import './temp/deep-fix.scss';
-@import './temp/element-plus-fix.scss';
+/* Base styles */
+@use 'sass:color';
+@use './_variables' as *;
+@use './base';
+@use './element-rewrite';
+@use './cp-tiku-ui';
+@use './temp/deep-fix';
+@use './temp/element-plus-fix';
 
 // Global styles
 html, body {
@@ -22,7 +24,7 @@ a {
   text-decoration: none;
   
   &:hover, &:focus {
-    color: lighten($primary-color, 10%);
+    color: color.adjust($primary-color, $lightness: 10%);
   }
 }
 
