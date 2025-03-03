@@ -1,0 +1,1048 @@
+<template>
+  <div class="top-nav-position">
+    <div class="top-nav-body">
+      <div class="top-nav">
+        <div class="content-container">
+          <el-menu
+            :default-active="activeMenu"
+            class="top-nav-content"
+            mode="horizontal"
+            placement="bottom-start"
+            :router="false"
+            @select="handleSelect"
+          >
+            <el-submenu
+              v-if="!currDisabledNav"
+              index="-1"
+              popper-class="custom-dropdown-menu-nav subject-dropdown-menu"
+              :popper-append-to-body="true"
+              :show-timeout="10"
+              class="subject-nav-item"
+            >
+              <template #title>
+                <span class="text">
+                  <span class="iconfont icon-location_fill" />
+                  <em class="dropdown-text">{{ currSubject.periodName
+                  }}{{ currSubject.subjectName }}</em>
+                </span>
+              </template>
+              <el-menu-item
+                v-for="item in listData"
+                v-show="item.children && item.children.length"
+                :key="item.dictId"
+                class="subject-menu-item"
+              >
+                <div class="title">
+                  <span class="line" />
+                  {{ item.name }}
+                </div>
+                <div class="content">
+                  <span
+                    v-for="subItem in item.children"
+                    :key="subItem.dictId"
+                    class="text"
+                    :class="{
+                      active:
+                        (item.code || item.id) == currSubject.periodCode &&
+                        (subItem.code || subItem.id) == currSubject.subjectCode,
+                      vip: allVipDict[subItem.code],
+                    }"
+                    @click="selectSubject(item, subItem)"
+                  >
+                    {{ subItem.name }}
+                  </span>
+                </div>
+              </el-menu-item>
+            </el-submenu>
+            <el-menu-item
+              v-else
+              class="subject-nav-item"
+            >
+              <template #title>
+                <span class="iconfont icon-location_fill" />
+                <span class="text">
+                  {{ currSubject.periodName }}{{ currSubject.subjectName }}
+                </span>
+              </template>
+            </el-menu-item>
+            <el-menu-item
+              index="/index"
+              class="top-nav-item"
+              @click="entryFirstMenu('/index')"
+            >
+              首页
+            </el-menu-item>
+            <el-submenu
+              index="/smartpaper/chapter"
+              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu"
+              :popper-append-to-body="true"
+              :show-timeout="10"
+              class="top-nav-item custom-dropdown-chapter"
+              @click="entryFirstMenu('/smartpaper/chapter')"
+            >
+              <template #title>
+                <span class="text">智能备课</span>
+              </template>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/smartpaper/chapter"
+                @click="entryFirstMenu('/smartpaper/chapter')"
+              >
+                按章节
+              </el-menu-item>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/smartpaper/knowledge"
+                @click="entryFirstMenu('/smartpaper/knowledge')"
+              >
+                按知识点
+              </el-menu-item>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/smartpaper/special"
+                @click="entryFirstMenu('/smartpaper/special')"
+              >
+                按专题
+              </el-menu-item>
+            </el-submenu>
+            <!-- <el-menu-item
+              index="/paper/chapterques/selection"
+              class="top-nav-item"
+              @click="entryFirstMenu('/paper/chapterques/selection')"
+              :class="isHand ? 'is-active' : ''"
+              >手动组卷</el-menu-item> -->
+            <!-- <el-menu-item
+              index="/paper/center"
+              class="top-nav-item"
+              @click="entryFirstMenu('/paper/center')"
+              :class="isPaper ? 'is-active' : ''"
+              >精品试卷</el-menu-item> -->
+            <el-submenu
+              index="/tmanualPrepare"
+              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu"
+              :popper-append-to-body="true"
+              :show-timeout="10"
+              class="top-nav-item custom-dropdown-chapter"
+              @click="entryFirstMenu('/manualPrepare')"
+            >
+              <template #title>
+                <span class="text">手动备课</span>
+              </template>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/manualPrepare"
+                @click="entryFirstMenu('/manualPrepare')"
+              >
+                按章节
+              </el-menu-item>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/manualPrepare?type=2"
+                @click="entryFirstMenu('/manualPrepare?type=2')"
+              >
+                按知识点
+              </el-menu-item>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/manualPrepare?type=3"
+                @click="entryFirstMenu('/manualPrepare?type=3')"
+              >
+                按专题
+              </el-menu-item>
+            </el-submenu>
+            <el-menu-item
+              index="/lessonPreparation"
+              class="top-nav-item"
+              @click="entryFirstMenu('/lessonPreparation')"
+            >
+              以课备课
+            </el-menu-item>
+            <el-submenu
+              index="/preparation/myTeaching"
+              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu"
+              :popper-append-to-body="true"
+              :show-timeout="10"
+              class="top-nav-item custom-dropdown-chapter"
+              @click="entryFirstMenu('/preparation/myTeaching')"
+            >
+              <template #title>
+                <span class="text">我的备课</span>
+              </template>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/preparation/myTeaching"
+                @click="entryFirstMenu('/preparation/myTeaching')"
+              >
+                我的教案
+              </el-menu-item>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/preparation/myTeaching?type=1"
+                @click="entryFirstMenu('/preparation/myTeaching?type=1')"
+              >
+                我的收藏
+              </el-menu-item>
+              <el-menu-item
+                class="dropdown-menu-item dropdown-menu-item2"
+                index="/preparation/myTeaching?type=2"
+                @click="entryFirstMenu('/preparation/myTeaching?type=2')"
+              >
+                我的投稿
+              </el-menu-item>
+            </el-submenu>
+            <div
+              class="go-paper"
+              onclick="window.location.href='https://exam.canpoint.cn/paper/index'"
+            >
+              <img
+                src="../../assets/images/index/goPaper.png"
+                alt=""
+              >
+              <span>去组卷</span>
+            </div>
+          </el-menu>
+        </div>
+
+        <app-login ref="appLogin" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import {
+  isLogin,
+  ArrayExtentFind,
+  setCookieSubjectVolume,
+  getCookieSubjectVolume,
+} from '@/common/js/util'
+import { mapState, mapActions } from 'vuex'
+import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
+export default {
+  mixins: [windowScrollResetMixin],
+  props: {
+    distanceTop: {
+      type: [Number, String],
+      default: 0,
+    },
+  },
+  data() {
+    return {
+      listData: [],
+      isIndex: false,
+      isBook: false,
+      isPaper: false,
+      isHand: false,
+      showFixed: false,
+      currentServiceId: '',
+      refreshFlag: false,
+    }
+  },
+  computed: {
+    ...mapState([
+      'currSubject',
+      'serviceInfo',
+      'currDisabledNav',
+      'schoolVerify',
+      'gnoreHighRegionList',
+      'fullpath',
+      'allVipDict',
+    ]),
+    currPath() {
+      return this.$route.path
+    },
+    activeMenu() {
+      if (this.refreshFlag) return ''
+      const route = this.$route
+      const { meta, path, fullPath } = route
+      if (meta.apiActiveMenu) {
+        return meta.apiActiveMenu
+      } else {
+        return fullPath
+      }
+    },
+    isHome() {
+      if (this.fullpath == 'paperIndex') {
+        return true
+      } else {
+        return false
+      }
+    },
+    showHighregion() {
+      let gnoreList = this.gnoreHighRegionList
+      if (this.currSubject && this.currSubject.periodCode == '13') {
+        let subjectCodeStr = this.currSubject.subjectCode + ''
+        if (gnoreList.indexOf(subjectCodeStr) == -1) {
+          return true
+        }
+      }
+      return false
+    },
+  },
+  watch: {
+    currPath(val) {
+      if (val === '/paper/books/choose') {
+        this.isBook = true
+      } else {
+        this.isBook = false
+      }
+      if (val === '/paper/detail') {
+        this.isPaper = true
+      } else {
+        this.isPaper = false
+      }
+      if (val === '/paper/chapterques/selection' || val === '/paper/knowledge/selection' || val === '/paper/special/selection') {
+        this.isHand = true
+      } else {
+        this.isHand = false
+      }
+    },
+    serviceInfo: {
+      handler(nv, ov) {
+        this.currentServiceId = nv.serviceId
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
+  created() {
+    this.$store.dispatch('getVersionGrade', { vm: this })
+    if (this.currPath === '/paper/books/choose') {
+      this.isBook = true
+    } else {
+      this.isBook = false
+    }
+    if (this.currPath === '/paper/detail') {
+      this.isPaper = true
+    } else {
+      this.isPaper = false
+    }
+    // this.isPaper = this.currPathPaper === '/paper/detail'
+    this.getDefaultSubject()
+    if (isLogin()) {
+      this.isIndex = true
+    }
+    this.initWindowsEvent()
+    this.getSubjectList()
+  },
+  mounted() {
+    this.renderScrollFixed()
+  },
+  unmounted() {
+    this.destroyedWindowsEvent()
+  },
+  methods: {
+    renderScrollFixed(e) {
+      // showFixed
+      let comparisonTop = this.getPageScrollTop()
+      let offsetTop = this.offsetDis(
+        document.querySelector('.top-nav-position'),
+      ).top
+      if (offsetTop > 0) {
+        if (comparisonTop + this.distanceTop >= offsetTop) {
+          this.showFixed = true
+        } else {
+          this.showFixed = false
+        }
+      }
+    },
+    // 获取学段学科数据
+    getSubjectList() {
+      return this.$store
+        .dispatch('getConfigData', { vm: this, type: 2, strParams: {} })
+        .then(res => {
+          this.listData = res || []
+        })
+    },
+    async getInitSubject() {
+      // important
+      let subject = this.$route.query.subject
+      let currSubjectStorage = null
+      // 需要使用 浏览器上的 query 的有
+      if (subject && subject.length >= 4) {
+        await this.getSubjectList()
+        let stage = subject.substring(0, 2)
+        let stageItem = ArrayExtentFind(this.listData, 'code', stage)
+        if (stageItem && stageItem.children) {
+          let subjectItem = ArrayExtentFind(stageItem.children, 'code', subject)
+          if (subjectItem) {
+            console.log(stageItem, subjectItem)
+            currSubjectStorage = {
+              periodCode: stageItem.code || stageItem.id,
+              periodName: stageItem.name,
+              subjectCode: subjectItem.code || subjectItem.id,
+              subjectName: subjectItem.name,
+            }
+          }
+        }
+      }
+      if (!currSubjectStorage) {
+        currSubjectStorage = getCookieSubjectVolume()
+      }
+      return currSubjectStorage
+    },
+    // 获取默认学科
+    async getDefaultSubject() {
+      // 如果 url 里面带有 subject 以 subject 为主
+      let currSubjectStorage = await this.getInitSubject()
+      if (currSubjectStorage && Object.keys(currSubjectStorage).length) {
+        // 本地存有当前学科
+        if (!isLogin()) {
+          // 未登录本地有默认学科
+          this.updateCurrentSubject(currSubjectStorage)
+        } else {
+          // 已登录本地有默认学科
+          // this.getServerSubject()
+          this.updateServerSubject(currSubjectStorage, false) // 将本地同步到服务端
+        }
+        this.getSubjectList()
+      } else {
+        // 本地无默认学科
+        this.getServerSubject()
+      }
+    },
+    // 获取服务端默认学科
+    getServerSubject() {
+      this.apiGet(API.GET_DEFAULT_SUBJECT).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          let currSubject = {
+            periodCode: res.data.stage,
+            periodName: res.data.stageName,
+            subjectCode: res.data.subject,
+            subjectName: res.data.subjectName,
+          }
+
+          let cookieSubject = getCookieSubjectVolume()
+          if (cookieSubject && isLogin()) {
+            // 设置 cookie 中的数据
+            this.setSubjectVolumeService(
+              cookieSubject,
+              cookieSubject.volume,
+              currSubject.subjectCode != cookieSubject.subjectCode,
+            )
+            return
+          } else {
+            if (res.data.isFirst != 1) {
+              if (isLogin()) {
+                setCookieSubjectVolume(currSubject)
+              }
+            }
+          }
+          this.updateCurrentSubject(currSubject) // 将服务端同步到本地
+          this.getSubjectList()
+        }
+      })
+    },
+    async setSubjectVolumeService(currSubject, volume, isReload = false) {
+      if (volume) {
+        await this.addChooseConfig(currSubject.subjectCode, {
+          grade: volume.gCode,
+          volume: volume.vCode,
+          version: volume.tCode,
+        })
+      }
+
+      let parms = {
+        stage: currSubject.periodCode,
+        subject: currSubject.subjectCode,
+      }
+      let set = {
+        authCode: 2,
+        showLoading: true,
+      }
+      this.apiPost(API.UPDATE_DEFAULT_SUBJECT, parms, set).then(res => {
+        if (isReload) {
+          window.location.reload()
+        } else {
+          this.updateCurrentSubject(currSubject) // 将服务端同步到本地
+          this.getSubjectList()
+        }
+      })
+    },
+    // 如果 不是第一次 设置
+    // 切换学段学科
+    selectSubject(item, subItem) {
+      console.log(item, subItem, 111)
+      let currSubject = {
+        periodCode: item.code || item.id,
+        periodName: item.name,
+        subjectCode: subItem.code || subItem.id,
+        subjectName: subItem.name,
+      }
+      if (!isLogin()) {
+        // 未登录本地无token
+        setCookieSubjectVolume(currSubject)
+        this.updateCurrentSubject(currSubject)
+        window.location.reload()
+      } else {
+        // 已登录本地有token
+        this.updateServerSubject(currSubject)
+      }
+      // 组卷编辑和组卷预览特殊处理学科切换
+    },
+    // 更新服务端默认学科
+    updateServerSubject(currSubject, isRefresh = true) {
+      let parms = {
+        stage: currSubject.periodCode,
+        subject: currSubject.subjectCode,
+      }
+      let set = {
+        authCode: 2,
+      }
+      this.apiPost(API.UPDATE_DEFAULT_SUBJECT, parms, set).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          setCookieSubjectVolume(currSubject)
+          this.updateCurrentSubject(currSubject)
+          isRefresh && window.location.reload()
+        } else if (res.code === CTS.constant.AUTH_TOKEN_CALLBACK_CODE) {
+          // 本地token过期
+          this.updateCurrentSubject(currSubject)
+          isRefresh && window.location.reload()
+        }
+      })
+    },
+    // 监听菜单展开
+    handleSelect(key, keyPath) {
+      if (keyPath.includes('/paper/users')) {
+        if (isLogin()) {
+          this.isIndex = true
+        } else {
+          this.isIndex = false
+          this.$refs.appLogin.showLogin()
+        }
+      }
+    },
+    // 进入第一个菜单项
+    entryFirstMenu(path, isCheckLogin = true, separate = false) {
+      if (this.$route.fullPath == path) return
+      if (!isCheckLogin) {
+        this.skipPagePath(path, separate)
+      } else {
+        if (isLogin()) {
+          this.skipPagePath(path, separate)
+        } else {
+          this.refreshFlag = true
+          this.$nextTick(() => {
+            this.refreshFlag = false
+          })
+          this.$refs.appLogin.showLogin()
+        }
+      }
+    },
+    skipPagePath(path, separate) {
+      // if (this.isHome || separate) {
+      //   this.refreshFlag = true
+      //   this.$nextTick(() => {
+      //     this.refreshFlag = false
+      //   })
+      //   this.openSystemPathLink(path.slice(1))
+      // } else {
+      //   this.$router.push(path)
+      // }
+      this.$router.push(path)
+    },
+    // 显示登录弹框
+    showLogin() {
+      this.$refs.appLogin.showLogin()
+    },
+    // 提交更新学段学科state
+    ...mapActions(['updateCurrentSubject']),
+  },
+}
+</script>
+
+<style lang="scss">
+.subject-dropdown-menu {
+  .el-menu--popup {
+    display: none;
+  }
+}
+.custom-dropdown-menu-nav {
+  .el-menu--popup {
+
+    //display: none;
+    background: $color-white;
+    box-sizing: border-box;
+    margin-top: 5px !important;
+    border-radius: 0 0 6px 6px;
+
+    .arrow-menu-item {
+      background: $color-theme-d;
+      height: auto;
+      line-height: 20px;
+      padding: 0;
+      color: $color-theme;
+    }
+  }
+}
+
+// .custom-dropdown-menu-nav {
+//   .popper__arrow {
+//     left: 50% !important;
+//     margin-left: -4px;
+//     filter: drop-shadow(0px 4px 6px rgba(42,77,138,0.1));
+//   }
+// }
+.custom-dropdown-menu-nav[x-placement^='bottom-start'] .el-menu--popup-bottom-start {
+  margin-top: -1px;
+}
+
+// .custom-dropdown-menu-nav[x-placement^="bottom-start"] {
+//   .popper__arrow::after {
+//     top: 1px;
+//     margin-left: -6px;
+//     border-top-width: 0;
+//     border-bottom-color: $color-white;
+//   }
+// }
+.subject-dropdown-menu {
+
+  .el-menu--popup {
+    display: none;
+    // width: 170px;
+    padding: 25px 25px 5px 25px;
+
+    .subject-menu-item {
+      display: none;
+      background: none;
+      margin-bottom: 20px;
+      height: auto;
+      line-height: 16px;
+      padding: 0;
+      font-size: 12px;
+
+      .title {
+        margin-bottom: 12px;
+        color: $color-text-d;
+        font-size: $font-size-medium-x;
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 12px;
+
+        .line {
+          display: inline-block;
+          vertical-align: -1px;
+          width: 4px;
+          height: 18px;
+          background: $color-theme;
+          margin-right: 8px;
+        }
+      }
+
+      .content {
+        overflow: hidden;
+        padding: 8px 0;
+        font-size: 12px;
+
+        .text {
+          float: left;
+          line-height: 14px;
+          margin: 0px 1px;
+          color: $color-text;
+          padding: 4px 15px;
+          border: 1px solid transparent;
+          position: relative;
+          margin-right: 10px;
+          font-size: 12px;
+
+          &:hover,
+          &.active {
+            color: $color-white;
+            border-radius: 12px;
+            background: $color-theme;
+          }
+
+          &.vip::after {
+            content: '';
+            position: absolute;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            top: -8px;
+            right: 0px;
+            background-image: url('../../assets/images/index/vip-icon.png');
+            background-size: 16px 16px;
+          }
+
+          &.vip:hover,
+          &.vip.active {
+            background: #fef8e7;
+            border: 1px solid #ffdb94;
+            border-radius: 12px;
+            color: #9b610b;
+          }
+        }
+      }
+    }
+  }
+}
+
+// nav-dropdown-resource-menu
+.nav-dropdown-resource-menu,
+.nav-dropdown-menu {
+  .el-menu--popup {
+    width: 230px;
+    min-width: 230px;
+    // padding: 0;
+    background: #fff;
+
+    .dropdown-menu-item {
+      height: 45px;
+      line-height: 45px;
+      background: $color-white;
+      color: $color-text;
+      text-align: left;
+      padding-left: 54px;
+      transition: 0.2s;
+      font-size: 16px;
+      color: #333333;
+
+      &:hover,
+      &.is-active {
+        /*font-weight: 700;*/
+        background: $color-menu-l-hover;
+        color: $color-theme;
+      }
+    }
+
+    .dropdown-menu-item2 {
+      padding-left: 10px !important;
+      text-align: center;
+    }
+  }
+}
+
+.nav-dropdown-resource-menu {
+  .el-menu--popup {
+    width: 135px;
+    min-width: 135px;
+
+    .dropdown-menu-item {
+      padding-left: 37px;
+    }
+  }
+}
+
+.top-nav-content>.el-submenu.is-active .el-submenu__title {
+  border-bottom: none;
+  // border-bottom: 2px solid $color-theme-d;
+  // box-shadow: 0 0 10px 5px rgba(62, 115, 205, 0.5) inset;
+}
+
+.top-nav-content>.el-menu-item.is-active {
+  border-bottom: none;
+  // border-bottom: 2px solid $color-theme-d;
+  // box-shadow: 0 0 10px 5px rgba(62, 115, 205, 0.5) inset;
+}
+
+.top-nav-content>.el-menu-item:not(.is-disabled):focus,
+.top-nav-content>.el-menu-item:not(.is-disabled):hover,
+.top-nav-content>.el-submenu .el-submenu__title:hover {
+  // background-color: $color-theme;
+  color: $color-white;
+  // border-bottom: none;
+}
+</style>
+
+<style lang="scss">
+.top-nav {
+  height: 50px;
+  position: relative;
+  min-width: 1200px;
+  background: #fff;
+
+  .top-nav-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: none;
+    border-bottom: 0;
+
+    .go-paper {
+      cursor: pointer;
+      position: absolute;
+      right: 0px;
+
+      &:hover {
+        span {
+          color: #487FFF;
+        }
+      }
+
+      span {
+        display: inline-block;
+        margin-left: 4px;
+        font-family: MicrosoftYaHei, MicrosoftYaHei;
+        font-weight: normal;
+        color: #333333;
+        text-align: left;
+        font-style: normal;
+        text-transform: none;
+      }
+    }
+
+    .top-nav-item {
+      position: relative;
+      // width: 137px;
+      width: 125px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      padding: 0;
+      color: #333;
+      font-size: $font-size-medium-x;
+      border: none;
+
+      &::after {
+        content: '';
+        position: absolute;
+        right: 50%;
+        bottom: 0;
+        margin: 0;
+        transform: translateX(50%);
+        width: 50px;
+        height: 4px;
+      }
+
+      .el-submenu__title {
+        // background: #4b8ff5;
+        border: none !important;
+
+        .text {
+          // transition: all .2s;
+        }
+      }
+
+      .el-submenu__title * {
+        vertical-align: 0;
+        // color: $color-white;
+      }
+
+      &.custom-dropdown-chapter {
+        .el-submenu__title * {
+          vertical-align: 0;
+          color: #333;
+        }
+      }
+
+      &.is-active,
+      &.is-opened {
+        // background: #1060ea;
+        color: #1060ea;
+        font-weight: 400;
+
+        .el-submenu__title {
+
+          // background: #1060ea;
+          >.text {
+            color: #1060ea;
+          }
+        }
+      }
+
+      &.is-active::after {
+        background: #1060ea;
+      }
+
+      /*&:focus {
+          color: $color-white;
+          border-bottom: 0;
+        }*/
+      &:last-child {
+        margin-right: 0;
+      }
+
+      &:hover {
+        // background: #1060ea;
+        color: #1060ea;
+      }
+
+      &.active-nav-item {
+        width: 240px;
+        text-align: left;
+        padding-left: 55px;
+        box-sizing: border-box;
+        // background-color: #3e73cd;
+        line-height: 48px;
+        color: #1060ea;
+        font-weight: normal;
+
+        &:hover {
+          // background-color: #3867b8;
+        }
+      }
+
+      .el-submenu__title .text {
+        position: relative;
+
+        &::before {
+          content: '';
+          position: absolute;
+          right: -7px;
+          bottom: 1px;
+          border: 3px solid transparent;
+          width: 0;
+          height: 0;
+          border-color: transparent #c1c1c1 #c1c1c1 transparent;
+        }
+      }
+    }
+
+    .el-submenu__title {
+      height: 50px;
+      line-height: 50px;
+      // color: $color-white;
+      font-size: $font-size-medium-x;
+      padding: 0;
+
+      .el-submenu__icon-arrow {
+        display: none;
+      }
+
+      .text {
+        font-size: $font-size-medium-x;
+
+        .dropdown-text {
+          color: $color-white;
+        }
+
+        &:hover {
+          // color: $color-white;
+        }
+      }
+
+      .icon-triangle {
+        position: absolute;
+        top: 22px;
+        @include triangle();
+        transition: 0.2s ease-in;
+        border-width: 6px;
+        border-color: $color-white transparent transparent;
+        margin-left: 14px;
+
+        &.up-triangle {
+          transform-origin: 50% 30%;
+          transform: rotate(180deg);
+        }
+      }
+
+      &:hover {
+        // background: #1060ea !important;
+        // .dropdown-text {
+        //   color: $color-white;//   font-weight: 700;
+        // }
+      }
+    }
+  }
+
+  .subject-nav-item {
+    width: 260px;
+    line-height: 50px;
+    height: 50px;
+    color: $color-white;
+    text-align: center;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+
+    .el-submenu__title {
+      background: #487FFF;
+
+      &:hover {
+        background: #487FFF;
+      }
+    }
+
+    .text {
+      color: $color-white;
+      letter-spacing: 2px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .icon-location_fill {
+      padding-right: 8px;
+      color: $color-white;
+      font-weight: normal;
+      font-size: 22px;
+    }
+
+    .el-submenu__title {
+      text-align: center;
+
+      .text {
+        color: $color-white;
+        letter-spacing: 2px;
+        font-weight: bold;
+        font-size: 18px;
+      }
+    }
+
+    .el-submenu__title * {
+      vertical-align: 0;
+    }
+
+    &.is-opened {
+      background: #409eff;
+
+      .el-submenu__title {
+        background: #409eff;
+      }
+
+      //   .icon-triangle {
+      //     transform-origin: 50% 30%;
+      //     transform: rotate(180deg);
+      //   }
+      // }
+    }
+  }
+
+  .knowledge-nav-item {
+    width: 150px;
+  }
+}
+
+.top-nav-position {
+  height: 50px;
+  position: relative;
+}
+
+.top-nav-body {
+  width: 100%;
+
+  &.show-fixed {
+    position: fixed;
+    z-index: 1002;
+    top: 0;
+  }
+}
+
+.group-menu-text {
+  padding: 0 10px;
+  color: $color-theme;
+  line-height: 30px;
+  display: block;
+  color: #999999;
+  padding-left: 27px;
+  line-height: 45px;
+  font-size: 16px;
+
+  .iconfont {
+    padding-right: 10px;
+  }
+}
+
+.new-nav-tips {
+  position: absolute;
+  display: inline-block;
+  width: 24px;
+  height: 18px;
+  background-image: url(../../assets/images/highregion/new-nav.png);
+  background-repeat: no-repeat;
+  background-size: 24px 18px;
+  top: 10px;
+  right: 5px;
+}
+</style>

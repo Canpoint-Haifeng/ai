@@ -1,0 +1,54 @@
+<template>
+  <div class="breadcrumb-wrapper clearfix">
+    <!-- <div class="breadcrumb-left fl">
+      <i class="iconfont iconposition"></i>
+      <span class="text">当前位置：</span>
+    </div>
+    <el-breadcrumb class="breadcrumb-container fl" separator-class="el-icon-arrow-right">
+      <template v-for="(item, index) in crumbsData">
+        <el-breadcrumb-item v-if="item.isLink" :to="item.path" :key="index">{{ item.text }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-else :key="index">{{ item.text }}</el-breadcrumb-item>
+      </template>
+    </el-breadcrumb>
+    <slot name="gobank"></slot> -->
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Breadcrumb',
+  props: {
+    crumbsData: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.breadcrumb-wrapper {
+  height: 40px;
+  height: 20px;
+  line-height: 40px;
+  font-size: $font-size-small;
+  .iconposition {
+    margin-right: 10px;
+    font-size: $font-size-small;
+  }
+  .breadcrumb-container :deep(.el-breadcrumb__inner) {
+    line-height: 40px;
+    font-size: $font-size-small;
+    color: $color-text;
+  }
+  .slot {
+    float: right;
+    a {
+      color: #487FFF;
+      cursor: pointer;
+    }
+  }
+}
+</style>

@@ -1,0 +1,244 @@
+<template>
+  <div class="video" @contextmenu.prevent="onContextMenu">
+    <vue3-video-play
+      ref="videoPlayer"
+      :width="pwidth"
+      :height="pheight"
+      :src="videoURL"
+      :poster="posterUrl"
+      :playsinline="true"
+      :autoplay="false"
+      :muted="false"
+      :loop="false"
+      :preload="'auto'"
+      :rate="[0.5, 1.0, 1.5, 2.0]"
+      @play="onPlayerPlay"
+      @pause="onPlayerPause"
+      @ended="onPlayerEnded"
+      @statechanged="playerStateChanged"
+    />
+    <div v-if="isshow && posterUrl" class="mask-video-image">
+      <img class="video-image" :src="posterUrl" />
+    </div>
+    <div v-if="isshow && posterUrl" class="mask-video-image"></div>
+    <img
+      class="palyer-icon"
+      src="../../assets/images/play.png"
+      alt=""
+      v-show="isplay"
+      @click="onPlayerPlay"
+    />
+    <!-- 产品要求一直不显示暂停按钮 by 吴兴武 -->
+    <!-- <img src="../../assets/images/playStop.png"
+      alt=""
+      v-show="!isplay"
+      @click="onPlayerPause"
+      class="play_btn"
+    /> -->
+  </div>
+</template>
+
+<script>
+import { ref, computed, onMounted, watch } from 'vue'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { isLogin } from '@/common/js/util'
+import vue3VideoPlay from 'vue3-video-play'
+import 'vue3-video-play/dist/style.css'
+
+export default {
+  name: 'Video',
+  components: {
+    vue3VideoPlay,
+  },
+  props: {
+    videoItem: Object,
+    pwidth: String,
+    pheight: String,
+  },
+  setup(props, { refs }) {
+    const videoPlayer = ref(null)
+    const isFinishTask = ref(false)
+    const isplay = ref(true)
+    const isshow = ref(false)
+    const videoURL = ref('')
+    const posterUrl = ref('')
+    
+    // Watch for changes in videoItem
+    watch(() => props.videoItem, () => {
+      renderVideoItem()
+    })
+    
+    // Methods
+    const onContextMenu = () => {
+      return false
+    }
+    
+    // Player state changed callback
+    const playerStateChanged = (playerCurrentState) => {
+      // console.log('player current update state', playerCurrentState)
+    }
+    
+    const renderVideoItem = async () => {
+      if (props.videoItem) {
+        posterUrl.value = props.videoItem.pictureUrl || ''
+        let res = await apiQueryAudiosData(props.videoItem.videoId)
+        if (res.code == 200) {
+          if (res && res.data) {
+            videoURL.value = res.data.url || ''
+            isplay.value = true
+            isshow.value = false
+          }
+        } else {
+          videoURL.value = ''
+          isplay.value = true
+          isshow.value = false
+        }
+      }
+    }
+    
+    // Play callback
+    const onPlayerPlay = () => {
+      // Start playing
+      if (!isFinishTask.value) {
+        isFinishTask.value = true
+        watchVideoTask()
+      }
+
+      isplay.value = false
+      isshow.value = false
+      videoPlayer.value.play()
+    }
+    
+    // Complete video watching task
+    const watchVideoTask = () => {
+      // If logged in, complete the video watching task
+      if (isLogin()) {
+        apiGet(API.USER_TASK_WATCHVIDEO).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            console.log(res)
+            if (res.data && res.data.length) {
+              // Indicates there is a reward
+              showCpReceiveReward(res.data)
+            }
+          }
+        })
+      }
+    }
+    
+    // Pause callback
+    const onPlayerPause = () => {
+      isplay.value = true
+      isshow.value = false
+      videoPlayer.value.pause()
+    }
+    
+    // End callback
+    const onPlayerEnded = () => {
+      isplay.value = true
+      isshow.value = true
+    }
+    
+    // Lifecycle hooks
+    onMounted(() => {
+      renderVideoItem()
+    })
+    
+    return {
+      videoPlayer,
+      isFinishTask,
+      isplay,
+      isshow,
+      videoURL,
+      posterUrl,
+      onContextMenu,
+      playerStateChanged,
+      renderVideoItem,
+      onPlayerPlay,
+      watchVideoTask,
+      onPlayerPause,
+      onPlayerEnded
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+  .video-player {
+    position: relative;
+    max-width: 1200px;
+    border-radius: 6px;
+    overflow: hidden;
+
+    .palyer-icon {
+      width: 116px;
+      height: 116px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.8;
+      &.play_btn {
+        opacity: 0;
+        transition: all 1s;
+      }
+    }
+    &:hover {
+      .play_btn {
+        opacity: 1;
+      }
+    }
+    .end {
+      width: 100%;
+      height: 675px;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      background: url('../../assets/images/coverUrl.png');
+      background-size: cover;
+      .end_box {
+        width: 100%;
+        height: 675px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+  .video :deep(.vjs-big-play-button) {
+    display: none !important;
+  }
+  .video :deep(.video-js.vjs-ended .vjs-big-play-button) {
+    display: none !important;
+  }
+  .video :deep(.video-js) {
+    background-color: #fff;
+    .vjs-tech {
+      object-fit: fill;
+      height: 506px;
+    }
+  }
+  .video :deep(.vjs-poster) {
+    background-color: transparent;
+  }
+
+  .video :deep(.vjs-text-track-display) {
+    position: absolute;
+    bottom: 0em;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .video :deep(.video-js .vjs-play-progress:before) {
+    z-index: 0;
+  }
+  .mask-video-image {
+    width: 100%;
+    height: 675px;
+    background-color: rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 0;
+    text-align: center;
+    pointer-events: none;
+    .video-image {
+      display: inline-block;
+      height: 100%;
+      max-width: 100%;
+    }
+  }
+</style>

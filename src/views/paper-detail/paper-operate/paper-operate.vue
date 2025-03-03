@@ -1,0 +1,572 @@
+<template>
+  <div class="paper-operate paper-operate-fixed">
+    <div class="item item-all">
+      <el-button
+        class="btn"
+        @click="addBatchQuestionBox"
+      >
+        <i class="el-icon-plus" /> 全部加入试题篮
+      </el-button>
+    </div>
+    <div class="item item-all">
+      <el-button
+        class="btn btn-border"
+        @click="queryOrderLogin(paperData)"
+      >
+        <i class="iconfont icon-download_2_line" />下载试卷
+      </el-button>
+    </div>
+    <div class="item">
+      <!-- <el-button class="btn btn-border" @click="queryOrderLogin(paperData)"><i class="iconfont iconxiazai"></i>下载试卷</el-button> -->
+      <el-button
+        class="btn btn-border"
+        @click="onShowAnalysisDialogLogin(paperData)"
+      >
+        <i class="iconfont icon-chart_line_line" />试卷分析
+      </el-button>
+      <el-button
+        class="btn btn-border"
+        @click="grouppaperLogin(paperData)"
+      >
+        <i class="iconfont icon-tianjia" />沿用细目表
+      </el-button>
+    </div>
+    <div class="item">
+      <el-button
+        class="btn btn-border"
+        @click="paperParallel"
+      >
+        <i class="iconfont icon-tianjia" />平行组卷
+      </el-button>
+      <el-button
+        class="btn btn-border"
+        :disabled="paperData.creatorGuid == userInfo.userGuid"
+        @click="showCollectDialog"
+      >
+        <i
+          class="iconfont"
+          :class="{
+            'icon-nobg-star': !collectStatus,
+            'icon-quxiaoshoucang': collectStatus,
+          }"
+        />{{ collectStatus ? '取消收藏' : '收藏试卷' }}
+      </el-button>
+    </div>
+    <!-- <div class="item item-download" @click="queryOrderLogin(paperData)">
+      <el-button class="btn btn-border">
+        <i class="iconfont iconplus-download"></i> 下载试卷
+      </el-button>
+    </div>
+    <div class="item item-download" @click="grouppaperLogin(paperData)">
+      <el-button class="btn btn-border">
+        试卷细目表
+      </el-button>
+    </div> -->
+
+    <div class="item item-checkbox clearfix">
+      <!-- <el-checkbox v-model="showAllExplain" @change="changeAllExplain">
+        显示答案
+      </el-checkbox> -->
+      <!-- <div class="item-paper-share" v-if="source != 1">
+        <SharePaperPopover
+          :paperIdEnc="paperIdEnc"
+          :subjectCode="currSubject.subjectCode"
+          @showAppLogin="showAppLogin"
+        >
+          <template v-slot:reference>
+            <div class="paper-share-block">
+              <span class="iconfont iconhaotifenxiang"></span>分享
+            </div>
+          </template>
+</SharePaperPopover>
+</div> -->
+    </div>
+    <div class="analysis">
+      <!-- <el-button type="primary" icon="iconfont icon-chart_line_line" @click="openModal">组卷分析</el-button> -->
+      <div class="title">
+        <h6>题量分析</h6>
+        <p>
+          总题量:<span>{{ paperData.paperTotalCount }}</span>
+        </p>
+      </div>
+      <div class="chart">
+        <pie
+          :options="pieOptions"
+          :data="pieData"
+        />
+      </div>
+      <div class="title">
+        <h6>难度分析</h6>
+        <p>{{ difficulty.name }}（{{ difficulty.value }})</p>
+      </div>
+      <div class="chart">
+        <div
+          id="bar"
+          style="height: 100%"
+        />
+      </div>
+    </div>
+    <!-- 收藏试卷 -->
+    <!-- 取消收藏成功提示框 -->
+    <collect-message
+      ref="collectMessagePaper"
+      :collect-status="1"
+    />
+    <!-- 试卷分析 -->
+    <analysis-dialog
+      ref="analysisDialog"
+      :question-analysis="questionAnalysis"
+    />
+
+    <!-- 下载组卷 -->
+    <download-dialog
+      ref="downloadDialog"
+      :curr-paper="paperData"
+      @download-paper="onDownloadPaper"
+    />
+    <!-- 支付提示框 -->
+    <pay-dialog
+      v-if="payData.weChatQrcode"
+      ref="payDialog"
+      :pay-data="payData"
+      @change-pay-type="onChangePayType"
+      @balance-pay="onBalancePay"
+      @entry-my-wallet="onEntryMyWallet"
+      @close-pay-dialog="onClosePayDialog"
+    />
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import echarts from 'echarts'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import { isLogin } from '@/common/js/util'
+import paperAnalysisMixin from '@/common/mixins/paperAnalysisMixin'
+import paperPayMixin from '@/common/mixins/paperPayMixin'
+import CollectMessage from '@/components/CollectMessage/CollectMessage'
+import SharePaperPopover from '@/components/PaperItem/SharePaperPopover'
+import pie from '@/components/ECharts/Pie'
+import bar from '@/components/ECharts/line-bar.vue'
+import {
+  pieOptions1,
+  pieOptions2,
+  pieOptions3,
+  barOptions,
+} from '@/components/AnalysisDialog/options'
+
+export default {
+  components: { CollectMessage, SharePaperPopover, pie, bar },
+  mixins: [paperAnalysisMixin, paperPayMixin],
+  props: {
+    paperIdEnc: {
+      type: String,
+      default: '',
+    },
+    source: {
+      type: String,
+    },
+    paperName: String,
+    paperData: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  setup() {
+    const collectMessagePaper = ref(null)
+    const state = reactive({
+      showFixed: false,
+      offsetTop: 0,
+      showAllExplain: false,
+      collectStatus: false, // true已收藏，false未收藏
+      collectDialog: {
+        visible: false,
+        title: '试卷收藏',
+        showClose: true,
+        width: '500px',
+      },
+      pieOptions: {},
+      pieData: [],
+      barOptions: {},
+      difficulty: { name: '中等', value: 0.5 },
+    })
+    return {
+      ...toRefs(state),
+      collectMessagePaper
+    }
+  },
+  computed: {
+    ...mapState(['currSubject', 'userInfo']),
+  },
+  watch: {
+    paperData() {
+      this.paperData.paperStructure &&
+        this.initChart(this.paperData.paperStructure)
+    },
+  },
+  mounted() {
+    barOptions.series.pop()
+    barOptions.legend = null
+    this.barOptions = barOptions
+    pieOptions1.series.center = ['50%', '45%']
+    this.pieOptions = pieOptions1
+  },
+  created() {
+    this.getCollectStatus()
+  },
+  unmounted() {
+    // window.removeEventListener('scroll', this.handleScroll)
+  },
+  methods: {
+    initChart(arr) {
+      let pieData = {}
+      const barData = [0, 0, 0, 0, 0]
+      const loop = arg => {
+        arg.forEach(v => {
+          if (v.questionId) {
+            barData[v.questionInfo.difficulty.code - 1]++
+            if (pieData[v.questionInfo.quesType.name]) {
+              pieData[v.questionInfo.quesType.name]++
+            } else {
+              pieData[v.questionInfo.quesType.name] = 1
+            }
+          }
+          if (v.children && !v.questionId) {
+            loop(v.children)
+          }
+        })
+      }
+      loop(arr)
+      pieData = Object.keys(pieData).map(v => {
+        return { name: v, value: pieData[v] }
+      })
+      const chart = echarts.init(document.querySelector('#bar'))
+      let difficulty =
+        barData.reduce((prev, next, index) => {
+          return prev + next * [0.1, 0.3, 0.5, 0.7, 0.9][index]
+        }, 0) / this.paperData.paperTotalCount
+      difficulty = difficulty.toFixed(2)
+      this.difficulty.value = difficulty
+      if (difficulty <= 0.2) {
+        this.difficulty.name = '容易'
+      } else if (difficulty <= 0.4) {
+        this.difficulty.name = '较易'
+      } else if (difficulty <= 0.6) {
+        this.difficulty.name = '中等'
+      } else if (difficulty <= 0.8) {
+        this.difficulty.name = '较难'
+      } else {
+        this.difficulty.name = '困难'
+      }
+      this.barOptions.series[0].data = barData
+      chart.setOption(this.barOptions)
+      this.pieData = pieData
+    },
+    // 监听页面滚动定位元素位置
+    handleScroll() {
+      let scrollTop =
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop
+      if (scrollTop > this.offsetTop) {
+        this.showFixed = true
+      } else {
+        this.showFixed = false
+      }
+    },
+    showAnswerSheet() {
+      this.$emit('showAnswerSheet')
+    },
+    // 批量加入试题篮
+    addBatchQuestionBox() {
+      if (!isLogin()) {
+        this.$emit('showAppLogin')
+      } else {
+        this.$emit('addBatchQuestionBox')
+      }
+    },
+    // 获取所有答案
+    changeAllExplain(showAllExplain) {
+      // if (!isLogin()) {
+      //   this.$emit('showAppLogin')
+      //   this.showAllExplain = false
+      // } else {
+      //   this.$emit('changeAllExplain', showAllExplain)
+      // }
+      this.$emit('changeAllExplain', showAllExplain)
+    },
+    grouppaperLogin(paperData) {
+      this.$message.warning('暂未开通')
+      return
+      if (!isLogin()) {
+        this.$emit('showAppLogin')
+      } else {
+        this.grouppaper(paperData)
+      }
+    },
+    queryOrderLogin(paperData) {
+      if (!isLogin()) {
+        this.$emit('showAppLogin')
+      } else {
+        this.eventStatistics([
+          '_trackEvent',
+          '试卷预览',
+          '点击下载试卷',
+          '次数',
+        ])
+        this.queryOrder(paperData)
+      }
+    },
+    onShowAnalysisDialogLogin(paperData) {
+      if (!isLogin()) {
+        this.$emit('showAppLogin')
+      } else {
+        this.onShowAnalysisDialog(paperData)
+      }
+    },
+    showAppLogin() {
+      this.$emit('showAppLogin')
+    },
+    getQuestionIds(data) {
+      let array = []
+      data.forEach(v => {
+        array.push(v.questionInfo.questionId)
+      })
+      return array
+    },
+    paperParallel() {
+      console.log(this.paperData)
+      this.$router.push({
+        path: '/paper/paperParallel',
+        query: {
+          questionIds: this.getQuestionIds(
+            this.paperData.paperStructure[0].children[0].children,
+          ),
+          title: this.paperData.paperName,
+          source: this.$route.query.source,
+          viewCount: this.$route.query.viewCount,
+          pn: this.$route.query.pn,
+          isCollect: this.$route.query.isCollect,
+          paperId: this.$route.query.paperId,
+        },
+      })
+    },
+    // 细目表组卷
+    grouppaper() {
+      //
+      this.$router.push({
+        path: '/paper/intelligence/paperbreakdowngroup',
+        query: {
+          paperIdEnc: this.$route.query.paperIdEnc,
+          source: this.$route.query.source,
+        },
+      })
+    },
+    // 获取试卷收藏状态
+    getCollectStatus() {
+      if (!isLogin()) {
+        return
+      }
+      this.collectStatus =
+        Number(this.$route.query.isCollect) === 1 ? true : false
+    },
+    // 显示收藏框
+    showCollectDialog() {
+      if (!isLogin()) {
+        this.$emit('showAppLogin')
+        return
+      }
+      let parms = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        paperId: this.paperData.paperId || this.paperData.paperUid,
+        isCollect: this.collectStatus ? 2 : 1,
+        source: this.paperData.source,
+      }
+      this.newPost(
+        API.PAPER_BUILDER_PAPER_COLLECT,
+        parms,
+      ).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          console.log(this.collectStatus)
+          state.collectStatus = !state.collectStatus
+          collectMessagePaper.value.showMessage(state.collectStatus)
+        }
+      })
+    },
+    // 进入我的收藏
+    entryMyCollect() {
+      this.$router.push({
+        name: 'myCollection',
+      })
+    },
+
+    // 试卷下载
+    downloadPaper() {
+      let parms = {
+        paperVersion: 'doc',
+        paperSize: 'A4',
+        paperType: 'normal',
+        paperIdEnc: this.paperIdEnc,
+      }
+      let set = {
+        responseType: 'blob',
+        authCode: 2,
+      }
+      this.apiPost(API.MANAGE_PAPER_DOWNLOAD, parms, set).then(res => {
+        console.log('试卷下载成功')
+      })
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+  
+.paper-operate {
+  // height: 280px;
+  // height: 224px;
+  background: $color-white;
+  // margin-bottom: 16px;
+  padding: 20px 14px;
+  box-sizing: border-box;
+
+  &.fixed-operate {
+    position: fixed;
+    top: 65px;
+    z-index: 999;
+  }
+
+  .item {
+    margin-bottom: 16px;
+
+    .btn {
+      width: 113px;
+      height: 40px;
+      padding: 0;
+      color: $color-text-d;
+      font-size: $font-size-medium;
+      transition: 0.2s;
+
+      &:first-child {
+        margin-right: 6px;
+      }
+    }
+
+    .btn-border {
+      border: 1px solid #e2e2e2;
+    }
+
+    .btn-border.is-disabled:hover {
+      color: $color-text-d;
+      font-size: $font-size-medium;
+      background: $color-white;
+    }
+
+    .btn-border:hover {
+      border: 1px solid $color-theme;
+      color: $color-theme;
+    }
+  }
+
+  .item-download,
+  .item-all {
+    .btn {
+      width: 100%;
+    }
+  }
+
+  .item-all {
+    .btn {
+      // box-shadow:0px 2px 6px 0px rgba(42,77,138,0.18);
+      color: $color-white;
+    }
+
+    .btn.btn-border {
+      color: #333;
+    }
+
+    .btn.btn-border:hover {
+      border: 1px solid $color-theme;
+      color: $color-theme;
+    }
+  }
+
+  .item-checkbox :deep(.el-checkbox__label) {
+      color: $color-text;
+      font-size: $font-size-small;
+    }
+  }
+
+  .analysis {
+    :deep(.el-button) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      i {
+        font-size: 20px;
+        margin-right: 4px;
+      }
+    }
+
+    .title {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h6 {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      p {
+        span {
+          color: #ff6900;
+        }
+      }
+    }
+
+    .chart {
+      height: 200px;
+    }
+  }
+}
+
+.dialog-content {
+  text-align: center;
+
+  .dialog-tips {
+    padding-top: 50px;
+    color: $color-text-d;
+
+    .text {
+      cursor: pointer;
+      color: $color-theme;
+      font-weight: 700;
+    }
+  }
+}
+
+.dialog-footer {
+  .btn {
+    width: 100px;
+    height: 34px;
+    padding: 0;
+  }
+}
+
+.btn-border {
+  .iconfont {
+    padding-right: 6px;
+  }
+}
+
+.item-paper-share {
+  float: right;
+}
+</style>

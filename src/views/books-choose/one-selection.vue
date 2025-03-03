@@ -1,0 +1,458 @@
+<template>
+  <div>
+    <div class="paper-container">
+      <div class="paper-sort font-12">
+        <div class="paper-total color-9 fl">
+          共
+          <strong class="num">{{
+            questionsData.count ? questionsData.count : 0
+          }}</strong>
+          道试题
+        </div>
+        <div class="paper-add-black">
+          <span
+            class="add-btn"
+            @click="onAddBatchQuestionBox"
+          >
+            <i class="el-icon-plus" />全部加入试题篮
+          </span>
+        </div>
+      </div>
+      <div
+        v-loading="loading"
+        class="paper-content"
+      >
+        <ul
+          v-if="questionsData.list.length"
+          class="paper-list"
+        >
+          <question-item
+            v-for="(subItem, subIndex) in questionsData.list"
+            :key="subIndex"
+            :question-item="subItem"
+            :question-index="subIndex"
+            :show-view="1"
+            :show-similar="true"
+            @add-question-box="onAddQuestionBox"
+            @delete-question-box="onDeleteQuestionBox"
+            @check-question-detail="onCheckQuestionDetail"
+            @collect-question="onCollectQuestion"
+            @show-report-dialog="onShowReportDialog"
+            @toggle-explain="onToggleExplain"
+            @check-similar-quesiton="onCheckSimilarQuesiton"
+          />
+        </ul>
+        <div
+          v-if="questionsData.list.length"
+          class="pagination-container pagination-container-right"
+        >
+          <el-pagination
+            v-model:current-page="questionsData.page"
+            :page-size="questionsData.pageSize"
+            layout="prev, pager, next, jumper"
+            :total="questionsData.count"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+        <noresult-common
+          v-else
+          #empty
+          text="暂无数据！"
+        />
+      </div>
+    </div>
+    <!-- <router-view></router-view> -->
+    <!--试题篮组件-->
+    <app-tool-basket />
+    <!-- 收藏成功提示框 -->
+    <collect-message ref="collectMessage" />
+    <cp-simailar-dialog
+      ref="simailarDialog"
+      @collect-question="onCollectQuestion"
+      @check-question-detail="onCheckQuestionDetail"
+      @show-report-dialog="onShowReportDialog"
+      @add-question-box="onAddQuestionBox"
+      @delete-question-box="onDeleteQuestionBox"
+    />
+    <!-- 纠错提示框 -->
+    <report-dialog
+      ref="reportDialog"
+      @report-error="onReportError"
+    />
+    <!-- 登录弹窗 -->
+    <app-login ref="appLoginRef" />
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import { getToken, isLogin } from '@/common/js/util'
+import NoresultCommon from '@/components/Noresult/Noresult-common'
+import questionItemMixin from '@/common/mixins/questionItemMixin'
+import QuestionItem from '@/components/QuestionItem/QuestionItem'
+import QuestionType from '@/components/Category/QuestionType'
+import ReportDialog from '@/components/ReportDialog/ReportDialog'
+import CollectMessage from '@/components/CollectMessage/CollectMessage'
+import QuestionDiff from '@/components/Category/QuestionDiff'
+export default {
+  components: {
+    QuestionType,
+    QuestionDiff,
+    QuestionItem,
+    ReportDialog,
+    CollectMessage,
+    NoresultCommon,
+  },
+  mixins: [questionItemMixin],
+  props: {
+    bookId: {
+      require: true,
+      default: 0,
+    },
+    teachId: {
+      require: true,
+      type: String,
+      default: '',
+    },
+    dTree: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+  },
+  setup() {
+    const appLoginRef = ref(null)
+    return {
+      appLoginRef
+    }
+  },
+  data() {
+    return {
+      loading: false,
+      questionsData: {
+        list: [],
+        page: 1,
+        pageSize: 15,
+        count: 0,
+      },
+      checkNodeChapterCode: '',
+      searchValue: '',
+      showAnswer: false,
+      newUpload: 0,
+      newCommon: 0,
+      currTypeCode: '',
+      currDiffCode: '',
+      typeName: ['选择题', '单选题', '多选题', '判断题'],
+    }
+  },
+  computed: {
+    ...mapState(['currSubject']),
+  },
+  mounted() {
+    // 监听添加试题
+    this.Bus.$on('chooseCheckNodeCode', this.OnChooseCheckNodeCode)
+  },
+  created() {
+    this.getQusList()
+  },
+  unmounted() {
+    this.Bus.$off('chooseCheckNodeCode')
+  },
+  methods: {
+    // 接受选择的数据
+    OnChooseCheckNodeCode(val) {
+      this.checkNodeChapterCode = val
+      this.questionsData.page = 1
+      this.getQusList()
+    },
+    // 删除试题篮题目
+    onDeleteBasket() {
+      this.getQusList() // 刷新题目
+    },
+    // 获取题目列表
+    getQusList() {
+      let parms = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        pageNum: this.questionsData.page,
+        pageSize: this.questionsData.pageSize,
+        // type: this.currTypeCode ? this.currTypeCode : '',
+        // difficulty: this.currDiffCode ? this.currDiffCode : '',
+        bookId: this.bookId,
+        chapterId: this.checkNodeChapterCode,
+        sortByLatestUpload: this.newUpload,
+        sortByMostCombine: this.newCommon,
+      }
+
+      if (this.checkNodeChapterCode) {
+        let chapterRange = this.chapterSelectQuesRange(
+          this.dTree,
+          this.checkNodeChapterCode,
+        )
+        if (chapterRange.length) {
+          parms.notTextBookChapterCodes = chapterRange.join(',')
+        }
+      }
+      this.apiGet(API.BACK_QUES_LIST, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          const list = res.data.records
+          list.forEach(v => {
+            v.questionInfo = { ...v }
+          })
+          res.data.list = list
+          res.data.page = res.data.current
+          res.data.count = res.data.total
+          this.questionsData = res.data
+          this.loading = false
+        }
+      })
+    },
+    // 全部显示答案和解析
+    AllShowAnswer(showAllExplain) {
+      if (!isLogin()) {
+        appLoginRef.value.showLogin()
+        return
+      }
+      if (showAllExplain) {
+        // 显示所有答案
+        let questionIds = []
+        this.questionsData.list.forEach(item => {
+          questionIds.push(item.questionInfo.questionId)
+        })
+        if (questionIds.length === 0) {
+          return
+        }
+        let params = {
+          qids: questionIds.join(','),
+        }
+        let set = {
+          authCode: 1,
+        }
+        this.apiGet(API.BACK_QUES_LIST_EXPLAIN, params, set).then(res => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            this.questionsData.list.forEach((item, index) => {
+              questionIds.push(item.questionInfo.questionId)
+              this.$set(item, 'showExplain', true)
+              this.$set(item, 'showKnowledge', true)
+              item.questionInfo = res.data[index]
+            })
+          }
+        })
+      } else {
+        // 隐藏所有答案
+        this.questionsData.list.forEach(item => {
+          this.$set(item, 'showExplain', false)
+          this.$set(item, 'showKnowledge', false)
+        })
+      }
+    },
+    // 最多上传
+    OnNewUpload() {
+      if (this.newUpload) {
+        this.newUpload = 0
+      } else {
+        this.newUpload = 1
+        this.newCommon = 0
+      }
+      this.getQusList()
+    },
+    // 最多组卷
+    OnNewCommon() {
+      if (this.newCommon) {
+        this.newCommon = 0
+      } else {
+        this.newCommon = 1
+        this.newUpload = 0
+      }
+      this.getQusList()
+    },
+    // 监听全部加入试题篮
+    onAddBatchQuestionBox() {
+      if (!isLogin()) {
+        appLoginRef.value.showLogin()
+        return
+      }
+      let questionList = []
+      this.questionsData.list.forEach(item => {
+        if (!item.isAddedToBox) {
+          if (this.typeName.includes(item.questionInfo.quesType.name)) {
+            questionList.push({
+              questionId: item.questionInfo.questionId,
+              subjective: false,
+              typeName: item.questionInfo.quesType.name,
+              type: item.questionInfo.quesType.code,
+            })
+          } else {
+            questionList.push({
+              questionId: item.questionInfo.questionId,
+              subjective: true,
+              typeName: item.questionInfo.quesType.name,
+              type: item.questionInfo.quesType.code,
+            })
+          }
+        }
+      })
+      if (!questionList.length) {
+        this.$message.error('无可添加的试题!')
+        return
+      }
+      let parms = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        paramsJson: JSON.stringify(questionList),
+      }
+      let set = {
+        authCode: 1,
+      }
+      this.newPost(API.QUESTION_BATCH_ADD, parms, set).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$message.success('成功添加到试题篮!')
+          this.questionsData.list.forEach(subItem => {
+            subItem.isAddedToBox = 1
+          })
+          this.Bus.$emit('addBasket')
+        }
+      })
+    },
+    // 分页
+    handleCurrentChange(currPage) {
+      this.questionsData.page = currPage
+      this.loading = true
+      this.questionsData.list = []
+      document.documentElement.scrollTop = 0 // 返回页面顶部
+      this.showAnswer = false // 重置显示答案和解析按钮
+      this.getQusList()
+    },
+    // 选择的题目类型
+    selectType(item) {
+      this.currTypeCode = item.code
+      this.questionsData.page = 1
+      this.loading = true
+      this.questionsData.list = []
+      this.getQusList()
+    },
+    // 选择的难度
+    selectDiff(item) {
+      this.currDiffCode = item.code
+      this.questionsData.page = 1
+      this.loading = true
+      this.questionsData.list = []
+      this.getQusList()
+    },
+  },
+}
+</script>
+<style lang="scss" scoped>
+  
+.category-container {
+  width: 914px;
+  padding: 20px 20px 8px 20px;
+  background: $color-white;
+}
+
+.gray-line {
+  width: 914px;
+  height: 16px;
+  background: $color-background-l;
+}
+
+.paper-container {
+  width: 914px;
+  margin-bottom: 20px;
+  background: $color-white;
+  padding-bottom: 20px;
+}
+
+.paper-sort {
+  display: flex;
+  justify-content: space-between;
+  height: 46px;
+  line-height: 46px;
+  padding: 0 20px;
+  border-bottom: 1px solid $color-background-l;
+  margin-bottom: 20px;
+
+  .paper-total {
+    margin-right: 25px;
+
+    .num {
+      padding: 0 2px;
+      color: $color-theme-l;
+      font-size: $font-size-medium;
+    }
+  }
+
+  .sort-list {
+    .icondot {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 4px;
+      width: 4px;
+      height: 4px;
+      background: $color-theme;
+    }
+
+    .sort-item {
+      margin: 0 10px;
+      cursor: pointer;
+      transition: 0.2s;
+
+      .iconsort {
+        display: inline-block;
+        transform: rotate(180deg);
+        color: $color-text-ll;
+        font-size: $font-size-small;
+      }
+
+      &.active,
+      &:hover {
+        color: $color-theme;
+
+        .iconsort {
+          color: $color-theme;
+        }
+      }
+    }
+  }
+
+  .paper-search {
+    display: inline-block;
+    margin: 0 45px;
+    width: 174px;
+
+    .iconsearch {
+      cursor: pointer;
+    }
+  }
+
+  .paper-show-answer {
+    display: inline-block;
+    margin-right: 45px;
+  }
+
+  .paper-add-black {
+    display: inline-block;
+
+    .add-btn {
+      cursor: pointer;
+      padding: 7px 13px;
+      border-radius: 13px;
+      color: white;
+      background: $color-theme;
+
+      .el-icon-plus {
+        font-size: 13px;
+        margin-right: 6px;
+      }
+    }
+  }
+}
+
+.paper-content {
+  padding: 0 20px;
+}
+</style>

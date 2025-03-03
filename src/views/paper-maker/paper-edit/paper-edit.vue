@@ -1,0 +1,477 @@
+<template>
+  <div class="paper-edit">
+    <div class="edit-header">
+      <h3 class="edit-title color-3 font-16">
+        试题统计
+      </h3>
+      <span
+        class="paper-empty"
+        @click="showEmptyDialog"
+      >
+        <i class="iconfont iconnonebg-delete" />
+        <span class="text">清空</span>
+      </span>
+    </div>
+    <div class="edit-sum">
+      <span class="item">分数：<em class="num">{{ paperData.totalScore }}</em></span>
+      <span class="item">题数：<em class="num">{{ paperData.totalCount }}</em></span>
+    </div>
+    <div class="edit-body">
+      <div
+        v-for="part in questionsDataTemp"
+        :key="part.ordinal"
+        class="edit-part"
+      >
+        <div class="group-name color-3 font-b">
+          {{ part.name }}
+        </div>
+        <Draggable
+          group="cp_drag_type"
+          drag-class="dragClassType"
+          @update="e => updateDragType(e, part.ordinal)"
+          @add="e => addDragType(e, part.ordinal)"
+        >
+          <div
+            v-for="(item, index) in part.list"
+            :key="item.questionType"
+            class="edit-item dragClassType"
+            :data-type="item.questionType"
+          >
+            <div class="edit-item-top">
+              <strong class="type color-3">
+                <span class="order">{{ $filters.simplifiedChinese(item.typeIndex) }}.
+                </span>
+                <span class="text">{{ item.questionTypeName }}</span>
+              </strong>
+              <div class="edit-operate">
+                <el-popover
+                  placement="top"
+                  class="operate-order"
+                  popper-class="order-popover"
+                  trigger="hover"
+                >
+                  <ul class="order-list">
+                    <li
+                      v-for="orderItem in orderList"
+                      :key="orderItem.value"
+                      class="order-item"
+                      @click="updateQuestionOrder(orderItem.value, item, index)"
+                    >
+                      {{ orderItem.text }}
+                    </li>
+                  </ul>
+                  <template #reference>
+                    <span class="operate-btn">排序</span>
+                  </template>
+                </el-popover>
+                <span
+                  class="operate-btn delete-btn"
+                  @click="showDeleteDialog(item.questionType)"
+                >删除</span>
+              </div>
+            </div>
+            <div class="edit-item-content">
+              <ul class="item-num-body clearfix">
+                <Draggable
+                  group="cp_drag_question"
+                  drag-class="dragClassQues"
+                  @update="e => updateDrag(e, part.ordinal, item.questionType)"
+                  @add="e => addDrag(e, part.ordinal, item.questionType)"
+                >
+                  <li
+                    v-for="subItem in item.list"
+                    :key="subItem.questionId"
+                    class="dragClassQues item-num-box J_drag_grid"
+                    :data-qid="subItem.questionId"
+                    :data-type="item.questionType"
+                    @click="scrollToElement(subItem.questionId)"
+                  >
+                    <span class="num">{{ subItem.questionNum }}</span>
+                  </li>
+                </Draggable>
+              </ul>
+            </div>
+          </div>
+        </Draggable>
+      </div>
+    </div>
+    <div
+      class="ques-recycle"
+      @click="toRecycle"
+    >
+      <i class="iconfont iconhuishouzhan" />
+      试题回收站
+      <!-- <el-button class="btn btn-light" @click="toRecycle">试题回收站</el-button> -->
+    </div>
+    <div class="edit-footer">
+      <el-button
+        class="btn btn-light"
+        @click="goSelectQuestion"
+      >
+        继续选题
+      </el-button>
+    </div>
+    <base-dialog
+      ref="deleteDialog"
+      @comfirm="onDeleteBasket"
+    >
+      <template #dialogTips>
+        <div class="dialog-tips">
+          确认删除大题？
+        </div>
+      </template>
+    </base-dialog>
+    <base-dialog
+      ref="emptyDialog"
+      @comfirm="onEmptyBasket"
+    >
+      <template #dialogTips>
+        <div class="dialog-tips">
+          确认清空全部试题吗？
+        </div>
+      </template>
+    </base-dialog>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+// import { paperOptions } from '@/common/config/paperOptions'
+import BaseDialog from '@/components/BaseDialog/BaseDialog'
+import Draggable from 'vuedraggable'
+export default {
+  components: { BaseDialog, Draggable },
+  props: {
+    questionsData: {
+      type: Array,
+      default: () => [],
+    },
+    paperData: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  setup() {
+    const deleteDialog = ref(null)
+    const emptyDialog = ref(null)
+    
+    const state = reactive({
+      orderList: [
+        {
+          value: 1,
+          text: '难度从低到高',
+        },
+        {
+          value: 2,
+          text: '难度从高到低',
+        },
+      ],
+      questionsDataTemp: [],
+      offsetTop: 0,
+      deleteType: 0, // 默认删除大题的index
+      showGroupName: false,
+      dragOptions: {
+        animation: 150,
+        delay: 10,
+        direction: 'vertical',
+        ghostClass: 'ghost-item',
+        chosenClass: 'chosen-item', // 选中项的类名
+        dragClass: 'drag-item', // 拖动项的类名
+        // emptyInsertThreshold: 20, // 鼠标距离目标元素位置
+        forceFallback: false,
+      },
+    })
+    
+    return {
+      ...toRefs(state),
+      deleteDialog,
+      emptyDialog
+    }
+  },
+  watch: {
+    questionsData(v) {
+      this.updataQuestionData()
+    },
+  },
+  computed: {
+    ...mapState(['currSubject']),
+  },
+  mounted() {
+    // 监听试卷参数配置
+    this.Bus.$on('setOptions', this.onSetOptions)
+    // 监听大题名称修改
+    this.Bus.$on('editQuestionTypeName', this.onEditQuestionTypeName)
+    // 监听分卷名称修改
+    this.Bus.$on('editGroupName', this.onEditGroupName)
+    this.updataQuestionData()
+  },
+
+  unmounted() {
+    window.removeEventListener('scroll', this.handleScroll)
+    this.Bus.$off('setOptions')
+    this.Bus.$off('editQuestionTypeName')
+    this.Bus.$off('editGroupName')
+  },
+  methods: {
+    updataQuestionData() {
+      this.questionsDataTemp = []
+      this.$nextTick(() => {
+        console.log(this.questionsData)
+        this.questionsDataTemp = this.questionsData
+      })
+    },
+    renderTypeDom(dom) {
+      let arr = []
+      for (let i = 0; i < dom.length; i++) {
+        arr.push({
+          type: dom[i].getAttribute('data-type'),
+          ordinal: i + 1,
+        })
+      }
+      return arr
+    },
+    renderItemTypeDom(dom) {
+      return {
+        type: dom.getAttribute('data-type'),
+      }
+    },
+    updateDragType(e, ordinal) {
+      let list = this.renderTypeDom(e.target.childNodes)
+      let item = this.renderItemTypeDom(e.item)
+      let params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: item.type,
+        paramsJson: JSON.stringify(list),
+        sectionId: ordinal,
+        isCross: 0,
+      }
+      this.endQuestionTypeOrderHttp(params)
+    },
+
+    addDragType(e, ordinal) {
+      let list = this.renderTypeDom(e.target.childNodes)
+      let item = this.renderItemTypeDom(e.item)
+      let params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: item.type,
+        paramsJson: JSON.stringify(list),
+        sectionId: ordinal,
+        isCross: 1,
+      }
+      this.endQuestionTypeOrderHttp(params)
+    },
+    renderDom(dom) {
+      let arr = []
+      for (let i = 0; i < dom.length; i++) {
+        arr.push({
+          questionId: dom[i].getAttribute('data-qid'),
+          ordinal: i + 1,
+        })
+      }
+      return arr
+    },
+    renderItemDom(dom) {
+      return {
+        questionId: dom.getAttribute('data-qid'),
+        type: dom.getAttribute('data-type'),
+      }
+    },
+    addDrag(e, ordinal, type) {
+      let list = this.renderDom(e.target.childNodes)
+      let item = this.renderItemDom(e.item)
+      let params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: item.type,
+        paramsJson: JSON.stringify(list),
+        sectionId: ordinal,
+        isCross: 1,
+        crossType: type,
+        questionId: item.questionId,
+      }
+      this.updateQuestionOrderHttp(params)
+    },
+    updateDrag(e, ordinal, type) {
+      let list = this.renderDom(e.target.childNodes)
+      let item = this.renderItemDom(e.item)
+      let params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: item.type,
+        paramsJson: JSON.stringify(list),
+        sectionId: ordinal,
+        isCross: 0,
+        crossType: type,
+        questionId: item.questionId,
+      }
+      this.updateQuestionOrderHttp(params)
+    },
+    updateQuestionOrderHttp(params) {
+      this.newPost(API.QUESTION_UPDATE_ORDER, params).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$emit('refreshPaperData', params)
+        } else {
+          this.$emit('refreshPaper', params)
+        }
+      })
+    },
+    // 点击滚动对应题号
+    scrollToElement(questionId) {
+      this.Bus.$emit('scrollToElement', questionId)
+    },
+    endQuestionTypeOrderHttp(params) {
+      this.newPost(API.QUESTION_UPDATE_TYPEORDER, params).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$emit('refreshPaperType', params)
+        }
+      })
+    },
+    // 更新小题难易度排序
+    updateQuestionOrder(diffOrder, orderType) {
+      let questionListOrder = []
+      let orderItem = orderType.list
+      orderItem.sort((order1, order2) => {
+        const code1 = Number(order1.questionInfo.difficulty.code)
+        const code2 = Number(order2.questionInfo.difficulty.code)
+        if (diffOrder === 1) {
+          // 升序
+          return code1 - code2
+        } else {
+          // 降序
+          return code2 - code1
+        }
+      })
+      const newOrderItem = orderItem.slice(0).sort((order1, order2) => {
+        return order1.questionNum - order2.questionNum
+      })
+      const minQuestionNum = newOrderItem[0].questionNum // 获取当前小题中的最小题号
+      orderItem.forEach((item, index) => {
+        item.questionNum = minQuestionNum + index
+        questionListOrder.push({
+          questionId: item.questionId,
+          ordinal: minQuestionNum + index,
+        })
+      })
+      // let parms = {
+      //   stage: this.currSubject.periodCode,
+      //   subject: this.currSubject.subjectCode,
+      //   type: orderItem[0].questionType,
+      //   paramsJson: JSON.stringify(questionListOrder),
+      // }
+      let quesItem = orderItem[0]
+      let params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: quesItem.questionType,
+        paramsJson: JSON.stringify(questionListOrder),
+        sectionId: orderType.pordinal,
+        isCross: 0,
+        crossType: quesItem.questionType,
+        questionId: quesItem.questionId,
+      }
+
+      this.updateQuestionOrderHttp(params)
+      // this.newPost(API.QUESTION_UPDATE_ORDER, parms).then(res => {
+      //   if (res.code === CTS.constant.SUCCESS_CODE) {
+      //   }
+      // })
+    },
+    // updateQuestionOrderHttp(params) {
+    //   this.newPost(API.QUESTION_UPDATE_ORDER, params).then((res) => {
+    //     if (res.code === CTS.constant.SUCCESS_CODE) {
+    //       this.$emit('refreshPaperData', params)
+    //     } else {
+    //       this.$emit('refreshPaper', params)
+    //     }
+    //   })
+    // },
+    // 显示删除提示框
+    showDeleteDialog(deleteType) {
+      state.deleteType = deleteType
+      deleteDialog.value.show()
+    },
+    // 删除每道大题
+    onDeleteBasket() {
+      let parms = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: state.deleteType,
+        is2Recycle: true,
+        removeType: 2,
+      }
+      this.newPost(API.DELETE_BASKET, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          deleteDialog.value.hide()
+          this.$emit('refreshPaperRecycle')
+        }
+      })
+    },
+    // 显示清空提示框
+    showEmptyDialog() {
+      emptyDialog.value.show()
+    },
+    // 清空试题篮
+    onEmptyBasket() {
+      let parms = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        removeType: 3,
+      }
+      this.newPost(API.DELETE_BASKET, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.$refs.emptyDialog.hide()
+          this.goSelectQuestion()
+        }
+      })
+    },
+    // 跳转继续选题
+    goSelectQuestion() {
+      this.$router.push({
+        path: '/paper/chapterques/selection',
+      })
+    },
+    // 监听试卷参数配置
+    onSetOptions(options) {
+      if (options.includes(8)) {
+        this.showGroupName = true
+      } else {
+        this.showGroupName = false
+      }
+    },
+    // 监听大题名称修改
+    onEditQuestionTypeName(paramsObj) {
+      this.questionsData.forEach(item => {
+        const index = item.list.findIndex(
+          subItem => subItem.questionType === paramsObj.typeCode,
+        )
+        if (index > -1) {
+          item.list[index].questionTypeName = paramsObj.text
+          item.list[index].typesInfo.text = paramsObj.text
+        }
+      })
+      console.log('paper-edit.vue')
+    },
+    // 监听分卷名称修改
+    onEditGroupName(paramsObj) {
+      this.questionsData[paramsObj.ordinal - 1].name = paramsObj.text
+      this.questionsData[paramsObj.ordinal - 1].groupName.text = paramsObj.text
+    },
+    // 跳转试题回收转锚点
+    toRecycle() {
+      this.$emit('toRecycle')
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+/* SCSS styles */
+</style>
+<style lang="scss" scoped>
+/* SCSS styles */
+</style>

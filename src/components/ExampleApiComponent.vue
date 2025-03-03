@@ -1,0 +1,53 @@
+<template>
+  <div class="example-api-component">
+    <div v-if="loading">
+      Loading...
+    </div>
+    <div v-if="error">
+      Error: {{ error.message }}
+    </div>
+    <div v-if="data">
+      <h3>Data loaded successfully:</h3>
+      <pre>{{ JSON.stringify(data, null, 2) }}</pre>
+    </div>
+  </div>
+</template>
+
+<script>
+import { defineComponent, ref, onMounted } from 'vue'
+import { useApi } from '@/api/useApi'
+import { API } from '@/api/config'
+
+export default defineComponent({
+  name: 'ExampleApiComponent',
+  setup() {
+    const { get, loading, error } = useApi()
+    const data = ref(null)
+
+    onMounted(async () => {
+      // Example of using the new API client
+      data.value = await get(API.PAPER_BUILDER_GET_YEARS)
+    })
+
+    return {
+      loading,
+      error,
+      data
+    }
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+.example-api-component {
+  padding: 20px;
+  
+  pre {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    overflow: auto;
+    max-height: 400px;
+  }
+}
+</style>

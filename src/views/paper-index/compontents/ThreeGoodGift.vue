@@ -1,0 +1,130 @@
+<template>
+  <el-dialog
+    v-model:visible="dialogData.visible"
+    custom-class="dia-three-gift-success"
+    :title="dialogData.title"
+    :modal-append-to-body="false"
+    :modal="false"
+    :close-on-click-modal="false"
+    :show-close="false"
+    :width="dialogData.width"
+  >
+    <div class="three-gift-success-body">
+      <CpModal />
+      <img
+        class="three-gift-background"
+        src="@/assets/images/activity/goodgift/21.png"
+      >
+
+      <div class="three-gift-close">
+        <img
+          src="@/assets/images/activity/goodgift/18.png"
+          @click="hidden"
+        >
+      </div>
+
+      <div class="three-gift-footer">
+        <span
+          class="no-participation"
+          @click.stop="hidden()"
+        >暂不参与</span>
+        <span
+          class="go-participation"
+          @click.stop="participation()"
+        >
+          去参与
+        </span>
+      </div>
+    </div>
+  </el-dialog>
+</template>
+
+<script>
+  import CpModal from '@/components/CpFan/Category/CpModal'
+  export default {
+    components: { CpModal },
+    data() {
+      return {
+        dialogData: {
+          title: '',
+          visible: true,
+          width: '651px',
+        },
+      }
+    },
+    methods: {
+      participation() {
+        // this.$router.push({ path: '/fullactive/goodgift' })
+        this.hidden()
+        this.openSystemPathLink('fullactive/goodgift')
+      },
+      hidden() {
+        this.$emit('endProcess', 'threeGoodgift')
+      },
+    },
+  }
+</script>
+
+<style scoped lang="scss">
+  .three-gift-success-body {
+    position: relative;
+    .three-gift-background {
+      width: 651px;
+      height: 463px;
+      -webkit-user-drag: none;
+    }
+    .three-gift-close {
+      position: absolute;
+      right: 30px;
+      top: 85px;
+      font-size: 30px;
+      img {
+        cursor: pointer;
+        -webkit-user-drag: none;
+      }
+    }
+    .three-gift-footer {
+      position: absolute;
+      width: 100%;
+      bottom: 40px;
+      text-align: center;
+      .no-participation {
+        display: inline-block;
+        width: 135px;
+        height: 41px;
+        background: #b5b7c7;
+        border-radius: 20px;
+        color: white;
+        line-height: 41px;
+        text-align: center;
+        margin-right: 30px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .go-participation {
+        display: inline-block;
+        width: 135px;
+        height: 41px;
+        background: #ff6800;
+        border-radius: 20px;
+        color: white;
+        line-height: 41px;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+        &:hover {
+          background: #fa6a0b;
+        }
+      }
+    }
+  }
+
+  :deep(.el-dialog.dia-three-gift-success) {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 10px;
+    .el-dialog__header {
+      display: none;
+    }
+  }
+</style>

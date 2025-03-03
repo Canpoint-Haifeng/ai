@@ -1,0 +1,475 @@
+<template>
+  <div>
+    <el-drawer
+      v-model:visible="visible"
+      title="试题库"
+      direction="rtl"
+      size="800px"
+    >
+      <div class="drawer_content">
+        <div class="knowledge_point">
+          <el-popover
+            v-model="popoverVisible"
+            placement="bottom-start"
+            width="700"
+            trigger="click"
+            popper-class="version_grade"
+          >
+            <treeSelect
+              v-model="popoverVisible"
+              @select="selectNode"
+            />
+            <template #reference>
+              <div class="checked">
+                <span>{{ knowledge ? knowledge.name : '请选择知识点' }}</span>
+                <i class="iconfont icon-down_line" />
+              </div>
+            </template>
+          </el-popover>
+        </div>
+        <div
+          class="question_filter"
+          :style="{
+            height: showMore ? 'auto' : '110px',
+            overflow: showMore ? 'inherit' : 'hidden',
+          }"
+        >
+          <filterItem
+            v-for="(v, i) in filterOptions"
+            ref="filterItem"
+            :key="v.i"
+            :label="v.label"
+            :list="v.list"
+            :allow-multiple="v.allowMultiple"
+            @change="filterChange(v.key, $event)"
+          />
+          <more
+            ref="more"
+            @change="moreChange"
+          />
+          <div class="input">
+            <span>搜索</span>
+            <el-input
+              v-model="formData.keyword"
+              placeholder="请输入内容"
+              size="small"
+              @keyup.enter="currentChange(1)"
+            >
+              <template #suffix>
+                <i
+                  class="iconfont icon-search_3_line"
+                
+                  @click="currentChange(1)"
+                />
+              </template>
+            </el-input>
+          </div>
+          <el-button
+            class="more-btn"
+            type="text"
+            @click="showMore = !showMore"
+          >
+            {{ showMore ? '收起筛选' : '展开筛选'
+            }}<i
+              :class="showMore ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
+            />
+          </el-button>
+        </div>
+
+        <div class="sort_total">
+          <div class="sort_list">
+            <span
+              :class="{ active: formData.sortType === 1 }"
+              @click="changeSortType(1)"
+            >
+              综合<i class="iconfont icon-transfer_2_line" />
+            </span>
+            <span
+              :class="formData.sortType === 2 ? 'active' : ''"
+              @click="changeSortType(2)"
+            >最新<i class="iconfont icon-transfer_2_line" /></span>
+            <span
+              :class="formData.sortType === 3 ? 'active' : ''"
+              @click="changeSortType(3)"
+            >最热<i class="iconfont icon-transfer_2_line" /></span>
+          </div>
+          <div class="total">
+            共 <span>{{ pagination.total }}</span> 题
+          </div>
+        </div>
+        <div
+          id="question-list"
+          class="question_list"
+        >
+          <noresult-common
+            v-if="!pagination.total"
+            #empty
+            text="很遗憾，没有找到您要的试题"
+          />
+          <div
+            v-for="(v, i) in questionList"
+            :key="v.questionId"
+            class="question_item"
+          >
+            <question
+              :index="i + 1"
+              :info="v"
+              type="3"
+              @change="changeQuestion(v, i)"
+            />
+          </div>
+        </div>
+        <div class="pagination">
+          <el-pagination
+            v-if="pagination.total"
+            background
+            layout="prev, pager, next, jumper"
+            :total="pagination.total"
+            :page-size="pagination.pageSize"
+            :current-page="pagination.pageNum"
+            @current-change="currentChange"
+          />
+        </div>
+      </div>
+    </el-drawer>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import { mapState } from 'vuex'
+import treeSelect from './treeSelect.vue'
+import question from './question.vue'
+import filterItem from './filterItem.vue'
+import more from './more.vue'
+import scrollIntoView from 'scroll-into-view'
+export default {
+  components: {
+    treeSelect,
+    question,
+    filterItem,
+    more,
+  },
+  inject: ['app'],
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
+    selectQuestions: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  data() {
+    return {
+      showMore: false, // 显示更多
+      type: '',
+      filterOptions: [
+        {
+          label: '等级',
+          i: 1,
+          key: 'level',
+          list: [
+            { label: '网络级', value: '1,2' },
+            { label: '精品级', value: 3 },
+            { label: '出版级', value: 4 },
+          ],
+        },
+        {
+          label: '题型',
+          i: 2,
+          key: 'questionType',
+          list: [
+            { label: '单选题', value: 1 },
+            { label: '多选题', value: 2 },
+            { label: '填空题', value: 3 },
+            { label: '解答题', value: 4 },
+            { label: '判断题', value: 5 },
+          ],
+        },
+        {
+          label: '难度',
+          i: 3,
+          key: 'difficult',
+          list: [
+            { label: '容易', value: 1 },
+            { label: '较易', value: 2 },
+            { label: '中等', value: 3 },
+            { label: '较难', value: 4 },
+            { label: '困难', value: 5 },
+          ],
+        },
+        // { label: '年份', i: 4, key: 'years', list: [{ label: '2024', value: 1 }, { label: '2023', value: 2 }, { label: '2022', value: 3 }, { label: '2021', value: 4 }, { label: '更早', value: 5 }], allowMultiple: true },
+        // { label: '场景', i: 5, key: 'scene', list: [{ label: '预习', value: 1 }, { label: '作业', value: 2 }, { label: '单元测', value: 3 }, { label: '月考', value: 4 }, { label: '期中', value: 5 }, { label: '期末', value: 6 }] },
+      ],
+      formData: {
+        keyword: '',
+        sortType: 1,
+      },
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      questionList: [],
+      knowledge: {
+        name: '',
+        id: '',
+      },
+      popoverVisible: false,
+    }
+  },
+
+  watch: {
+    value(v) {
+      if (v) {
+        this.knowledge = this.app.currentKnowledge
+        console.log('selectQuestions', this.selectQuestions)
+        this.getList()
+      } else {
+        this.reset()
+      }
+    },
+  },
+  computed: {
+    ...mapState(['currSubject', 'versionGrade']),
+    visible: {
+      get() {
+        return this.value
+      },
+      set(val) {
+        this.$emit('input', val)
+      },
+    },
+  },
+  created() {
+    this.type = this.app.type
+    this.getFilterList()
+  },
+
+  methods: {
+    reset() {
+      (this.formData = {
+        keyword: '',
+        sortType: 1,
+      }),
+        (this.questionList = [])
+      this.pagination.total = 0
+      this.pagination.pageNum = 1
+      const filterItemRefs = this.$refs.filterItem
+      if (Array.isArray(filterItemRefs)) {
+        filterItemRefs.forEach(v => {
+          if (v && typeof v.reset === 'function') {
+            v.reset()
+          }
+        })
+      }
+      const moreRef = this.$refs.more
+      if (moreRef && typeof moreRef.reset === 'function') {
+        moreRef.reset()
+      }
+    },
+    selectNode(v) {
+      this.type = v.catalogType
+      this.knowledge.id = v.uuid
+      this.knowledge.name = v.name
+      this.popoverVisible = false
+      this.pagination.pageNum = 1
+      this.getList()
+    },
+    filterChange(k, v) {
+      this.formData[k] = v
+      this.pagination.pageNum = 1
+      this.getList()
+    },
+    moreChange(v) {
+      this.formData = { ...this.formData, ...v }
+      this.pagination.pageNum = 1
+      this.getList()
+    },
+    changeSortType(i) {
+      this.pagination.pageNum = 1
+      this.formData.sortType = i
+      this.getList()
+    },
+    currentChange(i) {
+      this.pagination.pageNum = i
+      document.getElementById('question-list').scrollTo({
+        top: 0,
+      })
+      this.getList()
+    },
+    getList() {
+      console.log(this.formData)
+      const arrayParams = [
+        'level',
+        'questionType',
+        'difficult',
+        'years',
+        'from',
+      ]
+      const arrayValues = {}
+      arrayParams.forEach(key => {
+        arrayValues[key] = this.formData[key] ? [this.formData[key]] : []
+      })
+
+      const params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        catalogueType: 9 + +this.type,
+        ...this.formData,
+        ...arrayValues,
+        pageNum: this.pagination.pageNum,
+        pageSize: this.pagination.pageSize,
+        catalogueTreeId:
+          this.knowledge && this.knowledge.id ? [this.knowledge.id] : [],
+        //excludeQuestionIds: this.selectQuestions,
+      }
+      this.newPost(
+        { urlPath: '/lesson-app/general/question/getQuestions' },
+        params,
+      ).then(res => {
+        if (res.code == 200) {
+          console.log(this.selectQuestions)
+          this.questionList = res.data.records.map(item => {
+            if (this.selectQuestions.includes(item.questionId)) {
+              item.disabled = true
+            } else {
+              item.disabled = false
+            }
+            return item
+          })
+          this.pagination.total = res.data.total
+        } else {
+          this.questionList = []
+          this.pagination.total = 0
+        }
+      })
+    },
+    getFilterList() {
+      const params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+      }
+      this.apiGet(
+        { urlPath: '/lesson-app/config/getQuestionType' },
+        params,
+      ).then(res => {
+        const list = res.data || []
+        list.forEach(item => {
+          item.label = item.name
+          item.value = item.id + ''
+        })
+        this.filterOptions.splice(1, 1, { ...this.filterOptions[1], list })
+      })
+    },
+    changeQuestion(v) {
+      console.log(v, i, this.type)
+      console.log(this.selectQuestions)
+      v.disabled = true
+      this.$set(this.questionList, i, v)
+      this.$emit('select', v)
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+  
+:deep(.el-drawer) {
+  .el-drawer__body .drawer_content {
+    padding: 0 20px;
+    .knowledge_point {
+      display: flex;
+      .checked {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        span {
+          font-weight: bold;
+          font-size: 16px;
+          margin-right: 4px;
+        }
+      }
+    }
+    .question_filter {
+      border-radius: 8px;
+      border: 1px solid #e2e2e2;
+      padding: 20px;
+      margin: 16px 0;
+      position: relative;
+      transition: height 0.5s ease;
+      .more-btn {
+        position: absolute;
+        bottom: 12px;
+        right: 10px;
+      }
+      .input {
+        display: flex;
+        align-items: center;
+        > span {
+          font-weight: bold;
+          font-size: 14px;
+          margin-right: 30px;
+          line-height: 24px;
+        }
+        .el-input {
+          width: 380px;
+          input {
+            border-radius: 4px;
+          }
+          .el-input__suffix {
+            display: flex;
+            align-items: center;
+          }
+          .iconfont {
+            font-size: 20px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .sort_total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 0 12px;
+      .sort_list {
+        display: flex;
+        align-items: center;
+        > span {
+          margin-right: 30px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          &.active,
+          &:hover {
+            color: #487fff;
+          }
+          i {
+            font-size: 16px;
+            transform: translate(-4px, 1px) rotateX(180deg);
+          }
+        }
+      }
+      .total {
+        font-size: 12px;
+        span {
+          color: #ff6900;
+        }
+      }
+    }
+    .question_list {
+      height: calc(100vh - 300px);
+      overflow: auto;
+    }
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+  }
+}
+</style>

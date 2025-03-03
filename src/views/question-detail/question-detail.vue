@@ -1,0 +1,596 @@
+<template>
+  <div class="content-container">
+    <breadcrumb :crumbs-data="crumbsData" />
+
+    <div class="question-detail clearfix">
+      <div
+        v-if="goodques"
+        class="good-question-top"
+      >
+        <div class="week-ques">
+          每周好题
+        </div>
+        <div
+          class="previous"
+          @click="openGoodQuestionList"
+        >
+          查看往期<i class="el-icon-arrow-right" />
+        </div>
+      </div>
+      <ul
+        ref="questionDetailRef"
+        class="question-content"
+      >
+        <question-item
+          v-if="questionDetail.questionInfo"
+          :question-item="questionDetail"
+          :item-obj="dataObj"
+          :show-view="1"
+          :show-type-part="true"
+          :show-share-question="true"
+          :reload-share-img-url="true"
+          :is-show-cancel-share="!!shareId"
+          show-recommend
+          @check-question-detail="onCheckQuestionDetail"
+          @collect-question="onCollectQuestion"
+          @show-report-dialog="onShowReportDialog"
+          @add-question-box="onAddQuestionBoxCount"
+          @delete-question-box="onDeleteQuestionBox"
+          @change-rate-score="onChangeRateScore"
+          @click-cancel-share="clickCancelShare"
+          @create-share-id="getQueryIsLike"
+          @recommend-question="onRecommendQuestion"
+        >
+          <template #reason>
+            <div
+              v-if="goodReason"
+              class="select-good-question"
+            >
+              <span
+                class="good-question-content"
+                v-html="goodReason"
+              />
+            </div>
+            <div v-else />
+          </template>
+        </question-item>
+        <div
+          v-else
+          style="width: 100%; height: 500px"
+        />
+      </ul>
+    </div>
+
+    <!-- <div class="question-recommend">
+      <h3 class="recommend-title color-3">类题推荐</h3>
+      <div class="quesiton-option-segment">
+        <question-type
+          v-if="stageSubject"
+          :defaultTypeCode="defaultTypeCode"
+          :stageSubject="stageSubject"
+          @selectType="selectType"
+        ></question-type>
+        <question-diff
+          :defaultQuesDiff="defaultQuesDiff"
+          @selectDiff="selectDiff"
+        ></question-diff>
+      </div>
+      <div class="recommend-content" v-if="questionsData.list.length > 0">
+        <ul class="question-content" ref="questionsDatasDetailRef">
+          <question-item
+            v-for="(item, index) in questionsData.list"
+            :key="index"
+            :questionItem="item"
+            :questionIndex="index"
+            @checkQuestionDetail="onCheckQuestionDetail"
+            @collectQuestion="onCollectQuestion"
+            @showReportDialog="onShowReportDialog"
+            @addQuestionBox="onAddQuestionBox"
+            @deleteQuestionBox="onDeleteQuestionBox"
+            @toggleExplain="onToggleExplain"
+          >
+          </question-item>
+        </ul>
+      </div>
+      <noresult-common
+        class="noresult-wrapper"
+        v-else
+        text="非常抱歉，暂时没有合适的试题哦！"
+      >
+      </noresult-common>
+    </div> -->
+    <!--试题篮组件-->
+    <app-tool-basket />
+    <!-- 收藏成功提示框 -->
+    <collect-message
+      ref="collectMessage"
+      dialog-title="试题"
+      collect-path="/paper/resources/collect?tabActiveName=QuesCollect"
+    />
+    <!-- 纠错提示框 -->
+    <report-dialog
+      ref="reportDialog"
+      @report-error="onReportError"
+    />
+    <!-- 推荐试题 弹框 -->
+    <RecommendQuestionDia ref="recommendQuestionRef" />
+    <!-- 登录弹窗 -->
+    <app-login ref="appLogin" />
+  </div>
+</template>
+
+<script>
+  import CTS from '@/common/js/constant'
+  import { mapState } from 'vuex'
+  import { API } from '@/api/config'
+  import { isLogin } from '@/common/js/util'
+
+  import questionItemMixin from '@/common/mixins/questionItemMixin'
+  import Breadcrumb from '@/components/Breadcrumb/Breadcrumb'
+  import NoresultCommon from '@/components/Noresult/Noresult-common'
+  import QuestionType from '@/components/Category/QuestionTypeStageSubject'
+  import QuestionDiff from '@/components/Category/QuestionDiff'
+  import CpCommonDialog from '@/components/AuthorityVip/CpCommonDialog'
+  export default {
+    components: {
+      Breadcrumb,
+      NoresultCommon,
+      QuestionType,
+      QuestionDiff,
+    },
+    mixins: [questionItemMixin],
+    data() {
+      return {
+        crumbsData: [
+          {
+            path: '',
+            isLink: false,
+            text: '试题详情',
+          },
+        ],
+        questionId: 0,
+        source: 0,
+        questionDetail: {},
+        knowledageCode: 0,
+        knowledgesData: [],
+        questionsData: {
+          pageSize: 5,
+          currPage: 1,
+          totalCount: 0,
+          list: [],
+        },
+        defaultTypeCode: '',
+        defaultQuesDiff: '',
+        stageSubject: '',
+        goodques: '',
+        goodReason: '',
+        shareId: '',
+        dataObj: null,
+      }
+    },
+    computed: {
+      ...mapState(['currSubject', 'schoolVerify']),
+    },
+    watch: {
+      $route(to) {
+        this.questionId = to.query.questionId
+        this.getSchoolQuestionDetail()
+      },
+    },
+    created() {
+      let query = this.$route.query
+      if (query.questionId) {
+        this.questionId = query.questionId
+        this.goodques = query.good || ''
+        this.source = query.source
+        this.rid = query.id
+        this.initQuestionDetial()
+      } else {
+        this.$router.back()
+      }
+    },
+    methods: {
+      async initQuestionDetial() {
+        await this.getSchoolQuestionDetail()
+        // this.getQueryIsLike()
+        if (this.goodques) {
+          this.greatQuesExplain()
+          this.eventQuestionStatistics(this.questionId, 2)
+        }
+      },
+      clickCancelShare() {
+        CpCommonDialog.openDialog({
+          moduleC: 'CpConfigDialog',
+          data: {
+            title: '取消分享',
+            content: '是否确认取消分享？',
+            comfirm: (status) => {
+              if (status) {
+                this.cancelShareHttp()
+              }
+            },
+          },
+        })
+      },
+      cancelShareHttp(item) {
+        let params = {
+          id: this.shareId,
+        }
+        this.apiGet(API.CENTER_QUESTIONSHARE_CANCELSHAREQUESTION, params, {
+          showLoading: true,
+        }).then((res) => {
+          if (this.checkoutRes(res)) {
+            this.showMessage('取消成功', 'success')
+            this.shareId = ''
+          } else {
+            this.showMessage(res.msg)
+          }
+        })
+      },
+      getQueryIsLike() {
+        if (isLogin()) {
+          this.apiGet(API.QUESIOTN_QUESTIONSHARE_QUERYISLIKE, {
+            qid: this.questionId,
+            subject: this.currSubject.subjectCode,
+          }).then((res) => {
+            if (this.checkoutRes(res)) {
+              if (res.data.isLike == 1) {
+                this.shareId = res.data.shareId
+              } else {
+                this.shareId = ''
+              }
+              console.log(this.shareId)
+            }
+          })
+        }
+      },
+      openGoodQuestionList() {
+        this.czcTrackEvent([
+          '_trackEvent',
+          '每周好题详情页',
+          '点击查看往期',
+          '次数',
+        ])
+        this.openSystemPathLink('question/goodquestions')
+      },
+
+      selectType(v) {
+        this.defaultTypeCode = v.code+''
+        this.getQuestionRelation()
+      },
+      selectDiff(v) {
+        this.defaultQuesDiff = v.code
+        this.getQuestionRelation()
+      },
+      getSchoolQuestionDetail() {
+        let query = this.$route.query
+        let parms = {
+          stage: this.currSubject.periodCode,
+          subject: this.currSubject.subjectCode,
+          questionId: this.questionId,
+          source: this.source,
+          isVerify: false,
+          year: query.year,
+          questionSource: query.qscource,
+          useCount: query.useCount || '',
+          updateTime: query.ut || '',
+        }
+        let set = {
+          showLoading: true,
+          message: '加载中...',
+        }
+        this.questionDetail = {
+          isAddedToBox: 1,
+          isCollected: 1,
+          useCount: 20,
+          questionInfo: JSON.parse(localStorage.getItem('bb')),
+          questionSourceList: [],
+          source: 1,
+          showExplain: true,
+          showKnowledge: true,
+          hideQuestionId: true,
+        }
+        return
+        // QUESTION_DETAIL  SCHOOL_QUES_GETQUESINFO
+        return this.apiGet(API.SCHOOL_QUES_GETQUESINFO, parms, set).then(
+          (res) => {
+            if (res.code === CTS.constant.SUCCESS_CODE) {
+              res.data.showExplain = true
+              res.data.showKnowledge = true
+              res.data.hideQuestionId = true
+              let resData = res.data
+              let quesData = {
+                ...resData,
+                isAddedToBox: resData.isAddQuesBox,
+                isCollected: resData.isCollect,
+                useCount: resData.useCount,
+                questionInfo: {...resData},
+                questionSourceList: resData.questionSourceList,
+                source: this.source,
+                showExplain: true,
+                showKnowledge: true,
+                hideQuestionId: true,
+                createTime: resData.createTime || '',
+              }
+              this.defaultTypeCode = resData.quesType.code+''
+              if (resData.difficulty) {
+                this.defaultQuesDiff = resData.difficulty.code
+              }
+
+              if (resData.stageSubject && resData.stageSubject.code) {
+                this.stageSubject = resData.stageSubject.code
+              } else {
+                this.stageSubject = this.currSubject.subjectCode
+              }
+              this.questionDetail = quesData
+              console.log(quesData, 'quesData----')
+              this.getQuestionRelation()
+
+              this.$nextTick(() => {
+                this.onRenderJaxPage('questionDetailRef')
+              })
+            }
+          },
+        )
+      },
+      // 获取试题详情
+      greatQuesExplain() {
+        let params = {
+          id: this.rid,
+        }
+        this.apiGet(API.QUESITON_GREATRECOMMEND_EXPLAIN, params).then((res) => {
+          if (this.checkoutRes(res)) {
+            this.goodReason = res.data.reason || ''
+            this.dataObj = res.data
+          }
+        })
+        // let params = {
+        //   qid: this.questionId,
+        // }
+        // this.apiGet(API.QUESITON_GREATRECOMMEND_EXPLAIN, params).then((res) => {
+        //   if (this.checkoutRes(res)) {
+        //     this.goodReason = res.data.reason || ''
+        //     this.dataObj = res.data
+        //   }
+        // })
+      },
+
+      // 查询类题推荐
+      async getQuestionRelation() {
+        if (!this.teachBook) {
+          this.teachBook = await this.getBookCategoryId(this.currSubject)
+        }
+        let parms = {
+          questionId: this.questionId,
+          questionType: this.defaultTypeCode || '',
+          difficulty: this.defaultQuesDiff || '',
+          currPage: this.questionsData.currPage,
+          pageSize: this.questionsData.pageSize,
+        }
+        this.apiGet(API.QUESTION_RELATION, parms).then((res) => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            // 类题推荐 的试题 都是题库的试题 source 为1
+            const list = res.data.records
+            list.forEach((item, index) => {
+              item.questionInfo = {...item}
+              item.questionNum = index + 1
+              item.source = 1
+              item.showQuestionNum = true
+            })
+            this.questionsData.list = list
+
+            this.$nextTick(() => {
+              this.onRenderJaxPage('questionsDatasDetailRef')
+            })
+          }
+        })
+      },
+      onPageCurrChange(currPage) {
+        this.questionsData.currPage = currPage
+        this.getQuestionRelation()
+      },
+      // 知识点选择切换
+      // selectItem(item) {
+      //   this.knowledageCode = item.code
+      //   this.questionsData = {
+      //     pageSize: 5,
+      //     currPage: 1,
+      //     totalCount: 0,
+      //     list: [],
+      //   }
+      //   this.getQuestionRelation()
+      // },
+      // 监听试题篮删除试题类型或清空
+      onDeleteBasket() {
+        this.getSchoolQuestionDetail()
+      },
+      onAddQuestionBoxCount(v) {
+        if (this.goodques) {
+          this.czcTrackEvent([
+            '_trackEvent',
+            '每周好题详情页',
+            '点击加入试题篮',
+            '次数',
+          ])
+          this.eventQuestionStatistics(this.questionId, 1)
+        }
+        this.onAddQuestionBox(v)
+      },
+    },
+  }
+</script>
+
+<style lang="scss" scoped>
+  .question-detail {
+    background: $color-white;
+    .question-top {
+      height: 40px;
+      line-height: 40px;
+      padding: 0 20px;
+      border-bottom: 1px solid $color-background-l;
+      .item {
+        margin-right: 36px;
+        .text {
+          color: $color-theme-ll;
+        }
+      }
+    }
+  }
+  .question-content {
+    overflow: hidden;
+    padding: 20px 20px 0 20px;
+    :deep(.question-wrapper-faber) {
+      .collected-btn {
+        display: none !important;
+      }
+    }
+  }
+  .question-attr {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    background: $color-white;
+    padding: 30px 20px 20px;
+    .attr-item {
+      @include flex();
+      margin-bottom: 10px;
+      .attr-label {
+        width: 84px;
+        line-height: 24px;
+        align-self: flex-start;
+      }
+      .attr-list {
+        width: 1030px;
+      }
+      .attr-text {
+        display: inline-block;
+        border-radius: 4px;
+        border: 1px solid #eee;
+        padding: 4px 10px;
+        margin-right: 10px;
+        margin-bottom: 5px;
+      }
+    }
+  }
+  .question-recommend {
+    margin-top: 16px;
+    margin-bottom: 70px;
+    background: $color-white;
+    overflow: hidden;
+    .recommend-title {
+      font-size: 18px;
+      line-height: 50px;
+      padding-left: 20px;
+      padding-top: 8px;
+      border: 1px solid #eeeeee;
+    }
+  }
+  .recommend-tabs {
+    position: relative;
+    padding: 0 20px;
+    .recommend-btn {
+      position: absolute;
+      right: 20px;
+      top: 0;
+      color: $color-theme;
+      cursor: pointer;
+      transition: 0.2s;
+      &:hover {
+        color: $color-theme-d;
+      }
+      .iconchange {
+        display: inline-block;
+        margin-right: 8px;
+        font-size: $font-size-medium;
+      }
+    }
+  }
+  .tabs-content {
+    @include flex();
+    justify-content: flex-start;
+    .recommend-label {
+      width: 75px;
+      line-height: 24px;
+      align-self: flex-start;
+      margin-right: 4px;
+      color: $color-text-d;
+      font-weight: 700;
+    }
+    .recommend-list {
+      width: 1030px;
+      .recommend-item {
+        font-size: 14px;
+        display: inline-block;
+        border-radius: 16px;
+        line-height: 32px;
+        padding: 0 40px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: #666666;
+        background: #f3f7fb;
+        margin-right: 20px;
+        margin-bottom: 10px;
+        &:hover {
+          color: $color-theme;
+        }
+        &.active {
+          color: #ffffff;
+          background: $color-theme;
+        }
+      }
+    }
+  }
+  .noresult-wrapper {
+    margin-bottom: 40px;
+    overflow: hidden;
+  }
+  .pagination-container {
+    margin-bottom: 20px;
+  }
+  .recommend-content {
+    // padding: 10px 20px;
+    min-height: 300px;
+  }
+  .quesiton-option-segment {
+    padding: 20px 20px 0 20px;
+  }
+
+  .select-good-question {
+    margin: 20px 20px 0px 20px;
+    padding: 15px 20px 15px 20px;
+    background-color: #fff8f1;
+    border-radius: 6px;
+    .good-question-title {
+      font-weight: bold;
+      color: #666666;
+    }
+    .good-question-content {
+      color: #666666;
+      line-height: 24px;
+      letter-spacing: 1px;
+    }
+  }
+  .good-question-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 25px 20px 17px 20px;
+    border-bottom: 1px solid #eeeeee;
+    align-items: baseline;
+    .week-ques {
+      line-height: 18px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333333;
+    }
+    .previous {
+      cursor: pointer;
+      user-select: none;
+      line-height: 14px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #4b8ff5;
+      .el-icon-arrow-right {
+        padding-left: 5px;
+      }
+    }
+  }
+</style>

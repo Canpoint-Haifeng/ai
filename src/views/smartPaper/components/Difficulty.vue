@@ -1,0 +1,560 @@
+<template>
+  <div class="difficultyWrap">
+    <div class="difficulty_title">
+      <div class="title_border">
+        选择难度
+      </div>
+      <span>当前试卷难度（整卷的难度）：<i>{{ getCoefficient }}</i></span>
+    </div>
+    <!-- <div class="title">
+      选择难度及年份
+      <span class="titleTip">（难度系数0.5）</span>
+    </div> -->
+    <div>
+      <div class="flex aloneOption">
+        <div class="sliderAlone">
+          <el-slider
+            v-model="step"
+            class="alone"
+            :min="0"
+            :max="100"
+            :show-tooltip="false"
+            :marks="marks"
+            :format-tooltip="forMatToolTip"
+            @change="getQuestionDiffNum"
+            @input="stepChange"
+          />
+          <div class="textWrap">
+            <div
+              v-for="(v, i) in text"
+              :key="v"
+              @click="setNum(i)"
+            >
+              {{ v }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="title_border differentiate">
+      区分度
+    </p>
+    <div>
+      <div class="flex">
+        <!-- <div class="difficultyLevel">
+          <div class="txt">
+            <span>高</span>
+            <span>低</span>
+          </div>
+          <div class="bar">
+            <i :style="{height: (1-getCoefficient)*100+'%'}"></i>
+          </div>
+        </div> -->
+        <div class="flex difficultyLevel">
+          <div
+            :class="['levelBox', level === 1 ? 'active' : '']"
+            @click="levelChange(1)"
+          >
+            高
+          </div>
+          <div
+            :class="['levelBox', level === 2 ? 'active' : '']"
+            @click="levelChange(2)"
+          >
+            中
+          </div>
+          <div
+            :class="['levelBox', level === 3 ? 'active' : '']"
+            @click="levelChange(3)"
+          >
+            低
+          </div>
+        </div>
+        <div class="sliderShell">
+          <div
+            v-for="(v, i) in seting"
+            :key="i"
+            class="flex sliderWrap"
+          >
+            <div class="label">
+              {{ v.label }}
+            </div>
+            <el-slider
+              v-model="v.value"
+              :class="`sliderCom slider${i + 1}`"
+              :min="0"
+              :max="total ? total : 100"
+              :show-tooltip="false"
+              @input="val => numChange(val, v)"
+            />
+            <div class="value">
+              {{ v.value }}
+            </div>
+          </div>
+        </div>
+        <!-- <div class="flex difficultyRight">
+          <div>
+            <div class="mb-10">
+              <span class="settingTips">当前试卷难度：</span>
+              <span class="allot">{{ getCoefficient }}</span>
+            </div>
+            <div class="mb-10">
+              <span class="settingTips">未分配试题数量：</span>
+              <span class="allot">{{ this.total - this.num }}</span>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import CTS from '@/common/js/constant'
+export default {
+  name: 'Difficulty',
+  props: {
+    total: {
+      type: Number,
+      default: 0,
+    },
+    advanced: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      step: 50,
+      text: ['容易', '较易', '中等', '较难', '困难'],
+      seting: [
+        { label: '容易', value: 0, type: 'easy_num' },
+        { label: '较易', value: 0, type: 'little_easy_num' },
+        { label: '中等', value: 0, type: 'middle_num' },
+        { label: '较难', value: 0, type: 'little_hard_num' },
+        { label: '困难', value: 0, type: 'hard_num' },
+      ],
+      level: 2, // 1高2中3低
+      showOption: false,
+      num: 0,
+      flag: false,
+	  marks: {
+		0: '1',
+		20: '0.8',
+		40: '0.6',
+		60: '0.4',
+		80: '0.2',
+		100: '0',
+	  },
+	  dom:'',
+    }
+  },
+  computed: {
+    getCoefficient() {
+      if (!this.total) return 0
+      const obj = {
+        easy_num: 0.9,
+        little_easy_num: 0.7,
+        middle_num: 0.5,
+        little_hard_num: 0.3,
+        hard_num: 0.1,
+      }
+      let total = 0
+      const num = this.seting.reduce((pre, cur) => {
+        total += cur.value
+        return pre + cur.value * obj[cur.type]
+      }, 0)
+      if (!num) return 0
+      this.step = (1 - (num / total).toFixed(2)) * 100
+      return (num / total).toFixed(2)
+    },
+  },
+  mounted() {
+	this.dom = document.querySelector('.sliderAlone .el-slider__button')
+  },
+  methods: {
+    initialize() {
+      this.showOption = false
+      this.step = 50
+      this.seting.forEach(v => (v.value = 0))
+      this.level = 2
+    },
+    async getQuestionDiffNum() {
+      // console.log(this.total, this.num)
+      // if(this.total > this.num) {
+      //   this.seting[2].value += this.total - this.num
+      // } else {
+      //   this.initialize()
+      //   this.seting[2].value = this.total
+      // }
+      // this.num = this.total
+      // this.flag = true
+      // return
+      if(this.advanced) return
+      this.flag = false
+      const url = '/paper-builder/paper-generate/get-difficulty-distribution'
+      const params = {
+        total: this.total,
+        difficulty: ((100 - this.step) / 100).toFixed(2),
+        discrimination: this.level,
+      }
+      const res = await this.apiGet({ urlPath: url }, params)
+      if (res.code === CTS.constant.SUCCESS_CODE) {
+        if (res.data) {
+          const data = res.data
+          this.seting = this.seting.map((v, i) => {
+            return {
+              ...v,
+              value: data[i],
+            }
+          })
+          this.$nextTick(() => {
+            this.flag = true
+          })
+        }
+      }
+    },
+	stepChange(val) {
+		this.dom.innerText = ((100 - val) / 100).toFixed(2)
+	},
+    setNum(i) {
+      this.flag = false
+      switch (i) {
+        case 0:
+          this.step = 10
+          break
+        case 1:
+          this.step = 30
+          break
+        case 2:
+          this.step = 50
+          break
+        case 3:
+          this.step = 70
+          break
+        case 4:
+          this.step = 90
+          break
+        default:
+      }
+      this.getQuestionDiffNum()
+    },
+
+    forMatToolTip(val) {
+      return val / 100
+    },
+    toggleHandle() {
+      this.showOption = !this.showOption
+    },
+    levelChange(num) {
+      if (this.level !== num) {
+        this.flag = false
+        this.level = num
+        this.getQuestionDiffNum()
+      }
+    },
+    numChange(val, item) {
+      if(this.advanced) return
+      const num = this.seting.reduce((pre, cur) => {
+        return pre + cur.value
+      }, 0)
+      const poor = Math.abs(num - this.num)
+      if (this.flag) {
+        this.flag = false
+        const i = this.seting.findIndex(v => v.type === item.type)
+        // [0, 1, 2, 3, 4] ['容易', '较易', '中等', '较难', '困难'],
+        if (num > this.num) {
+          // 增加
+          if (i <= 2) {
+            this.beforeHandle('sub', i, poor)
+          } else {
+            this.afterHandle('sub', i, poor)
+          }
+        } else {
+          // 减少
+          if (i <= 2) {
+            this.beforeHandle('add', i, poor)
+          } else {
+            this.afterHandle('add', i, poor)
+          }
+        }
+        this.$nextTick(() => {
+          this.flag = true
+        })
+      }
+      this.num = num
+    },
+    beforeHandle(type, i, num) {
+      const arr = this.seting.filter((_, idx) => idx !== i)
+      if (i !== 0) {
+        const temp = arr[0]
+        arr[0] = arr[1]
+        arr[1] = temp
+      }
+      this.transfer(arr, type, num)
+    },
+    afterHandle(type, i, num) {
+      const arr = this.seting.filter((_, idx) => idx !== i)
+      arr.reverse()
+      this.transfer(arr, type, num)
+    },
+    transfer(arr, type, num) {
+      arr.some(v => {
+        if (type === 'sub') {
+          if (v.value >= num) {
+            v.value -= num
+            return true
+          } else {
+            num = num - v.value
+            v.value = 0
+          }
+        } else {
+          if (v.value + num <= this.total) {
+            v.value += num
+            return true
+          } else {
+            num = this.total - v.value
+            v.value = this.total
+          }
+        }
+      })
+    },
+  },
+}
+</script>
+<style lang="scss" scoped>
+.flex {
+  display: flex;
+}
+.difficultyWrap {
+  // padding: 15px 0;
+  box-sizing: border-box;
+  .difficulty_title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    span {
+      font-style: 12px;
+      margin-left: 10px;
+      i {
+        color: #FF6900;
+      }
+    }
+  }
+  .title_border {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 20px;
+    padding-left: 10px;
+    position: relative;
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: #487FFF;
+      border-radius: 2px;
+    }
+    &.differentiate {
+      margin: 30px 0 20px;
+
+    }
+  }
+}
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333333;
+}
+.titleTip {
+  color: #4b8ff5;
+  font-size: 14px;
+}
+.aloneOption {
+  align-items: center;
+}
+.sliderAlone {
+  width: 380px;
+}
+:deep(.alone) {
+  width: 380px;
+  .el-slider__bar {
+    background: transparent !important;
+  }
+  .el-slider__runway {
+    height: 8px;
+    background: linear-gradient(
+      to right,
+      rgba(75, 143, 245, 0.2),
+      rgba(75, 143, 245, 0.4),
+      rgba(75, 143, 245, 0.6),
+      rgba(75, 143, 245, 0.8),
+      rgba(75, 143, 245, 1)
+    ) !important;
+    // &.disabled {
+    //   .el-slider__button-wrapper:hover {
+    //     &:hover {
+    //       cursor: default;
+    //     }
+    //   }
+    //   .el-slider__button {
+    //     cursor: default;
+    //     border-color: #409eff;
+    //     &:hover {
+    //       cursor: default;
+    //     }
+    //   }
+    // }
+	.el-slider__button {
+	  width: 38px;
+	  height: 18px;
+	  border-radius: 12px 12px 12px 12px;
+	  line-height: 14px;
+	  transition: none;
+	  animation: none;
+	  color: #4B8FF5;
+	  &:hover {
+		transform: none !important;
+	  }
+	  &.hover {
+		transform: none !important;
+	  }
+	  &.dragging {
+		transform: none !important;
+	  }
+	}
+    .el-slider__button-wrapper {
+      top: -14px;
+	  width: 44px;
+    }
+  }
+  .el-slider__marks-stop {
+    width: 0.5px;
+  }
+}
+.sliderShell {
+  width: 320px;
+}
+.sliderWrap {
+  align-items: center;
+  .label {
+    margin-right: 20px;
+  }
+  .sliderCom {
+    flex: 1;
+  }
+  .value {
+    width: 50px;
+    text-align: center;
+  }
+}
+
+:deep(.el-slider__marks-stop) {
+  border-radius: 0;
+}
+:deep(.el-slider__runway) {
+  height: 8px;
+  border-radius: 0;
+}
+:deep(.el-slider__bar) {
+  height: 8px;
+  border-radius: 0;
+}
+.textWrap {
+  display: flex;
+  justify-content: space-around;
+  div {
+    color: #666;
+    cursor: pointer;
+  }
+}
+.setting {
+  margin-left: 15px;
+  width: 80px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 4px 4px 4px 4px;
+  opacity: 1;
+  border: 1px solid #4b8ff5;
+  text-align: center;
+  color: #4b8ff5;
+  cursor: pointer;
+}
+.difficultyLevel {
+  flex-direction: column;
+  margin-right: 15px;
+  justify-content: space-around;
+  .levelBox {
+    width: 72px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid #eeeeee;
+    cursor: pointer;
+    &.active {
+      background: #4b8ff5;
+      color: #fff;
+    }
+  }
+  // margin: 0 16px;
+  // display: flex;
+  // .txt {
+  //   display: flex;
+  //   flex-direction: column;
+  //   justify-content: space-between;
+  //   margin-right: 8px;
+  // }
+  // .bar {
+  //   width: 27px;
+  //   background: #f0f0f0;
+  //   border-radius: 8px;
+  //   position: relative;
+  //   i {
+  //     position: absolute;
+  //     bottom: 0;
+  //     left: 0;
+  //     width: 100%;
+  //     height: 40px;
+  //     background: linear-gradient( 180deg, #487FFF 0%, #D9E5FF 100%);
+  //     border-radius: 8px;
+  //     transition: all .2s;
+  //   }
+  // }
+}
+.difficultyRight {
+  flex-direction: column;
+  justify-content: space-between;
+  .normalSetting {
+    margin: 0;
+  }
+  .settingTips {
+    font-size: 16px;
+    color: #333333;
+  }
+  .coefficient {
+    font-size: 16px;
+    color: #4b8ff5;
+  }
+  .allot {
+    font-size: 16px;
+    color: #ff6e5d;
+  }
+}
+.mb-10 {
+  margin-bottom: 10px;
+}
+.mb-30 {
+  margin-bottom: 30px;
+}
+:deep(.el-slider__marks-stop) {
+	height: 8px;
+}
+:deep(.el-slider__marks-text) {
+	margin-top: 24px;
+	color: #666;
+	pointer-events: none;
+}
+</style>

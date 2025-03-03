@@ -1,0 +1,128 @@
+<template>
+  <div
+    v-if="diffsData.length"
+    class="category-content"
+  >
+    <label class="category-label">{{ categoryLabel }}</label>
+    <div class="category-list">
+      <div
+        v-for="item in diffsData"
+        :key="item.code"
+        class="category-item"
+        :class="item.code === currQuestonId ? 'active' : ''"
+        @click="selectDiff(item)"
+      >
+        {{ item.name }}
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import CTS from '@/common/js/constant'
+  import { API } from '@/api/config'
+  export default {
+  name: 'QuestionDiff',
+    props: {
+      categoryLabel: {
+        type: String,
+        default: '难度',
+      },
+      // 是否显示全部
+      isShowAll: {
+        type: Boolean,
+        default: true,
+      },
+      defaultQuesDiff: {
+        type: [String, Number],
+      },
+    },
+    data() {
+      return {
+        currQuestonId: 0,
+        diffsData: [],
+      }
+    },
+    watch: {
+      defaultQuesDiff(v) {
+        this.currQuestonId = v || 0
+      },
+    },
+    created() {
+      this.getQuestionDiffList()
+      this.currQuestonId = this.defaultQuesDiff || 0
+    },
+    methods: {
+      // 获取年份
+      getQuestionDiffList() {
+        let parms = {
+          categoryId: CTS.cfgDict.CID_QUESTION_DIFF,
+          level: 1,
+        }
+        this.wayGet(API.GET_DICT_BY_LEVEL, parms).then(res => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            let arrData = res.data
+            if (this.isShowAll) {
+              arrData.unshift({
+                code: 0,
+                name: '全部',
+              })
+            }
+            this.diffsData = arrData
+          }
+        })
+      },
+      selectDiff(item) {
+        this.currQuestonId = item.code
+        this.$emit('selectDiff', item)
+      },
+    },
+  }
+</script>
+
+<style lang="scss" scoped>
+  .category-content {
+    @include flex();
+    .category-label {
+      word-break: keep-all;
+      line-height: 24px;
+      align-self: flex-start;
+      color: $color-text-d;
+      font-weight: 700;
+      width: 48px;
+    }
+    .category-list {
+      width: 855px;
+      .category-item {
+        display: inline-block;
+        padding: 5px 16px;
+        margin: 0 4px 12px 4px;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+        &:hover {
+          color: $color-theme;
+        }
+        &.active {
+          background: $color-theme;
+          color: $color-white;
+        }
+      }
+      .sub-category-list {
+        width: 100%;
+      }
+      .sub-category-item {
+        display: inline-block;
+        padding: 4px 16px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: $color-text;
+        &:hover,
+        &.active {
+          color: $color-theme;
+        }
+      }
+    }
+  }
+</style>

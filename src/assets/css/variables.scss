@@ -1,0 +1,41 @@
+// Colors
+$color-theme: #487FFF;
+$color-white: #FFFFFF;
+$color-black: #000000;
+$color-gray: #666666;
+$color-light-gray: #999999;
+$color-border: #DCDFE6;
+$color-background: #F5F7FA;
+$color-success: #67C23A;
+$color-warning: #E6A23C;
+$color-danger: #F56C6C;
+$color-info: #909399;
+
+// Font sizes
+$font-size-small: 12px;
+$font-size-base: 14px;
+$font-size-medium: 16px;
+$font-size-large: 18px;
+$font-size-xlarge: 20px;
+
+// Spacing
+$spacing-mini: 4px;
+$spacing-small: 8px;
+$spacing-base: 16px;
+$spacing-large: 24px;
+$spacing-xlarge: 32px;
+
+// Border radius
+$border-radius-small: 2px;
+$border-radius-base: 4px;
+$border-radius-large: 8px;
+
+// Z-index
+$z-index-normal: 1;
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;

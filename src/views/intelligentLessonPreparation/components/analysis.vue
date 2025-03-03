@@ -1,0 +1,163 @@
+<template>
+  <div class="analysis">
+    <el-button
+      type="primary"
+      icon="iconfont icon-chart_line_line"
+      @click="openModal"
+    >
+      组卷分析
+    </el-button>
+    <div class="title">
+      <h6>题量分析</h6>
+      <p>共<span>{{ total }}</span>题</p>
+    </div>
+    <div class="chart">
+      <pie
+        :options="pieOptions"
+        :data="pieData"
+      />
+    </div>
+    <div class="title">
+      <h6>难度分析</h6>
+      <p>{{ difficulty.name }}（{{ difficulty.value }})</p>
+    </div>
+    <div class="chart">
+      <div
+        id="bar"
+        style="height: 100%"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import echarts from 'echarts'
+import pie from '@/components/ECharts/Pie'
+// import { setpieOptions } from '@/common/config/pieOptions'
+import { setpieOptions } from '@/common/config/pieOptions'
+// import { pieOptions,  barOptions} from './charts/options'
+import bar from '@/components/ECharts/line-bar.vue'
+import { pieOptions1, barOptions } from '@/components/AnalysisDialog/options'
+
+barOptions.series.pop()
+barOptions.legend = null
+export default {
+    components: {
+        pie,
+        bar
+    },
+    props: ['paperData'],
+    data() {
+        return {
+            aa: {
+                show: true,
+                text: '题型题量分布',
+            },
+            pieOptions: {},
+            pieData: [],
+            barOptions: {},
+            difficulty: {name: '中等', value: 0.50},
+            total: 0,
+        }
+    },
+    watch: {
+        paperData() {
+            // this.paperData.list && this.initChart(this.paperData.list)
+        }
+    },
+    mounted() {
+        // this.pieOptions = pieOptions
+        // this.barOptions = barOptions
+        // this.pieData = [ { value: 2, name: '单选题' }, { value: 2, name: '填空题' }, { value: 5, name: '解答题' },]
+        // const chart = echarts.init(document.querySelector('#bar'))
+        // chart.setOption(this.barOptions)
+        this.barOptions = barOptions
+        pieOptions1.series.center = ['50%', '45%']
+        this.pieOptions = pieOptions1
+        this.paperData.length && this.initChart(this.paperData)
+    },
+    methods: {
+        initChart(arr) {
+            let pieData = {}
+            const barData = [0, 0, 0, 0, 0]
+            arr.forEach(v => {
+                v.children&&v.children.forEach(y => {
+                    y.questionList&&y.questionList.forEach(z => {
+                        barData[z.difficulty.code - 1]++
+                        if(pieData[z.quesType.name]) {
+                            pieData[z.quesType.name]++
+                        } else {
+                            pieData[z.quesType.name] = 1
+                        }
+                    })
+                })
+            })
+            pieData = Object.keys(pieData).map((v) => {
+                return {name: v, value: pieData[v]}
+            })
+            const chart = echarts.init(document.querySelector('#bar'))
+            this.total = barData.reduce((prev, next) => {
+                return prev + next
+            }, 0)
+            let difficulty = barData.reduce((prev, next, index) => {
+                return prev + next * [0.9, 0.7, 0.5, 0.3, 0.1][index]
+            }, 0) / this.total
+                difficulty = difficulty.toFixed(2)
+                this.difficulty.value = difficulty
+            if(difficulty <= 0.2) {
+                this.difficulty.name = '容易'
+            } else if(difficulty <= 0.4) {
+                this.difficulty.name = '较易'
+            } else if(difficulty <= 0.6) {
+                this.difficulty.name = '中等'
+            } else if(difficulty <= 0.8) {
+                this.difficulty.name = '较难'
+            } else {
+                this.difficulty.name = '困难'
+            }
+            console.log(pieData, barData)
+            this.barOptions.series[0].data = barData
+            chart.setOption(this.barOptions)
+            this.pieData = pieData
+        },
+        openModal() {
+            this.$emit('openAnalysisModal')
+        },
+    }
+};
+</script>
+
+<style lang="scss" scoped>
+.analysis {
+    padding: 20px;
+    background: #fff;
+    :deep(.el-button) {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i {
+            font-size: 20px;
+            margin-right: 4px
+        }
+    }
+    .title {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        h6 {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        p {
+            span {
+                color: #FF6900;
+            }
+        }
+    }
+    .chart{
+        height: 200px;
+    }
+}
+</style>

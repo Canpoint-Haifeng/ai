@@ -1,0 +1,177 @@
+<template>
+  <div>
+    <el-dialog
+      v-model:visible="dialog.visible"
+      class="dialog"
+      :title="dialogTitle"
+      :modal-append-to-body="false"
+      :lock-scroll="false"
+      :width="dialog.width"
+      :close-on-click-modal="false"
+    >
+      <div class="CheckQuestionDia">
+        <div
+          v-if="questionsData.list.length > 0"
+          class="recommend-content"
+        >
+          <ul
+            ref="questionsDatasDetailRef"
+            class="question-content"
+          >
+            <QuestionItem
+              v-for="(item, index) in questionsData.list"
+              :key="index"
+              :question-item="item"
+              :question-index="index"
+              @check-question-detail="onCheckQuestionDetail"
+              @collect-question="onCollectQuestion"
+              @show-report-dialog="onShowReportDialog"
+              @add-question-box="onAddQuestionBox"
+              @delete-question-box="onDeleteQuestionBox"
+              @toggle-explain="onToggleExplain"
+            />
+          </ul>
+        </div>
+        <noresult-common
+          v-else
+          class="noresult-wrapper"
+          text="非常抱歉，暂时没有合适的试题哦！"
+        />
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button
+            class="btn btn-gray"
+            @click="dialog.visible = false"
+          >
+            关闭
+          </el-button>
+          <el-button
+            class="btn btn-shadow"
+            @click="downloadPaper('form')"
+          >
+            换一批
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <!-- 纠错提示框 -->
+    <report-dialog
+      ref="reportDialog"
+      @report-error="onReportError"
+    />
+  </div>
+</template>
+
+<script>
+import CTS from '@/common/js/constant'
+import { mapState } from 'vuex'
+import { API } from '@/api/config'
+import QuestionItem from '@/components/QuestionItem/SmartQuestionItem'
+import questionItemMixin from '@/common/mixins/questionItemMixin'
+export default {
+  components: { QuestionItem },
+  mixins: [questionItemMixin],
+  data() {
+    return {
+      dialogTitle: '手动换题',
+      source: 0,
+      dialog: {
+        visible: false,
+        width: '914px',
+      },
+      questionsData: {
+        pageSize: 10,
+        currPage: 1,
+        totalCount: 0,
+        list: [],
+      },
+    }
+  },
+
+  watch: {
+    $route(to) {
+      //   this.questionId = to.query.questionId
+      //   this.getSchoolQuestionDetail()
+    },
+  },
+  computed: {
+    ...mapState(['currSubject', 'schoolVerify']),
+  },
+  created() {
+    // questionId=6d8c0d2a-b1d2-4a4d-b129-ac479de4f803&source=1
+    this.questionId = '6d8c0d2a-b1d2-4a4d-b129-ac479de4f803'
+    // this.goodques = query.good || ''
+    this.source = 1
+  },
+  mounted() {
+    this.getQuestionRelation()
+  },
+  methods: {
+    show() {
+      this.dialog.visible = true
+    },
+    closed() {
+      this.dialog.visible = false
+    },
+    // 查询类题推荐
+    async getQuestionRelation() {
+      if (!this.teachBook) {
+        this.teachBook = await this.getBookCategoryId(this.currSubject)
+      }
+      this.stageSubject = this.currSubject.subjectCode
+      let parms = {
+        period: this.stageSubject.substring(0, 2),
+        subjectCode: this.stageSubject,
+        refQid: this.questionId,
+        versionGradeVolumeCode: this.teachBook || '',
+        questionType: '',
+        difficulty: '',
+        source: this.source,
+        currPage: this.questionsData.currPage,
+        pageSize: this.questionsData.pageSize,
+      }
+      this.apiGet(API.QUESTION_RELATION, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          // 类题推荐 的试题 都是题库的试题 source 为1
+          let resData = res.data
+          let list = [...res.data.list, ...res.data.list]
+          resData.list = list
+          resData.list.forEach((item, index) => {
+            item.questionNum = index + 1
+            item.source = 1
+            item.showQuestionNum = true
+          })
+          this.questionsData = resData
+          this.$nextTick(() => {
+            this.onRenderJaxPage('questionsDatasDetailRef')
+          })
+        }
+      })
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.dialog {
+  .recommend-content {
+    // padding: 10px 20px;
+    min-height: 300px;
+  }
+
+  .question-content {
+    overflow: hidden;
+    padding: 20px 20px 0 20px;
+  }
+  :deep(.el-dialog__body) {
+    height: 500px;
+    overflow-y: scroll;
+  }
+  :deep(.el-dialog__footer) {
+    height: 60px;
+    padding: 15px 0px;
+    text-align: center;
+  }
+}
+</style>

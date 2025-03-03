@@ -1,0 +1,69 @@
+<!-- <ellipsis-tooltip
+        :text="templateDetail.type"
+    ></ellipsis-tooltip> -->
+
+<template>
+  <!-- :disabled="disabledTip" -->
+  <el-tooltip
+    ref="tlp"
+    :disabled="!tooltipFlag"
+    :placement="placement"
+    class="tooltip"
+    effect="light"
+    :open-delay="openDelay"
+  >
+    <template #content>
+      <span
+        :class="className"
+        v-html="text"
+      />
+    </template>
+    <span
+      ref="item"
+      :class="className"
+      v-html="text"
+    />
+  </el-tooltip>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue'
+
+export default {
+  name: 'EllipsisTooltip',
+  props: {
+    text: { type: String, default: '' }, // 字符内容
+    placement: { type: String, default: 'top-start' },
+    className: { type: String, default: 'text' }, // class
+  },
+  setup(props) {
+    const disabledTip = ref(false)
+    const tooltipFlag = ref(false)
+    const openDelay = ref(500)
+    const item = ref(null)
+    const tlp = ref(null)
+    
+    onMounted(() => {
+      setTimeout(() => {
+        if (item.value) {
+          tooltipFlag.value =
+            item.value.offsetWidth >
+              item.value.parentElement.offsetWidth ||
+            item.value.offsetWidth >
+              item.value.parentElement.parentElement.offsetWidth
+        }
+      }, 500)
+    })
+    
+    return {
+      disabledTip,
+      tooltipFlag,
+      openDelay,
+      item,
+      tlp
+    }
+  }
+}
+</script>
+
+<style></style>

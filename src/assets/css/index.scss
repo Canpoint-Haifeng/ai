@@ -1,0 +1,73 @@
+/* Base styles */
+@use 'sass:color';
+@use './_variables' as *;
+@use './base';
+@use './element-rewrite';
+@use './cp-tiku-ui';
+@use './temp/deep-fix';
+@use './temp/element-plus-fix';
+
+// Global styles
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-size: $font-size-base;
+  color: $text-color;
+  background-color: $background-color;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: $primary-color;
+  text-decoration: none;
+  
+  &:hover, &:focus {
+    color: color.adjust($primary-color, $lightness: 10%);
+  }
+}
+
+// Common utility classes
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}

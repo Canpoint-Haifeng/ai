@@ -1,0 +1,31 @@
+import Topbar from './Topbar/Topbar'
+import NewTopbar from './Topbar/NewTopbar'
+import TopSearch from './TopSearch/TopSearch'
+import Nav from './Nav/Nav'
+import AppLogin from './AppLogin/AppLogin'
+import ToolBasket from './ToolBasket/ToolBasket'
+import Backtop from './Backtop/Backtop'
+import Footer from './Footer/Footer'
+import Pagination from '@/components/Pagination/Pagination'
+import appBroadsideBack from './Backtop/app-broadside-back'
+import VideoPlay from './VideoPlay/VideoPlay'
+import HomePageSearch from './TopSearch/HomePageSearch'
+import NoresultCommon from '@/components/Noresult/Noresult-common'
+
+export default {
+  install: (app) => {
+    app.component('app-top-bar', Topbar)
+    app.component('app-new-top-bar', NewTopbar)
+    app.component('app-top-search', TopSearch)
+    app.component('app-nav', Nav)
+    app.component('app-login', AppLogin)
+    app.component('app-tool-basket', ToolBasket)
+    app.component('app-backtop', Backtop)
+    app.component('app-broadside-back', appBroadsideBack)
+    app.component('app-footer', Footer)
+    app.component('noresult-common', NoresultCommon)
+    app.component('pagination', Pagination)
+    app.component('VideoPlay', VideoPlay)
+    app.component('HomePageSearch', HomePageSearch)
+  },
+}
