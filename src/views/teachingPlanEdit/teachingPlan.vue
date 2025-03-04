@@ -3105,7 +3105,7 @@ export default {
     position: sticky;
     top: 0;
     z-index: 2;
-    /deep/ button {
+    :deep() button {
       display: flex;
       align-items: center;
       i {

@@ -43,7 +43,7 @@
           <el-input
             v-model="searchValue"
             placeholder="在结果中搜索"
-            @keyup.enter.native="handleCurrentChange(1)"
+            @keyup.enter="handleCurrentChange(1)"
           >
             <template #suffix>
               <i

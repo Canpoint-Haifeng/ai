@@ -43,7 +43,7 @@
               placeholder="请输入内容"
               size="small"
               clearable
-              @keyup.enter.native="currentChange(1)"
+              @keyup.enter="currentChange(1)"
             >
               <template #suffix>
                 <i
