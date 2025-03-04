@@ -2,135 +2,165 @@
   <div>
     <div class="head-contenter">
       <div class="center">
-        <div class="name">
-          全品文教-基础教育的内容供应商和服务者
-        </div>
+        <div class="name">全品文教-基础教育的内容供应商和服务者</div>
         <div class="help">
+          <!-- <el-dropdown v-if="loginStatus">
+            <span class="el-dropdown-link top">
+              <img
+                src="./img/user_4_fill.svg"
+                :alt="userInfo.nickname"
+                class="logo-img"
+              />
+              {{ userInfo.nickname || '--' }}
+            </span> 
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click="logout"
+                >退出登录</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>-->
+
           <div class="help">
-            <a
-              class="link"
-              href="https://tech.canpoint.cn"
-              target="_blank"
-            >开放平台</a>
-            <div class="line" />
+            <a class="link" href="https://tech.canpoint.cn" target="_blank"
+              >开放平台</a
+            >
+            <div class="line"></div>
+            <!-- <span @click="skip('/personal/home')">个人中心</span>
+            <div class="line"></div>
+            <span @click="skip('/vip')">会员服务</span>
+            <div class="line"></div> -->
             <div class="service_code_wrap">
               官方客服
               <div class="service_code">
-                <img
-                  src="./img/service_code.png"
-                  alt="官方客服"
-                >
+                <img src="./img/service_code.png" alt="官方客服" />
                 <span>全品AI教研云-微信客服</span>
               </div>
             </div>
-            <div class="line" />
+            <div class="line"></div>
             <span>帮助中心</span>
+            <div class="line"></div>
+            <span @click="go">意见反馈</span>
             <el-button
-              v-if="!loginStatus"
               style="margin-left: 50px;"
               type="text"
               @click="showLogin"
+              v-if="!loginStatus"
+              >登录</el-button
             >
-              登录
-            </el-button>
             <el-popover
               popper-class="popper-class-my"
               placement="bottom"
               trigger="hover"
             >
               <user-center-popover
-                :user-info="userInfo"
+                :userInfo="userInfo"
                 @logout="logout"
-              />
-              <template #reference>
-                <div
-                  v-if="loginStatus"
-                  class="user-center"
-                >
-                  <span class="el-dropdown-link top">
-                    <img
-                      style="width: 24px;"
-                      :src="
-                        userInfo.profilePhoto || require('./img/user_4_fill.svg')
-                      "
-                      :alt="userInfo.nickname"
-                      class="logo-img"
-                    >
-                    我的
-                  </span>
-                  <i class="el-icon-arrow-down" />
-                </div>
-              </template>
+              ></user-center-popover>
+              <div slot="reference" class="user-center" v-if="loginStatus">
+                <span class="el-dropdown-link top">
+                  <img
+                    style="width: 24px;"
+                    :src="
+                      userInfo.profilePhoto || require('./img/user_4_fill.svg')
+                    "
+                    :alt="userInfo.nickname"
+                    class="logo-img"
+                  />
+                  我的
+                </span>
+                <i class="el-icon-arrow-down"></i>
+              </div>
             </el-popover>
+            <!-- @click="helpCenter" -->
           </div>
+
+          <!-- <el-button type="text" @click="showLogin" >注册</el-button> -->
         </div>
       </div>
     </div>
     <div class="top-search">
       <div class="content-container">
-        <div
-          class="logo"
-          @click="goIndex"
-        >
+        <div class="logo" @click="goIndex">
           <a :href="url">
-            <img
-              src="./img/logo.png"
-              alt="全品AI教研云"
-              class="logo-img"
-            >
+            <img src="./img/logo.png" alt="全品AI教研云" class="logo-img" />
           </a>
+          <!-- <span>- 基础教育的内容供应商和服务者</span> -->
         </div>
         <div class="search-form">
           <div class="container">
             <div class="home-search-input">
               <div class="tab-btn">
                 <div
+                  class="btns"
                   v-for="item in searchOptions"
                   :key="item.label"
-                  class="btns"
-                  :class="{ 'active-btn': currSearchOption === item.label }"
                   @mousedown="event => handleCommand(event, item)"
+                  :class="{ 'active-btn': currSearchOption === item.label }"
                 >
                   {{ item.name }}
                 </div>
               </div>
               <el-input
-                v-model="keywords"
                 popper-class="search-autocomplete-suggestions custom-dropdown-menu"
+                v-model="keywords"
                 maxlength="100"
                 class="search-input"
-                :placeholder="searchPlaceholder"
                 @keyup.enter="search"
+                :placeholder="searchPlaceholder"
                 @focus="handleFocus"
                 @blur="blurEvent"
-              />
+              >
+              </el-input>
+              <!-- <HistoryMessageList
+                ref="historyMsgListRef"
+                :currSearchOption="currSearchOption"
+                @changeHisText="changeHisText"
+                @changeHotPaper="changeHotPaper"
+              ></HistoryMessageList> -->
             </div>
 
-            <div
-              class="search-btn"
-              @click="search"
-            >
-              <i class="iconfont icon-search_3_line" />
+            <div class="search-btn" @click="search">
+              <i class="iconfont icon-search_3_line"></i>
             </div>
           </div>
         </div>
-        <div class="right" />
+        <div class="right">
+          <!-- <div class="help">
+            <i class="iconfont icon-question_line"></i>
+            <span>帮助中心</span>
+          </div>
+          <div class="login">
+            <i class="iconfont icon-touxiang_avatar"></i>
+            <el-dropdown v-if="loginStatus">
+              <span class="el-dropdown-link">{{ userInfo.nickname || '--'}}</span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button type="text" @click="showLogin" v-else>登录</el-button>
+          </div> -->
+        </div>
+        <!-- <div class="top-invite-segment fl">
+          <NewGift></NewGift>
+        </div> -->
+        <!-- <div class="top-upload fl" @click="entryUpload">
+            <span class="icon-box">
+              <i class="iconfont iconupload"></i>
+            </span>
+            <span class="text">上传试卷</span>
+          </div> -->
       </div>
       <!-- 登录弹窗 -->
-      <app-login ref="appLogin" />
+      <app-login ref="appLogin"></app-login>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, onBeforeUnmount, inject, watch, getCurrentInstance } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter, useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { defineComponent } from 'vue'
 import CTS from '@/common/js/constant'
 import { API } from '@/api/config'
-import HistoryMessageList from './HistoryMessageList.vue'
+import { mapState } from 'vuex'
+import HistoryMessageList from './HistoryMessageList'
 import userCenterPopover from './userCenterPopover.vue'
 import {
   isLogin,
@@ -138,12 +168,21 @@ import {
   removeToken,
   removeSessionStore,
 } from '@/common/js/util'
-
-export default defineComponent({
-  name: 'TopSearch',
+import userCenterPopoverVue from './userCenterPopover.vue'
+export default {
   components: {
     HistoryMessageList,
     userCenterPopover,
+  },
+  computed: {
+    ...mapState(['currSubject', 'fullpath', 'userInfo']),
+    isHome() {
+      if (this.fullpath == 'paperIndex') {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   props: {
     messageList: {
@@ -153,75 +192,81 @@ export default defineComponent({
       },
     },
   },
-  setup() {
-    const instance = getCurrentInstance()
-    const store = useStore()
-    const router = useRouter()
-    const route = useRoute()
-    const Bus = inject('Bus')
-    
-    const appLogin = ref(null)
-    const historyMsgListRef = ref(null)
-    const loginStatus = ref(false)
-    const keywords = ref('')
-    const currSearchOption = ref(1)
-    const searchPlaceholder = ref('可输入教案名称搜索')
-    const showSearchOptions = ref(false)
-    const url = ref('/')
-    
-    const searchOptions = ref([
-      {
-        label: 1,
-        name: '教案',
-        className: 'btn-paper',
-        placeholder: '可输入教案名称搜索',
-      },
-    ])
-    
-    // Computed properties
-    const currSubject = computed(() => store.state.currSubject)
-    const fullpath = computed(() => store.state.fullpath)
-    const userInfo = computed(() => store.state.userInfo)
-    
-    const isHome = computed(() => {
-      if (fullpath.value == 'paperIndex') {
-        return true
-      } else {
-        return false
-      }
-    })
-    
-    // Methods
-    const init = () => {
-      loginStatus.value = isLogin()
-      loginStatus.value && getUserInfo()
+  data() {
+    return {
+      loginStatus: false,
+      keywords: '',
+      currSearchOption: 1,
+      searchPlaceholder: '可输入教案名称搜索',
+      searchOptions: [
+        // {
+        //   label: 1,
+        //   name: '试题',
+        //   className: 'btn-ques',
+        //   placeholder: '请输入试题内容搜索',
+        // },
+        {
+          label: 1,
+          name: '教案',
+          className: 'btn-paper',
+          placeholder: '可输入教案名称搜索',
+        },
+      ],
+      showSearchOptions: false,
+      url: '/',
     }
-    
-    const getUserInfo = () => {
+  },
+  created() {
+    this.init()
+    this.Bus.$on('showAppLogin', this.showLogin)
+    this.url = this.$router.resolve('/index').href
+  },
+  mounted() {
+    this.updateKeyWords()
+    // console.log(this.currSubject, 'currSubject-mounted')
+  },
+  helpCenter() {
+    this.$router.push('/help')
+  },
+  beforeRouteUpdate(to, from) {
+    // this.updateKeyWords()
+    this.loginStatus = isLogin()
+  },
+  methods: {
+    go() {
+      this.$router.push({
+        path: '/personal/feedback',
+      })
+    },
+    init() {
+      this.loginStatus = isLogin()
+      this.loginStatus && this.getUserInfo()
+    },
+    getUserInfo() {
       let parms = {
         token: getToken(),
       }
       let set = {
         authCode: 2,
       }
-      instance.proxy.apiPost(API.GET_SSO_VERIFY, parms, set).then(res => {
+      this.apiPost(API.GET_SSO_VERIFY, parms, set).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
-          store.dispatch('updateUserInfo', res.data)
+          // this.userInfo = res.data
+          this.$store.dispatch('updateUserInfo', res.data)
           if (res.data.rewards && res.data.rewards.length) {
-            showCpReceiveReward(res.data.rewards)
+            this.showCpReceiveReward(res.data.rewards)
           }
         } else if (res.code === CTS.constant.AUTH_TOKEN_CALLBACK_CODE) {
-          loginStatus.value = false
+          this.loginStatus = false
           setTimeout(() => {
-            store.dispatch('updateUserInfo', {
+            this.$store.dispatch('updateUserInfo', {
               t: new Date().getTime(),
             })
           }, 2000)
         }
       })
-    }
-    
-    const logout = () => {
+    },
+    logout() {
       let parms = {
         url: API.LOGOUT.urlPath,
         apiId: 100099,
@@ -231,28 +276,25 @@ export default defineComponent({
           token: getToken(),
         },
       }
-      instance.proxy.newPost({ urlPath: API.LOGOUT.baseURL }, parms).then(res => {
+      this.newPost({ urlPath: API.LOGOUT.baseURL }, parms).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
           removeToken()
           removeSessionStore('serviceInfo')
           localStorage.clear()
-          loginStatus.value = false
-          store.commit('CLEAR_CACHE_DICT')
+          this.loginStatus = false
+          this.$store.commit('CLEAR_CACHE_DICT')
           window.location.reload()
         }
       })
-    }
-    
-    const showLogin = () => {
-      appLogin.value.showLogin()
-    }
-    
-    const changeHisText = (item) => {
-      keywords.value = item
-      search()
-    }
-    
-    const changeHotPaper = (paperItem) => {
+    },
+    showLogin() {
+      this.$refs.appLogin.showLogin()
+    },
+    changeHisText(item) {
+      this.keywords = item
+      this.search()
+    },
+    changeHotPaper(paperItem) {
       let viewCount = paperItem.viewCount || paperItem.totalCountView || 0
       let queryStr =
         '?paperIdEnc=' +
@@ -264,51 +306,44 @@ export default defineComponent({
         '&pn=' +
         (paperItem.provinceName || '')
 
-      queryStr += '&subject=' + currSubject.value.subjectCode
-      router.push('/paper/detail' + queryStr)
-    }
-    
-    const handleFocus = () => {
-      // if (historyMsgListRef.value) {
-      //   historyMsgListRef.value.show()
-      // }
-    }
-    
-    const blurEvent = () => {
-      // if (historyMsgListRef.value) {
-      //   historyMsgListRef.value.closed()
-      // }
-    }
-    
-    const updateKeyWords = () => {
-      if (route.name === 'searchPaper' && route.query.keywords) {
-        keywords.value = route.query.keywords
-        currSearchOption.value = 2
+      queryStr += '&subject=' + this.currSubject.subjectCode
+      this.$router.push('/paper/detail' + queryStr)
+      // window.open(this.$router.resolve('/paper/detail').href+queryStr)
+    },
+    handleFocus() {
+      // this.$refs.historyMsgListRef.show()
+    },
+    blurEvent() {
+      // this.$refs.historyMsgListRef.closed()
+    },
+    updateKeyWords() {
+      if (this.$route.name === 'searchPaper' && this.$route.query.keywords) {
+        this.keywords = this.$route.query.keywords
+        this.currSearchOption = 2
       } else if (
-        route.name === 'searchQuestion' &&
-        route.query.keywords
+        this.$route.name === 'searchQuestion' &&
+        this.$route.query.keywords
       ) {
-        keywords.value = route.query.keywords
-        currSearchOption.value = 1
+        this.keywords = this.$route.query.keywords
+        this.currSearchOption = 1
       } else {
-        keywords.value = ''
+        this.keywords = ''
       }
-    }
-    
-    const goIndex = () => {
-      router.push({
+    },
+    goIndex() {
+      this.$router.push({
         name: 'paperIndex',
       })
-    }
-    
-    const searchPaperList = (queryString, callback) => {
+    },
+    // 获取试卷列表数据
+    searchPaperList(queryString, callback) {
       let parms = {
-        period: currSubject.value.periodCode,
-        subjectCode: currSubject.value.subjectCode,
-        paperName: keywords.value, // 试卷关键字
+        period: this.currSubject.periodCode,
+        subjectCode: this.currSubject.subjectCode,
+        paperName: this.keywords, // 试卷关键字
         pageSize: 20,
       }
-      // apiGet(API.MANAGE_PAPER_LIST, parms).then((res) => {
+      // this.apiGet(API.MANAGE_PAPER_LIST, parms).then((res) => {
       //   let paperList = []
       //   if (res.code === CTS.constant.SUCCESS_CODE) {
       //     paperList = res.data.list
@@ -324,135 +359,90 @@ export default defineComponent({
       //   }
       //   callback(paperList)
       // })
-    }
-    
-    const search = () => {
-      if (!loginStatus.value) return
-      if (!keywords.value.trim()) {
-        console.log(keywords.value.trim())
+    },
+    // 点击搜索
+    search() {
+      if (!this.loginStatus) return
+      if (!this.keywords.trim()) {
+        console.log(this.keywords.trim())
         return
       }
 
-      // if (historyMsgListRef.value) {
-      //   historyMsgListRef.value.saveCookieData(keywords.value.trim())
-      // }
+      // this.$refs.historyMsgListRef.saveCookieData(this.keywords.trim())
 
-      if (isHome.value) {
+      if (this.isHome) {
         let path =
-          currSearchOption.value === 1 ? '/search/question' : '/search/paper'
-        router.push(path + '?keywords=' + keywords.value)
+          this.currSearchOption === 1 ? '/search/question' : '/search/paper'
+        this.$router.push(path + '?keywords=' + this.keywords)
+        // this.openSystemPathLink(path + '?keywords=' + this.keywords)
       } else {
         let name =
-          currSearchOption.value === 1 ? 'searchQuestion' : 'searchPaper'
+          this.currSearchOption === 1 ? 'searchQuestion' : 'searchPaper'
         if (
-          route.name == name &&
-          route.query.keywords == keywords.value
+          this.$route.name == name &&
+          this.$route.query.keywords == this.keywords
         ) {
           return
         }
-        router.push({
+        this.$router.push({
           name,
           query: {
-            keywords: keywords.value,
+            keywords: this.keywords,
           },
         })
       }
-    }
-    
-    const handleCommand = (event, command) => {
+    },
+
+    // 搜索条件切换
+    handleCommand(event, command) {
       event.preventDefault()
-      currSearchOption.value = command.label
-      searchPlaceholder.value = command.placeholder
+      this.currSearchOption = command.label
+      this.searchPlaceholder = command.placeholder
       if (
-        route.name === 'searchPaper' &&
-        route.query.keywords &&
+        this.$route.name === 'searchPaper' &&
+        this.$route.query.keywords &&
         command.label === 2
       ) {
-        keywords.value = route.query.keywords
+        this.keywords = this.$route.query.keywords
       } else if (
-        route.name === 'searchQuestion' &&
-        route.query.keywords &&
+        this.$route.name === 'searchQuestion' &&
+        this.$route.query.keywords &&
         command.label === 1
       ) {
-        keywords.value = route.query.keywords
+        this.keywords = this.$route.query.keywords
       } else {
-        keywords.value = ''
+        this.keywords = ''
       }
-    }
-    
-    const visibleChange = (visible) => {
-      showSearchOptions.value = visible
-    }
-    
-    const entryUpload = () => {
+    },
+    // 监控搜索条件变化
+    visibleChange(visible) {
+      this.showSearchOptions = visible
+    },
+    // 进入资源上传
+    entryUpload() {
       if (!isLogin()) {
-        appLogin.value.showLogin()
+        this.$refs.appLogin.showLogin()
       } else {
         let parms = {
           token: getToken(),
         }
-        instance.proxy.wayGet(API.TOKEN_VERIFY, parms).then(res => {
+        this.wayGet(API.TOKEN_VERIFY, parms).then(res => {
           if (res.code === CTS.constant.SUCCESS_CODE) {
-            router.push({
+            // this.$router.push({
+            //   name: 'resourceUpload'
+            // })
+            this.$router.push({
               name: 'PaperUpload',
             })
           } else {
-            appLogin.value.showLogin()
-            ElMessage.error('验证已经失效，请重新登录!')
+            this.$refs.appLogin.showLogin()
+            this.$message.error('验证已经失效，请重新登录!')
           }
         })
       }
-    }
-    
-    // Lifecycle hooks
-    onMounted(() => {
-      init()
-      Bus.on('showAppLogin', showLogin)
-      url.value = router.resolve('/index').href
-      updateKeyWords()
-    })
-    
-    onBeforeUnmount(() => {
-      Bus.off('showAppLogin', showLogin)
-    })
-    
-    // Watch for route changes
-    watch(() => route, () => {
-      loginStatus.value = isLogin()
-    })
-    
-    return {
-      appLogin,
-      historyMsgListRef,
-      loginStatus,
-      keywords,
-      currSearchOption,
-      searchPlaceholder,
-      searchOptions,
-      showSearchOptions,
-      url,
-      userInfo,
-      currSubject,
-      fullpath,
-      isHome,
-      init,
-      getUserInfo,
-      logout,
-      showLogin,
-      changeHisText,
-      changeHotPaper,
-      handleFocus,
-      blurEvent,
-      updateKeyWords,
-      goIndex,
-      searchPaperList,
-      search,
-      handleCommand,
-      visibleChange,
-      entryUpload
-    }
-  }
-})
+    },
+  },
+}
 </script>
 
 <style lang="scss">
@@ -569,20 +559,19 @@ export default defineComponent({
 
       .search-input {
         width: 320px;
-      }
-      
-      .search-input :deep(.el-input__inner) {
-        height: 20px;
-        line-height: 20px;
-        border: none;
-        // border-left: 1px solid #cfcfcf;
-        border-radius: 0;
-        color: $color-text-d;
-        padding: 0;
-        padding-left: 12px;
-        font-size: $font-size-medium;
-        &:focus {
-          // border-left: 1px solid $color-theme;
+        :deep() .el-input__inner {
+          height: 20px;
+          line-height: 20px;
+          border: none;
+          // border-left: 1px solid #cfcfcf;
+          border-radius: 0;
+          color: $color-text-d;
+          padding: 0;
+          padding-left: 12px;
+          font-size: $font-size-medium;
+          &:focus {
+            // border-left: 1px solid $color-theme;
+          }
         }
       }
     }
@@ -625,15 +614,17 @@ export default defineComponent({
         font-size: 22px;
         margin-right: 10px;
       }
+      &.login {
+        :deep() .el-dropdown {
+          .el-dropdown-link {
+            display: block;
+            max-width: 70px;
+            @include textEllipsis();
+          }
+        }
+      }
     }
   }
-  
-  .right :deep(.el-dropdown .el-dropdown-link) {
-    display: block;
-    max-width: 70px;
-    @include textEllipsis();
-  }
-  
   .top-invite-segment {
     width: 90px;
     height: 40px;
@@ -684,26 +675,24 @@ export default defineComponent({
   &.el-popper[x-placement^='bottom'] {
     margin-top: 10px;
   }
+  :deep() .dropdown-menu-item {
+    padding: 0;
+    line-height: 42px;
+    color: $color-text;
+    text-align: center;
+    transition: 0.2s;
+    &:hover {
+      background: $color-menu-l-hover;
+      color: $color-theme-d;
+    }
+    &:first-child:hover {
+      border-radius: 4px 4px 0 0;
+    }
+    &:last-child:hover {
+      border-radius: 0 0 4px 4px;
+    }
+  }
 }
-
-.search-dropdown-menu :deep(.dropdown-menu-item) {
-  padding: 0;
-  line-height: 42px;
-  color: $color-text;
-  text-align: center;
-  transition: 0.2s;
-  &:hover {
-    background: $color-menu-l-hover;
-    color: $color-theme-d;
-  }
-  &:first-child:hover {
-    border-radius: 4px 4px 0 0;
-  }
-  &:last-child:hover {
-    border-radius: 0 0 4px 4px;
-  }
-}
-
 .head-contenter {
   background: #f6f6f6;
   height: 40px;

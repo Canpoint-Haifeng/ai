@@ -91,3 +91,49 @@ export function reQuids(quids) {
 export function getSimpleCheckedNodes(nodes) {
   return nodes
 }
+
+// Simple encryption function
+export function encrypt(data) {
+  // Simple encryption placeholder
+  return btoa(data);
+}
+
+// Remove token function
+export function removeToken() {
+  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+// Session storage functions
+export function getSessionStore(key) {
+  return sessionStorage.getItem(key);
+}
+
+export function setSessionStore(key, value) {
+  return sessionStorage.setItem(key, value);
+}
+
+export function removeSessionStore(key) {
+  return sessionStorage.removeItem(key);
+}
+
+// Array extension find function
+export function ArrayExtentFind(arr, key, value) {
+  if (!arr || !Array.isArray(arr)) return null;
+  return arr.find(item => item[key] === value) || null;
+}
+
+// Convert digital to Chinese
+export function getDigitalChinese(num) {
+  const chineseDigits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+  if (num <= 10) return chineseDigits[num];
+  if (num < 20) return '十' + (num > 10 ? chineseDigits[num - 10] : '');
+  const tens = Math.floor(num / 10);
+  const ones = num % 10;
+  return chineseDigits[tens] + '十' + (ones > 0 ? chineseDigits[ones] : '');
+}
+
+// Decrypt function (counterpart to encrypt)
+export function decrypt(data) {
+  // Simple decryption placeholder
+  return atob(data);
+}

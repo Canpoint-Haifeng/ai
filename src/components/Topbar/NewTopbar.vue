@@ -1,120 +1,90 @@
 <!-- 没有 验证登录的 top -->
 <template>
-  <div
-    class="top-bar"
-    :class="isHome ? 'showFixed' : ''"
-  >
+  <div class="top-bar" :class="isHome ? 'showFixed' : ''">
     <div class="content-container top-h">
       <h1><span>全品文教</span> - 学生用品提供商和教育服务者</h1>
       <div class="top-menu fr">
-        <ul
-          v-if="!loginStatus"
-          class="top-menu-list"
-        >
-          <li
-            class="list-item item-login"
-            @click="showLogin"
-          >
-            <span class="text"><i class="iconfont iconuser" />登录</span>
+        <ul class="top-menu-list" v-if="!loginStatus">
+          <li class="list-item item-login" @click="showLogin">
+            <span class="text"><i class="iconfont iconuser"></i>登录</span>
             <em class="line">|</em>
           </li>
-          <li
-            class="list-item"
-            @click="showRegister"
-          >
+          <li class="list-item" @click="showRegister">
             <span class="text">注册</span>
             <em class="line">|</em>
           </li>
-          <li
-            class="list-item"
-            @click="openCampusService"
-          >
+          <li class="list-item" @click="openCampusService">
             <span class="text">开通校园服务</span>
             <em class="line">|</em>
           </li>
-          <li
-            class="list-item"
-            @click="openCanpointItem"
-          >
+          <li class="list-item" @click="openCanpointItem">
             <span class="text">题库开放平台</span>
             <em class="line">|</em>
           </li>
-          <li
-            class="list-item"
-            @click="entryPage('help')"
-          >
+          <li class="list-item" @click="entryPage('help')">
             <span class="text">帮助中心</span>
           </li>
         </ul>
-        <ul
-          v-else
-          class="top-menu-list"
-        >
+        <ul class="top-menu-list" v-else>
           <li class="list-item">
             <el-dropdown
+              @command="handleCommand"
               class="user-dropdown"
               placement="bottom"
-              @command="handleCommand"
             >
-              <el-button
-                type="text"
-                class="dropdown-text"
-              >
+              <el-button type="text" class="dropdown-text">
                 <img
-                  v-if="userInfo.profilePhoto"
                   :src="userInfo.profilePhoto"
                   alt="avatar"
                   width="24"
                   height="24"
                   class="avatar"
-                >
+                  v-if="userInfo.profilePhoto"
+                />
                 <img
-                  v-else
                   src="@/assets/images/avatar.png"
                   alt="avatar"
                   width="24"
                   height="24"
                   class="avatar"
-                >
+                  v-else
+                />
                 <span class="username">{{ userInfo.nickname }}</span>
               </el-button>
-              <template #dropdown>
-                <el-dropdown-menu
-                
-                  class="user-dropdown-menu custom-dropdown-menu"
-                >
-                  <el-dropdown-item class="dropdown-menu-item">
-                    <slot name="dropdown">
-                      <div class="slot-drop-item">
-                        <p
-                          class="item-one"
-                          @click="handleUser"
+              <el-dropdown-menu
+                slot="dropdown"
+                class="user-dropdown-menu custom-dropdown-menu"
+              >
+                <el-dropdown-item class="dropdown-menu-item">
+                  <slot name="dropdown">
+                    <div class="slot-drop-item">
+                      <p class="item-one" @click="handleUser">当前服务：</p>
+                      <p class="item-two">
+                        <span @click="handleUser"
+                          ><i class="iconfont iconbanbengengxin"></i
+                          >{{ serviceInfo.serviceName }}</span
                         >
-                          当前服务：
-                        </p>
-                        <p class="item-two">
-                          <span @click="handleUser"><i class="iconfont iconbanbengengxin" />{{ serviceInfo.serviceName }}</span>
-                          <label
-                            v-if="
-                              selectServiceDialog.serviceList &&
-                                selectServiceDialog.serviceList.length > 1
-                            "
-                            @click="selectServiceDialog.visible = true"
-                          >[切换]</label>
-                        </p>
-                      </div>
-                    </slot>
-                  </el-dropdown-item>
-                  <el-dropdown-item
-                    v-for="item in menuOptions"
-                    :key="item.value"
-                    class="dropdown-menu-item"
-                    :command="item.value"
-                  >
-                    {{ item.name }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
+                        <label
+                          v-if="
+                            selectServiceDialog.serviceList &&
+                            selectServiceDialog.serviceList.length > 1
+                          "
+                          @click="selectServiceDialog.visible = true"
+                          >[切换]</label
+                        >
+                      </p>
+                    </div>
+                  </slot>
+                </el-dropdown-item>
+                <el-dropdown-item
+                  class="dropdown-menu-item"
+                  v-for="item in menuOptions"
+                  :key="item.value"
+                  :command="item.value"
+                >
+                  {{ item.name }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
             </el-dropdown>
           </li>
           <!-- <li class="list-item" @click="openVipService">
@@ -122,35 +92,26 @@
             <span class="text">会员服务</span>
             <em class="line">|</em>
           </li> -->
-          <li
-            class="list-item"
-            @click="openCampusService"
-          >
+          <li class="list-item" @click="openCampusService">
             <span class="text">开通校园服务</span>
             <em class="line">|</em>
           </li>
-          <li
-            class="list-item"
-            @click="openCanpointItem"
-          >
+          <li class="list-item" @click="openCanpointItem">
             <span class="text">题库开放平台</span>
             <em class="line">|</em>
           </li>
-          <li
-            class="list-item"
-            @click="entryPage('help')"
-          >
+          <li class="list-item" @click="entryPage('help')">
             <span class="text">帮助中心</span>
           </li>
         </ul>
       </div>
     </div>
-    <app-login ref="appLogin" />
+    <app-login ref="appLogin"></app-login>
     <!--切换服务-->
     <div class="dialog-wrapper">
       <el-dialog
-        v-model:visible="selectServiceDialog.visible"
         :title="selectServiceDialog.title"
+        :visible.sync="selectServiceDialog.visible"
         :modal-append-to-body="false"
         :lock-scroll="false"
         :show-close="selectServiceDialog.showClose"
@@ -162,39 +123,36 @@
           </p>
           <ul class="service-list">
             <li
-              v-for="(item, index) in selectServiceDialog.serviceList"
-              :key="index"
               :class="
                 item.currId === selectServiceDialog.currId ? 'active' : ''
               "
+              v-for="(item, index) in selectServiceDialog.serviceList"
+              :key="index"
               @click="changeService(item)"
             >
               <label>
                 <span v-if="item.roleName">{{ item.roleName }}</span>
-                <span v-else>以个人身份使用</span> </label>——{{ item.serviceName }}
+                <span v-else>以个人身份使用</span> </label
+              >——{{ item.serviceName }}
               <!--<label>{{item.serviceName}}</label>-->
               <i
                 v-if="item.currId === selectServiceDialog.currId"
                 class="iconfont iconxuanzhong"
-              />
+              ></i>
             </li>
           </ul>
           <p>
             <el-checkbox
               v-model="selectServiceDialog.serviceChecked"
-            />&nbsp;&nbsp;记住选择，不再提示
+            ></el-checkbox
+            >&nbsp;&nbsp;记住选择，不再提示
           </p>
         </div>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button
-              class="btn btn-shadow"
-              @click="getCurrentService"
-            >
-              确定
-            </el-button>
-          </div>
-        </template>
+        <div slot="footer" class="dialog-footer">
+          <el-button class="btn btn-shadow" @click="getCurrentService"
+            >确定</el-button
+          >
+        </div>
       </el-dialog>
     </div>
     <!---->
@@ -664,7 +622,7 @@
     background: $color-white;
     overflow: visible;
     box-shadow: 0px 4px 6px 0px rgba(42, 77, 138, 0.1);
-    :deep(.dropdown-menu-item) {
+    :deep() .dropdown-menu-item {
       padding: 0;
       line-height: 40px;
       color: $color-text;

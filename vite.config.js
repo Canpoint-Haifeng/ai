@@ -28,7 +28,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      'vue': 'vue/dist/vue.esm-bundler.js'
+      'vue': '@vue/compat'
     }
   },
   server: {
@@ -42,7 +42,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         charset: false,
-        additionalData: `@use "@/assets/css/_variables.scss" as *;`
+        additionalData: `@use "@/assets/styles/variables.scss" as *;`
       }
     }
   },

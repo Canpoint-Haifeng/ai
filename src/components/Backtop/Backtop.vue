@@ -7,26 +7,18 @@
       :visibility-height="10"
     >
       <div class="app-top-back-part">
-        <i class="iconfont iconshiliangzhinengduixiang-08" />
-        <div class="text">
-          置顶
-        </div>
+        <i class="iconfont iconshiliangzhinengduixiang-08"></i>
+        <div class="text">置顶</div>
       </div>
     </el-backtop>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'Backtop'
-})
+  export default {}
 </script>
 
 <style lang="scss" scoped>
-  $color-theme: #3e7eff; // Define the theme color directly
-  
   .app-top-back-part {
     position: absolute;
     right: 10px;

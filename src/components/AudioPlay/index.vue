@@ -1,12 +1,12 @@
 <template>
-  <div class="topbar">
-    <!-- Topbar content -->
+  <div class="audio-player">
+    <!-- Audio player placeholder -->
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Topbar',
+  name: 'AudioPlayer',
   setup() {
     return {}
   }
@@ -14,7 +14,7 @@ export default {
 </script>
 
 <style scoped>
-.topbar {
+.audio-player {
   /* Styles here */
 }
 </style>

@@ -1,45 +1,29 @@
 <template>
-  <div
-    class="video"
-    @contextmenu.prevent="onContextMenu"
-  >
-    <vue3-video-play
+  <div class="video" @contextmenu.prevent="onContextMenu">
+    <video-player
       ref="videoPlayer"
-      :width="pwidth"
-      :height="pheight"
-      :src="videoURL"
-      :poster="posterUrl"
+      name="videoPlayer"
+      id="video"
+      class="video-player vjs-custom-skin"
+      :style="{ width: pwidth, height: pheight }"
       :playsinline="true"
-      :autoplay="false"
-      :muted="false"
-      :loop="false"
-      :preload="'auto'"
-      :rate="[0.5, 1.0, 1.5, 2.0]"
-      @play="onPlayerPlay"
-      @pause="onPlayerPause"
-      @ended="onPlayerEnded"
-      @statechanged="playerStateChanged"
+      :options="defaultOptions"
+      @play="onPlayerPlay($event)"
+      @pause="onPlayerPause($event)"
+      @ended="onPlayerEnded($event)"
+      @statechanged="playerStateChanged($event)"
     />
-    <div
-      v-if="isshow && posterUrl"
-      class="mask-video-image"
-    >
-      <img
-        class="video-image"
-        :src="posterUrl"
-      >
+    <div v-if="isshow && defaultOptions.poster" class="mask-video-image">
+      <img class="video-image" :src="defaultOptions.poster" />
     </div>
-    <div
-      v-if="isshow && posterUrl"
-      class="mask-video-image"
-    />
+    <div v-if="isshow && defaultOptions.poster" class="mask-video-image"></div>
     <img
-      v-show="isplay"
       class="palyer-icon"
       src="../../assets/images/play.png"
       alt=""
+      v-show="isplay"
       @click="onPlayerPlay"
-    >
+    />
     <!-- 产品要求一直不显示暂停按钮 by 吴兴武 -->
     <!-- <img src="../../assets/images/playStop.png"
       alt=""
@@ -51,128 +35,147 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from 'vue'
-import CTS from '@/common/js/constant'
-import { API } from '@/api/config'
-import { isLogin } from '@/common/js/util'
-import vue3VideoPlay from 'vue3-video-play'
-import 'vue3-video-play/dist/style.css'
+  import CTS from '@/common/js/constant'
+  import { API } from '@/api/config'
+  import { isLogin } from '@/common/js/util'
+  import { videoPlayer } from 'vue-video-player'
+  //   import 'vue-video-player/node_modules/video.js/dist/video-js.css'
+  //   import 'vue-video-player/src/custom-theme.css'
 
-export default {
-  name: 'Video',
-  components: {
-    vue3VideoPlay,
-  },
-  props: {
-    videoItem: Object,
-    pwidth: String,
-    pheight: String,
-  },
-  setup(props, { refs }) {
-    const videoPlayer = ref(null)
-    const isFinishTask = ref(false)
-    const isplay = ref(true)
-    const isshow = ref(false)
-    const videoURL = ref('')
-    const posterUrl = ref('')
-    
-    // Watch for changes in videoItem
-    watch(() => props.videoItem, () => {
-      renderVideoItem()
-    })
-    
-    // Methods
-    const onContextMenu = () => {
-      return false
-    }
-    
-    // Player state changed callback
-    const playerStateChanged = (playerCurrentState) => {
-      // console.log('player current update state', playerCurrentState)
-    }
-    
-    const renderVideoItem = async () => {
-      if (props.videoItem) {
-        posterUrl.value = props.videoItem.pictureUrl || ''
-        let res = await apiQueryAudiosData(props.videoItem.videoId)
-        if (res.code == 200) {
-          if (res && res.data) {
-            videoURL.value = res.data.url || ''
-            isplay.value = true
-            isshow.value = false
-          }
-        } else {
-          videoURL.value = ''
-          isplay.value = true
-          isshow.value = false
-        }
+  import 'video.js/dist/video-js.css'
+  // Custom theme CSS is not available in Vue 3 version
+  export default {
+    name: 'Video',
+    props: {
+      videoItem: Object,
+      pwidth: String,
+      pheight: String,
+    },
+    watch: {
+      videoItem() {
+        this.renderVideoItem()
+      },
+    },
+    data() {
+      return {
+        isFinishTask: false,
+        isplay: true,
+        isshow: false,
+        videoURL: '',
+        defaultOptions: {
+          sources: [
+            {
+              src: '', // 路径
+              type: 'video/mp4', // 类型
+            },
+          ],
+          playbackRates: [0.5, 1.0, 1.5, 2.0], // 可选的播放速度
+          autoplay: false, // 如果为true,浏览器准备好时开始回放。
+          muted: false, // 默认情况下将会消除任何音频。
+          loop: false, // 是否视频一结束就重新开始。
+          preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+          language: 'zh-CN',
+          aspectRatio: '16:9', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+          fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+          poster: '', // 封面地址
+          notSupportedMessage: '此视频暂无法播放，请稍后再试', // 允许覆盖Video.js无法播放媒体源时显示的默认信息。
+          controlBar: {
+            timeDivider: true, // 当前时间和持续时间的分隔符
+            durationDisplay: true, // 显示持续时间
+            remainingTimeDisplay: false, // 是否显示剩余时间功能
+            fullscreenToggle: false, // 是否显示全屏按钮
+          },
+        },
       }
-    }
-    
-    // Play callback
-    const onPlayerPlay = () => {
-      // Start playing
-      if (!isFinishTask.value) {
-        isFinishTask.value = true
-        watchVideoTask()
-      }
-
-      isplay.value = false
-      isshow.value = false
-      videoPlayer.value.play()
-    }
-    
-    // Complete video watching task
-    const watchVideoTask = () => {
-      // If logged in, complete the video watching task
-      if (isLogin()) {
-        apiGet(API.USER_TASK_WATCHVIDEO).then((res) => {
-          if (res.code === CTS.constant.SUCCESS_CODE) {
-            console.log(res)
-            if (res.data && res.data.length) {
-              // Indicates there is a reward
-              showCpReceiveReward(res.data)
+    },
+    mounted() {
+      this.renderVideoItem()
+    },
+    methods: {
+      onContextMenu() {
+        return false
+      },
+      // 播放状态改变回调
+      playerStateChanged(playerCurrentState) {
+        // console.log('player current update state', playerCurrentState)
+      },
+      async renderVideoItem() {
+        if (this.videoItem) {
+          this.defaultOptions.poster = this.videoItem.pictureUrl || ''
+          let res = await this.apiQueryAudiosData(this.videoItem.videoId)
+          if (res.code == 200) {
+            if (res && res.data) {
+              this.videoURL = res.data.url || ''
+              this.defaultOptions.sources[0].src = this.videoURL
+              this.isplay = true
+              this.isshow = false
             }
+          } else {
+            this.videoURL = ''
+            this.defaultOptions.sources[0].src = this.videoURL
+            this.isplay = true
+            this.isshow = false
           }
-        })
-      }
-    }
-    
-    // Pause callback
-    const onPlayerPause = () => {
-      isplay.value = true
-      isshow.value = false
-      videoPlayer.value.pause()
-    }
-    
-    // End callback
-    const onPlayerEnded = () => {
-      isplay.value = true
-      isshow.value = true
-    }
-    
-    // Lifecycle hooks
-    onMounted(() => {
-      renderVideoItem()
-    })
-    
-    return {
+        }
+      },
+      // 播放回调
+      onPlayerPlay(player) {
+        // 开始播放
+        if (!this.isFinishTask) {
+          this.isFinishTask = true
+          this.watchVideoTask()
+        }
+
+        this.isplay = false
+        this.isshow = false
+        this.$refs.videoPlayer.player.play()
+        document.getElementsByClassName(
+          'vjs-text-track-display',
+        )[0].style.background = 'none'
+      },
+      // 完成 播放视频的 任务
+      watchVideoTask() {
+        // 登录了 点击 开始播放 就完成完成视频任务
+        // USER_TASK_WATCHVIDEO
+        if (isLogin()) {
+          this.apiGet(API.USER_TASK_WATCHVIDEO).then((res) => {
+            if (res.code === CTS.constant.SUCCESS_CODE) {
+              console.log(res)
+              if (res.data && res.data.length) {
+                // 表示有奖励哦
+                this.showCpReceiveReward(res.data)
+              }
+            }
+          })
+        }
+      },
+      // 暂停回调
+      onPlayerPause(player) {
+        this.isplay = true
+        this.isshow = false
+        this.$refs.videoPlayer.player.pause()
+        document.getElementsByClassName(
+          'vjs-text-track-display',
+        )[0].style.background = 'rgba(0,0,0,.2)'
+      },
+      // 结束回调
+      onPlayerEnded(player) {
+        this.isplay = true
+        this.isshow = true
+        document.getElementsByClassName(
+          'vjs-text-track-display',
+        )[0].style.background = 'rgba(0,0,0,.2)'
+      },
+    },
+    computed: {
+      player() {
+        return this.$refs.videoPlayer.player
+      },
+    },
+    components: {
       videoPlayer,
-      isFinishTask,
-      isplay,
-      isshow,
-      videoURL,
-      posterUrl,
-      onContextMenu,
-      playerStateChanged,
-      renderVideoItem,
-      onPlayerPlay,
-      watchVideoTask,
-      onPlayerPause,
-      onPlayerEnded
-    }
+    },
   }
-}
 </script>
 <style lang="scss" scoped>
   .video-player {

@@ -13,54 +13,43 @@
 
     <!-- <InvitationActivity></InvitationActivity> -->
     <!-- <CpRankingList v-if="isHome" @showLogin="showLogin"></CpRankingList> -->
-    <app-login ref="appLogin" />
+    <app-login ref="appLogin"></app-login>
   </div>
 </template>
 
 <script>
-import { computed, ref } from 'vue'
-import { useStore } from 'vuex'
-import QQFeedback from './QQFeedback.vue'
-import CompanyWeiXin from './CompanyWeiXin.vue'
-import CompanyWeiXin2 from './CompanyWeiXin2.vue'
-import InvitationActivity from './InvitationActivity.vue'
-import CpRankingList from './CpRankingList.vue'
-import BackTopComponents from './components/BackTopComponents.vue'
-
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'AppBroadsideBack',
-  components: {
-    QQFeedback,
-    CompanyWeiXin,
-    CompanyWeiXin2,
-    InvitationActivity,
-    CpRankingList,
-    BackTopComponents,
-  },
-  setup() {
-    const store = useStore()
-    const appLogin = ref(null)
-    
-    // Get state from store
-    const fullpath = computed(() => store.state.fullpath)
-    
-    // Computed property
-    const isHome = computed(() => fullpath.value === 'paperIndex')
-    
-    // Methods
-    const showLogin = () => {
-      appLogin.value.showLogin()
-    }
-    
-    return {
-      appLogin,
-      isHome,
-      showLogin
-    }
+  import QQFeedback from './QQFeedback'
+  import CompanyWeiXin from './CompanyWeiXin'
+  import CompanyWeiXin2 from './CompanyWeiXin2'
+  import InvitationActivity from './InvitationActivity'
+  import CpRankingList from './CpRankingList'
+  import BackTopComponents from './components/BackTopComponents'
+  import { mapState } from 'vuex'
+  export default {
+    components: {
+      QQFeedback,
+      CompanyWeiXin,
+      CompanyWeiXin2,
+      InvitationActivity,
+      CpRankingList,
+      BackTopComponents,
+    },
+    computed: {
+      ...mapState(['fullpath']),
+      isHome() {
+        if (this.fullpath == 'paperIndex') {
+          return true
+        } else {
+          return false
+        }
+      },
+    },
+    methods: {
+      showLogin() {
+        this.$refs.appLogin.showLogin()
+      },
+    },
   }
-})
 </script>
 
 <style lang="scss" scoped>

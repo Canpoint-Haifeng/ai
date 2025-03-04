@@ -1,7 +1,6 @@
 <template>
   <div>
     <el-dialog
-      v-model="visible"
       title=" "
       width="824px"
       class="login-dialog"
@@ -9,19 +8,13 @@
       :append-to-body="true"
       :lock-scroll="false"
       :close-on-click-modal="false"
+      :visible.sync="visible"
       :closed="hide"
     >
       <div class="login-container">
-        <div
-          class="login-left"
-          :style="loginLeftStyle"
-        >
+        <div class="login-left" :style="loginLeftStyle">
           <div class="login-logo">
-            <img
-              src="@/assets/images/logo-slogan.svg"
-              alt="logo"
-              height="30"
-            >
+            <img src="@/assets/images/logo-slogan.svg" alt="logo" height="30" />
           </div>
         </div>
         <div class="login-right">
@@ -31,52 +24,37 @@
                 class="tabs-text"
                 :class="{ active: currentIndex === 0 }"
                 @click="tabHandle(0)"
-              >账号密码登录</span>
+                >账号密码登录</span
+              >
               <span
                 class="tabs-text"
                 :class="{ active: currentIndex === 1 }"
                 @click="tabHandle(1)"
-              >验证码登录</span>
-            </div>
-            <div
-              v-show="currentIndex === 0"
-              class="tabs-content"
-            >
-              <el-form
-                ref="loginForm"
-                :model="loginData"
-                :rules="loginRules"
+                >验证码登录</span
               >
-                <el-form-item
-                  prop="account"
-                  class="form-item"
-                >
+            </div>
+            <div class="tabs-content" v-show="currentIndex === 0">
+              <el-form :model="loginData" :rules="loginRules" ref="loginForm">
+                <el-form-item prop="account" class="form-item">
                   <el-input
                     v-model="loginData.account"
                     placeholder="请输入手机号/邮箱"
                     autocomplete="off"
                     class="form-input"
                   >
-                    <template #prefix>
-                      <i class="el-icon-user" />
-                    </template>
+                    <i slot="prefix" class="el-icon-user"></i>
                   </el-input>
                 </el-form-item>
-                <el-form-item
-                  prop="password"
-                  class="form-item"
-                >
+                <el-form-item prop="password" class="form-item">
                   <el-input
                     v-model="loginData.password"
                     placeholder="请输入密码"
                     autocomplete="off"
                     type="password"
-                    class="form-input"
                     @keyup.enter="login('loginForm')"
+                    class="form-input"
                   >
-                    <template #prefix>
-                      <i class="el-icon-key" />
-                    </template>
+                    <i slot="prefix" class="el-icon-key"></i>
                   </el-input>
                 </el-form-item>
                 <div
@@ -92,10 +70,9 @@
                 <div class="form-item-agree">
                   <el-checkbox v-model="loginData.agree">
                     <span class="font-12">
-                      我已同意并阅读<span
-                        class="text"
-                        @click="privacyPolicy"
-                      >《全品AI教研云隐私政策》</span>
+                      我已同意并阅读<span class="text" @click="privacyPolicy"
+                        >《全品AI教研云隐私政策》</span
+                      >
                     </span>
                   </el-checkbox>
                 </div>
@@ -104,85 +81,67 @@
 
                 <el-form-item class="form-item form-item-submit">
                   <el-button
-                    v-if="isValue"
                     type="primary"
                     class="btn login-btn"
+                    v-if="isValue"
                     @click="login('loginForm')"
+                    >登录</el-button
                   >
-                    登录
-                  </el-button>
-                  <el-button
-                    v-else
-                    type="primary"
-                    class="btn btn-disabled"
+                  <el-button type="primary" class="btn btn-disabled" v-else
+                    >登录</el-button
                   >
-                    登录
-                  </el-button>
                 </el-form-item>
               </el-form>
             </div>
-            <div
-              v-show="currentIndex === 1"
-              class="tabs-content"
-            >
+            <div class="tabs-content" v-show="currentIndex === 1">
               <el-form
-                ref="loginFormVs"
                 :model="loginVsData"
                 :rules="loginVsRules"
+                ref="loginFormVs"
               >
-                <el-form-item
-                  prop="phone"
-                  class="form-item"
-                >
+                <el-form-item prop="phone" class="form-item">
                   <el-input
                     v-model="loginVsData.phone"
                     placeholder="请输入手机号"
                     autocomplete="off"
-                    class="form-input"
                     @blur="onFocus"
+                    class="form-input"
                   >
-                    <template #prefix>
-                      <i class="el-icon-mobile-phone" />
-                    </template>
+                    <i slot="prefix" class="el-icon-mobile-phone"></i>
                   </el-input>
                 </el-form-item>
                 <div class="noCaptcha-wrapper">
                   <no-captcha
+                    :customWidth="customWidth"
                     v-if="visible"
-                    :custom-width="customWidth"
-                    @check-code-success="onCheckCodeSuccess"
-                  />
+                    @checkCodeSuccess="onCheckCodeSuccess"
+                  ></no-captcha>
                 </div>
-                <el-form-item
-                  prop="vsCode"
-                  class="form-item"
-                >
+                <el-form-item prop="vsCode" class="form-item">
                   <el-input
                     v-model="loginVsData.vsCode"
                     placeholder="请输入验证码"
                     autocomplete="off"
-                    class="form-input"
                     @keyup.enter="login('loginForm')"
+                    class="form-input"
                   >
-                    <template #prefix>
-                      <i class="el-icon-key" />
-                    </template>
+                    <i slot="prefix" class="el-icon-key"></i>
                   </el-input>
                   <div
-                    v-if="loginVsData.vsCodeStatus"
                     class="append-btn"
+                    v-if="loginVsData.vsCodeStatus"
                     style="width: 95px"
                   >
-                    <div class="line" />
+                    <div class="line"></div>
                     {{ loginVsData.vsCodeText }}
                   </div>
                   <div
-                    v-else
                     class="append-btn"
                     :class="{ isdisavled: isVfCode }"
+                    v-else
                   >
                     <span @click="getVfcode">
-                      <div class="line" />
+                      <div class="line"></div>
                       {{ loginVsData.vsCodeText }}
                     </span>
                   </div>
@@ -199,10 +158,9 @@
                 <div class="form-item-agree form-item-agree2">
                   <el-checkbox v-model="loginVsData.agree">
                     <span class="font-12">
-                      我已同意并阅读<span
-                        class="text"
-                        @click="privacyPolicy"
-                      >《全品AI教研云隐私政策》</span>
+                      我已同意并阅读<span class="text" @click="privacyPolicy"
+                        >《全品AI教研云隐私政策》</span
+                      >
                     </span>
                   </el-checkbox>
                 </div>
@@ -211,20 +169,15 @@
                   style="margin-top: 0"
                 >
                   <el-button
-                    v-if="isValueVs"
                     type="primary"
                     class="btn login-btn"
+                    v-if="isValueVs"
                     @click="loginVs('loginFormVs')"
+                    >登录</el-button
                   >
-                    登录
-                  </el-button>
-                  <el-button
-                    v-else
-                    type="primary"
-                    class="btn btn-disabled"
+                  <el-button type="primary" class="btn btn-disabled" v-else
+                    >登录</el-button
                   >
-                    登录
-                  </el-button>
                 </el-form-item>
               </el-form>
             </div>
@@ -232,11 +185,11 @@
               <span
                 class="text font-12"
                 @click="goFindPassword('/retrievePassword')"
-              >忘记密码?</span>
-              <span
-                class="text font-12 color-theme"
-                @click="goRegister"
-              >免费注册></span>
+                >忘记密码?</span
+              >
+              <span class="text font-12 color-theme" @click="goRegister"
+                >免费注册></span
+              >
             </div>
             <!-- 微信小程序已下架 -->
             <!-- <div class="login-wx-login" v-if="currentIndex === 0">
@@ -259,31 +212,16 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
 import CTS from '@/common/js/constant'
 import commonUrl from '@/common/js/project-url'
 import { API } from '@/api/config'
 // import wxlogin from 'vue-wxlogin'
-import NoCaptcha from '@/components/NoCaptcha/NoCaptcha.vue'
+import NoCaptcha from '@/components/NoCaptcha/NoCaptcha'
 // import WxProgramLogin from './WxProgramLogin'
 import { setToken, removeToken, encrypt } from '@/common/js/util'
 import { loginLeftList } from './config'
+let interval = null
 export default {
-  name: 'Login',
-  components: {
-    NoCaptcha,
-  },
-  props: {
-    showLoginEvent: Function,
-    hideLoginEvent: Function,
-  },
-  setup(props) {
-    // Will implement Composition API logic here
-    return {
-      // Return all reactive state and methods
-    }
-  },
   data() {
     let validateAccount = (rule, value, callback) => {
       if (value === '') {
@@ -393,6 +331,14 @@ export default {
       loginLeftStyle: {}, // 可以修改背景的 样式设置
     }
   },
+  created() {
+    let index = Math.floor(Math.random() * loginLeftList.length)
+    // console.log(loginLeftList.length,index)
+    this.loginLeftStyle = {
+      background: `url(${loginLeftList[index]}) no-repeat`,
+      backgroundSize: '412px 540px',
+    }
+  },
   computed: {
     isValue() {
       return !!(this.loginData.account && this.loginData.password)
@@ -414,14 +360,6 @@ export default {
         // this.wxLoginInit()
       }
     },
-  },
-  created() {
-    let index = Math.floor(Math.random() * loginLeftList.length)
-    // console.log(loginLeftList.length,index)
-    this.loginLeftStyle = {
-      background: `url(${loginLeftList[index]}) no-repeat`,
-      backgroundSize: '412px 540px',
-    }
   },
   methods: {
     onCheckCodeSuccess(params) {
@@ -662,16 +600,17 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.login-dialog :deep(.el-dialog) {
-  width: 824px;
-  padding: 0px;
-  box-sizing: border-box;
-  box-shadow: 0px 0px 30px 0px rgba(62, 115, 205, 0.4);
-  border-radius: 6px;
-}
-
-.login-dialog :deep(.el-dialog__header) {
-  padding: 0;
+.login-dialog :deep() {
+  .el-dialog {
+    width: 824px;
+    padding: 0px;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 30px 0px rgba(62, 115, 205, 0.4);
+    border-radius: 6px;
+    .el-dialog__header {
+      padding: 0;
+    }
+  }
 }
 .login-container {
   display: flex;
@@ -732,11 +671,10 @@ export default {
     .noCaptcha-wrapper {
       margin-bottom: 22px;
     }
-    .form-item {
+    .form-item :deep() {
       position: relative;
       margin-bottom: 30px;
-      
-      :deep(.icon-box) {
+      .icon-box {
         position: absolute;
         top: 0;
         left: 16px;
@@ -745,8 +683,7 @@ export default {
           font-size: $font-size-medium;
         }
       }
-      
-      :deep(.form-input) {
+      .form-input {
         .el-input__inner {
           height: 40px;
           line-height: 40px;
@@ -768,8 +705,7 @@ export default {
           color: $color-text-ll;
         }
       }
-      
-      :deep(.el-form-item__error) {
+      .el-form-item__error {
         padding-top: 8px;
         color: #ff5733;
         display: none;
@@ -882,7 +818,7 @@ export default {
     }
 
     .form-item-agree {
-      :deep(.el-checkbox__label) {
+      :deep() .el-checkbox__label {
         font-size: 12px;
         padding-left: 6px;
         .text {
@@ -954,7 +890,7 @@ export default {
     color: #487fff;
     font-size: 12px;
   }
-  :deep(.el-checkbox__label) {
+  :deep() .el-checkbox__label {
     font-size: 12px;
     padding-left: 6px;
   }

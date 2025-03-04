@@ -1,23 +1,63 @@
 <template>
-  <div class="app-login">
-    <!-- Component content preserved -->
-  </div>
+  <span> </span>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'AppLogin',
-  setup() {
-    return {}
+  import Login from '../Login/CbLogin'
+  import Register from '../Register/Register'
+  export default {
+    methods: {
+      // 显示登录弹框
+      showLogin() {
+        this.$cpLogin({
+          visible: true,
+          onGoRegister: () => {
+            this.onGoregister()
+          },
+        })
+      },
+      // 关闭登录弹窗
+      // closeLogin() {
+      //   this.loginConfig.visible = false
+      //   console.log('关闭登录弹窗')
+      // },
+      // 显示注册弹框
+      showRegister() {
+        this.$cpRegister({
+          visible: true,
+          onGoAgreement: () => {
+            this.$router.push({ name: 'agreement' })
+          },
+          onGoLogin: () => {
+            this.onGologin()
+          },
+        })
+      },
+      // 关闭注册弹窗
+      // closeReg() {
+      //   this.regConfig.visible = false
+      //   console.log('关闭注册弹窗')
+      // },
+      // 去登录
+      onGologin() {
+        this.$cpRegister({ visible: false })
+        setTimeout(() => {
+          this.showLogin()
+        }, 500)
+      },
+      // 去注册
+      onGoregister() {
+        this.$cpLogin({ visible: false })
+        setTimeout(() => {
+          this.showRegister()
+        }, 500)
+      },
+    },
+    components: {
+      Login,
+      Register,
+    },
   }
-})
 </script>
 
-<style lang="scss" scoped>
-
-.app-login {
-  // Styles preserved
-}
-</style>
+<style lang="scss" scoped></style>

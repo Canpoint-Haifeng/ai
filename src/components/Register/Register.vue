@@ -1,25 +1,21 @@
 <template>
   <div>
     <el-dialog
-      v-model="visible"
       title=" "
       width="824px"
       class="login-dialog"
       top="11.5%"
       :append-to-body="true"
       :lock-scroll="false"
+      :visible.sync="visible"
       :closed="hide"
     >
       <div
-        v-if="!(registerRewards && registerRewards.length)"
         class="login-container"
+        v-if="!(registerRewards && registerRewards.length)"
       >
         <div class="login-logo">
-          <img
-            src="@/assets/images/logo-slogan.svg"
-            alt="logo"
-            height="30"
-          >
+          <img src="@/assets/images/logo-slogan.svg" alt="logo" height="30" />
           <!-- <span class="interval"></span> -->
           <!-- <img src="@/assets/images/slogan.svg" width="104" /> -->
         </div>
@@ -29,77 +25,55 @@
             <!-- <div class="tips">注册即可获得10颗胖大海和3张下载券</div> -->
           </h2>
 
-          <el-form
-            ref="loginForm"
-            :model="loginData"
-            :rules="loginRules"
-          >
-            <el-form-item
-              prop="account"
-              class="form-item"
-            >
+          <el-form :model="loginData" :rules="loginRules" ref="loginForm">
+            <el-form-item prop="account" class="form-item">
               <el-input
-                v-model="loginData.account"
                 class="form-input"
+                v-model="loginData.account"
                 placeholder="请输入手机号"
                 autocomplete="off"
                 @blur="onFocus"
               >
-                <template #prefix>
-                  <i class="el-icon-mobile-phone" />
-                </template>
+                <i slot="prefix" class="el-icon-mobile-phone"></i>
               </el-input>
             </el-form-item>
-            <el-form-item
-              prop="password"
-              class="form-item"
-            >
+            <el-form-item prop="password" class="form-item">
               <span class="icon-box">
-                <i class="el-icon-key" />
+                <i class="el-icon-key"></i>
               </span>
               <el-input
-                v-model="loginData.password"
                 class="form-input"
+                v-model="loginData.password"
                 placeholder="设置密码（6-18位数字或字母组合）"
                 autocomplete="off"
                 type="password"
                 @blur="onFocus"
               >
-                <template #prefix>
-                  <i class="el-icon-key" />
-                </template>
+                <i slot="prefix" class="el-icon-key"></i>
               </el-input>
             </el-form-item>
             <div class="noCaptcha-wrapper">
               <no-captcha
                 v-if="visible"
-                @check-code-success="onCheckCodeSuccess"
-              />
+                @checkCodeSuccess="onCheckCodeSuccess"
+              ></no-captcha>
             </div>
-            <el-form-item
-              prop="vfcode"
-              class="form-item vfcode"
-            >
+            <el-form-item prop="vfcode" class="form-item vfcode">
               <el-input
-                v-model="loginData.vfcode"
                 class="form-input form-input-short"
+                v-model="loginData.vfcode"
                 placeholder="请输入短信验证码"
                 autocomplete="off"
                 @blur="onFocus"
               >
-                <template #prefix>
-                  <i class="el-icon-key" />
-                </template>
+                <i slot="prefix" class="el-icon-key"></i>
               </el-input>
-              <div
-                v-if="loginData.vfcodeStatus"
-                class="code-btn"
-              >
+              <div class="code-btn" v-if="loginData.vfcodeStatus">
                 <span>{{ loginData.vfcodeText }}</span>
               </div>
               <div
-                v-else
                 class="code-btn"
+                v-else
                 :class="isVfCode ? '' : 'btn-disabled'"
                 @click="getVfcode"
               >
@@ -114,10 +88,7 @@
               class="form-item form-item-agree"
             >
               <el-checkbox v-model="loginData.agree">
-                <span
-                  class="font-12"
-                  @click="entryAgreement"
-                >
+                <span class="font-12" @click="entryAgreement">
                   我同意<span class="text">《全品AI教研云隐私政策》</span>
                 </span>
               </el-checkbox>
@@ -126,7 +97,7 @@
               class="custom-error"
               :class="loginData.errorStatus ? 'error-show' : ''"
             >
-              <span class="iconfont iconerror" />
+              <span class="iconfont iconerror"></span>
               <span class="error-text">{{ loginData.errorText }}</span>
             </div>
             <!-- 1111111111111111111111111111111111111111111111111111111111111111111111 -->
@@ -135,53 +106,33 @@
                 v-if="isValue"
                 class="btn login-btn"
                 @click="register('loginForm')"
+                >注册</el-button
               >
-                注册
-              </el-button>
-              <el-button
-                v-else
-                type="primary"
-                class="btn btn-disabled"
+              <el-button v-else type="primary" class="btn btn-disabled"
+                >注册</el-button
               >
-                注册
-              </el-button>
             </el-form-item>
             <div class="form-item-service">
-              <span
-                v-if="haslogin == 1"
-                class="font-12"
-              >
-                已注册, <span
-                  class="text"
-                  @click="goLogin"
-                >去登录</span>
+              <span class="font-12" v-if="haslogin == 1">
+                已注册, <span class="text" @click="goLogin">去登录</span>
               </span>
             </div>
           </el-form>
         </div>
       </div>
-      <div
-        v-else
-        class="login-container"
-      >
+      <div class="login-container" v-else>
         <div class="login-logo">
-          <img
-            src="@/assets/images/logo-slogan.svg"
-            alt="logo"
-            height="30"
-          >
+          <img src="@/assets/images/logo-slogan.svg" alt="logo" height="30" />
         </div>
         <div class="login-content">
-          <h2 class="login-success-title color-3">
-            注册成功，恭喜获得
-          </h2>
+          <h2 class="login-success-title color-3">注册成功，恭喜获得</h2>
         </div>
 
         <div class="reward-list">
           <div
+            class="reward-item"
             v-for="(item, index) in registerRewards"
             :key="index"
-            class="reward-item"
           >
             <img
               :src="item.goodsInfoPicture"
@@ -189,20 +140,12 @@
                 width: item.width + 'px',
                 height: item.height + 'px',
               }"
-            >
-            <div
-              class="reward-info"
-              v-html="item.content"
             />
+            <div class="reward-info" v-html="item.content"></div>
           </div>
         </div>
-        <div
-          class="register-success-bottom"
-          @click="gotoReload"
-        >
-          <div class="register-success-button">
-            开始使用
-          </div>
+        <div class="register-success-bottom" @click="gotoReload">
+          <div class="register-success-button">开始使用</div>
         </div>
       </div>
     </el-dialog>
@@ -210,57 +153,15 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, computed, onMounted, nextTick } from 'vue'
 import CTS from '@/common/js/constant'
 import { setToken, encrypt, getToken } from '@/common/js/util'
 import { API } from '@/api/config'
 // import commonUrl from '@/common/js/project-url'
 import NoCaptcha from '@/components/NoCaptcha/NoCaptcha'
-
-export default defineComponent({
-  name: 'Register',
-  components: {
-    NoCaptcha,
-  },
-  props: {
-    onGoLogin: {
-      type: Function,
-      default: null
-    },
-    onGoAgreement: {
-      type: Function,
-      default: null
-    },
-    registerRewards: {
-      type: Array,
-      default: () => []
-    },
-    haslogin: {
-      type: Number,
-      default: 1
-    }
-  },
-  setup(props, { emit }) {
-    const visible = ref(false)
-    const loginForm = ref(null)
-    const loginSuccese = ref(false)
-    const checkeNCData = ref({})
-    let interval = null
-
-    const loginData = reactive({
-      account: '',
-      codeStatus: false, // 滑动验证码
-      vfcode: '',
-      password: '',
-      agree: true,
-      errorStatus: false,
-      errorText: '',
-      vfcodeStatus: false,
-      vfCodeDiabled: true, // 验证码禁用状态
-      vfcodeText: '获取验证码',
-    })
-
-    const validateAccount = (rule, value, callback) => {
+let interval = null
+export default {
+  data() {
+    let validateAccount = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入手机号'))
       } else {
@@ -268,13 +169,12 @@ export default defineComponent({
         if (CTS.constant.phoneReg.test(str)) {
           callback()
         } else {
-          loginData.errorStatus = false
+          this.loginData.errorStatus = false
           return callback(new Error('请输入正确的手机号'))
         }
       }
     }
-
-    const validateVfcode = (rule, value, callback) => {
+    let validateVfcode = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入短信验证码'))
       } else {
@@ -282,13 +182,12 @@ export default defineComponent({
         if (vfcode.test(value)) {
           callback()
         } else {
-          loginData.errorStatus = false
+          this.loginData.errorStatus = false
           return callback(new Error('验证码是4位数字'))
         }
       }
     }
-
-    const validatePassword = (rule, value, callback) => {
+    let validatePassword = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
@@ -296,135 +195,193 @@ export default defineComponent({
         if (passwordReg.test(value)) {
           callback()
         } else {
-          loginData.errorStatus = false
+          this.loginData.errorStatus = false
           return callback(new Error('密码是6~18位字母、数字'))
         }
       }
     }
-
-    const loginRules = {
-      account: [{ validator: validateAccount, trigger: 'blur' }],
-      password: [{ validator: validatePassword, trigger: 'blur' }],
-      vfcode: [{ validator: validateVfcode, trigger: 'blur' }],
-      agree: [{ required: true, message: '', trigger: 'change' }],
+    return {
+      initDate: {
+        visible: false,
+        onGoLogin: null,
+        onGoAgreement: null,
+        registerRewards: [],
+        haslogin: 1,
+      },
+      visible: false,
+      onGoLogin: null,
+      onGoAgreement: null,
+      loginSuccese: false,
+      registerRewards: [],
+      loginData: {
+        account: '',
+        codeStatus: false, // 滑动验证码
+        vfcode: '',
+        password: '',
+        agree: true,
+        errorStatus: false,
+        errorText: '',
+        vfcodeStatus: false,
+        vfCodeDiabled: true, // 验证码禁用状态
+        vfcodeText: '获取验证码',
+      },
+      loginRules: {
+        account: [{ validator: validateAccount, trigger: 'blur' }],
+        password: [{ validator: validatePassword, trigger: 'blur' }],
+        vfcode: [{ validator: validateVfcode, trigger: 'blur' }],
+        agree: [{ required: true, message: '', trigger: 'change' }],
+      },
+      checkeNCData: {},
+      haslogin: 1,
     }
-
+  },
+  computed: {
     // 是否可以发送短信验证码
-    const isVfCode = computed(() => {
-      return !!(loginData.account && loginData.codeStatus)
-    })
-
-    const isValue = computed(() => {
+    isVfCode() {
+      return !!(this.loginData.account && this.loginData.codeStatus)
+    },
+    isValue() {
       return !!(
-        loginData.account &&
-        loginData.password &&
-        loginData.codeStatus &&
-        loginData.vfcode &&
-        loginData.agree
+        this.loginData.account &&
+        this.loginData.password &&
+        this.loginData.codeStatus &&
+        this.loginData.vfcode &&
+        this.loginData.agree
       )
-    })
-
+    },
+  },
+  created() {
+    console.log('创建 register')
+  },
+  methods: {
     // 显示注册弹窗
-    const show = () => {
-      visible.value = true
-    }
+    show() {
+      this.visible = true
 
+      // this.$emit('showRegister')
+    },
     // 关闭注册弹窗
-    const hide = () => {
-      visible.value = false
-    }
-
+    hide() {
+      this.visible = false
+      // this.$emit('hideRegister')
+    },
     // 去登陆
-    const goLogin = () => {
-      if (props.onGoLogin) {
-        props.onGoLogin()
+    goLogin() {
+      // this.showReceiveReward([
+      //   {
+      //     pointsGoodsId: 33,
+      //     goodsInfoPicture:
+      //       'https://cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/stb-points/goods/goods_info_p.png',
+      //     num: 1,
+      //     goodsName: '胖大海',
+      //   },
+      //   {
+      //     pointsGoodsId: 33,
+      //     goodsInfoPicture:
+      //       'https://cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/stb-points/goods/goods_info_p.png',
+      //     num: 2,
+      //     goodsName: '胖大海',
+      //   },
+      // ])
+      if (this.onGoLogin) {
+        this.onGoLogin()
       }
-    }
-
-    const onFocus = () => {
-      loginData.errorStatus = false
-    }
-
+    },
+    onFocus() {
+      this.loginData.errorStatus = false
+    },
     // 监听滑动验证码
-    const onCheckCodeSuccess = (params) => {
-      checkeNCData.value = params
-      loginData.codeStatus = true // 检验成功
-      loginData.errorStatus = false
-    }
-
+    onCheckCodeSuccess(params) {
+      // sessionId: data.csessionid,
+      // sig: data.sig,
+      // token: ncToken,
+      // scene: this.scene
+      console.log(`1111111111111`)
+      this.checkeNCData = params
+      this.loginData.codeStatus = true // 检验成功
+      this.loginData.errorStatus = false
+    },
     // 进入服务协议
-    const entryAgreement = () => {
-      hide()
-      openWindowLink(import.meta.env.VITE_SRC + 'infomationAuth')
-    }
-
-    const register = (formName) => {
-      loginForm.value.validate((valid, result) => {
+    entryAgreement() {
+      this.hide()
+      this.openWindowLink(process.env.VUE_APP_SRC + 'infomationAuth')
+      //   if (this.onGoAgreement) {
+      //     this.onGoAgreement()
+      //   }
+      // this.$router.push({ name: 'agreement' })
+    },
+    register(loginForm) {
+      this.$refs[loginForm].validate((valid, result) => {
         // 1. 参数验证
         if (!valid) {
           const key = Object.keys(result)[0]
-          loginData.errorStatus = true
-          loginData.errorText = result[key][0].message
+          this.loginData.errorStatus = true
+          this.loginData.errorText = result[key][0].message
         } else {
           // 2.注册提交
-          loginData.errorStatus = false
+          this.loginData.errorStatus = false
           let parms = {
             isWhitelist: 0,
             httpMethod: 1,
             url: API.REGISTER.urlPath,
             apiId: API.REGISTER.apiId,
             strParams: {
-              account: loginData.account,
-              password: encrypt(loginData.password),
-              vCode: loginData.vfcode,
+              account: this.loginData.account,
+              password: encrypt(this.loginData.password),
+              vCode: this.loginData.vfcode,
             },
           }
           let set = {
             showLoading: true,
             message: '注册中...',
           }
-          newPost({ urlPath: API.REGISTER.baseURL }, parms, set).then(
+          this.newPost({ urlPath: API.REGISTER.baseURL }, parms, set).then(
             res => {
               if (res && res.code === CTS.constant.SUCCESS_CODE) {
                 // 3 .注册后显示注册成功
-                loginSuccese.value = true
+                this.loginSuccese = true
                 // 登录后把token存到cookie
-                loginHttp(loginData.account, loginData.password)
+                // setToken(res.data.token, 30)
+                // console.log(res.data.token)
+                // window.location.reload()
+                //  注册 成功
+                console.log(this.loginData.account, this.loginData.password)
+                this.loginHttp(this.loginData.account, this.loginData.password)
               } else {
-                loginSuccese.value = false
-                loginData.errorStatus = true
-                loginData.errorText = res.msg
+                this.loginSuccese = false
+                this.loginData.errorStatus = true
+                this.loginData.errorText = res.msg
               }
             },
           )
         }
       })
-    }
-
+    },
     //  注册 成功 获取 用户 信息 获取奖励
-    const getUserInfo = () => {
+    getUserInfo() {
       let parms = {
         token: getToken(),
       }
       let set = {
         authCode: 2,
       }
-      apiPost(API.GET_SSO_VERIFY, parms, set).then(res => {
+      console.log('getUserInfo')
+      this.apiPost(API.GET_SSO_VERIFY, parms, set).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
           if (res.data.rewards && res.data.rewards.length) {
-            showReceiveReward(res.data.rewards)
+            this.showReceiveReward(res.data.rewards)
           } else {
             window.location.reload()
           }
         }
       })
-    }
-
-    const gotoReload = () => {
-      window.location.href = import.meta.env.VITE_SRC
-    }
-
-    const showReceiveReward = (rewards) => {
+    },
+    gotoReload() {
+      // window.location.reload()
+      window.location.href = process.env.VUE_APP_SRC
+    },
+    showReceiveReward(rewards) {
+      // goodsInfoPicture
       for (let item of rewards) {
         item.width = 115
         item.hegiht = 115
@@ -434,37 +391,41 @@ export default defineComponent({
           item.num +
           '</span>'
       }
-      registerRewards.value = rewards
-    }
-
-    const getVfcode = () => {
+      this.registerRewards = rewards
+      console.log(this.registerRewards)
+    },
+    getVfcode() {
       // 1.校验参数
-      if (!loginData.account) {
-        loginData.errorStatus = true
-        loginData.errorText = '请输入手机号'
+      if (!this.loginData.account) {
+        this.loginData.errorStatus = true
+        this.loginData.errorText = '请输入手机号'
         return
       }
-      if (!CTS.constant.phoneReg.test(loginData.account)) {
-        loginData.errorStatus = true
-        loginData.errorText = '请输入正确的手机号'
+      if (!CTS.constant.phoneReg.test(this.loginData.account)) {
+        this.loginData.errorStatus = true
+        this.loginData.errorText = '请输入正确的手机号'
         return
       }
-      if (!loginData.password) {
-        loginData.errorStatus = true
-        loginData.errorText = '请设置登录密码'
+      if (!this.loginData.password) {
+        this.loginData.errorStatus = true
+        this.loginData.errorText = '请设置登录密码'
         return
       }
-      if (!loginData.codeStatus) {
-        loginData.errorStatus = true
-        loginData.errorText = '请完成滑动验证'
+      if (!this.loginData.codeStatus) {
+        this.loginData.errorStatus = true
+        this.loginData.errorText = '请完成滑动验证'
         return
       }
       // 2.验证码秒数减少
-      changeVf()
+      this.changeVf()
+      // sessionId: data.csessionid,
+      // sig: data.sig,
+      // token: ncToken,
+      // scene: this.scene
       let parms = {
         strParams: {
-          account: loginData.account,
-          sessionId: checkeNCData.value.strParams.sessionId,
+          account: this.loginData.account,
+          sessionId: this.checkeNCData.strParams.sessionId,
         },
         isWhitelist: 0,
         httpMethod: 1,
@@ -475,22 +436,21 @@ export default defineComponent({
         message: '发送验证码中',
       }
       // 2.发送验证码请求
-      newPost({ urlPath: API.VCODE.baseURL }, parms, set).then(res => {
+      this.newPost({ urlPath: API.VCODE.baseURL }, parms, set).then(res => {
         if (res && res.code === CTS.constant.SUCCESS_CODE) {
           // 3.请求成功后改变验证码显示
         } else {
-          loginData.errorStatus = true
-          loginData.errorText = res.msg
+          this.loginData.errorStatus = true
+          this.loginData.errorText = res.msg
           setTimeout(() => {
             window.clearInterval(interval)
-            loginData.vfcodeStatus = false
-            loginData.vfcodeText = '获取验证码'
+            this.loginData.vfcodeStatus = false
+            this.loginData.vfcodeText = '获取验证码'
           }, 1000)
         }
       })
-    }
-
-    const loginHttp = (account, password) => {
+    },
+    loginHttp(account, password) {
       let parms = {
         url: API.LOGIN.urlPath,
         apiId: API.LOGIN.apiId,
@@ -500,60 +460,40 @@ export default defineComponent({
           account: account,
           password: encrypt(password),
         },
+        // account: this.loginData.account.trim(),
+        // password: encrypt(this.loginData.password),
       }
-      newPost({ urlPath: API.LOGIN.urlLocalPath }, parms).then(res => {
+      this.newPost({ urlPath: API.LOGIN.urlLocalPath }, parms).then(res => {
+        // this.wayPost(API.LOGIN, parms).then(res => {
         if (res && res.code === CTS.constant.SUCCESS_CODE) {
           // 3 .注册后显示注册成功
           // 登录后把token存到cookie
           setToken(res.data.token, 30)
-          getUserInfo()
+          this.getUserInfo()
+          // window.location.reload()
         }
       })
-    }
-
-    const changeVf = () => {
+    },
+    changeVf() {
+      let that = this
       let time = 60
-      loginData.vfcodeStatus = true
-      loginData.vfcodeText = `60S后重新获取`
+      that.loginData.vfcodeStatus = true
+      that.loginData.vfcodeText = `60S后重新获取`
       interval = window.setInterval(function() {
         --time
-        loginData.vfcodeText = `${time}S后重新获取`
+        that.loginData.vfcodeText = `${time}S后重新获取`
         if (time < 0) {
-          loginData.vfcodeStatus = false
-          loginData.vfcodeText = `获取验证码`
+          that.loginData.vfcodeStatus = false
+          that.loginData.vfcodeText = `获取验证码`
           window.clearInterval(interval)
         }
       }, 1000)
-    }
-
-    onMounted(() => {
-      console.log('创建 register')
-    })
-
-    return {
-      visible,
-      loginForm,
-      loginSuccese,
-      loginData,
-      loginRules,
-      isVfCode,
-      isValue,
-      show,
-      hide,
-      goLogin,
-      onFocus,
-      onCheckCodeSuccess,
-      entryAgreement,
-      register,
-      getUserInfo,
-      gotoReload,
-      showReceiveReward,
-      getVfcode,
-      loginHttp,
-      changeVf
-    }
-  }
-})
+    },
+  },
+  components: {
+    NoCaptcha,
+  },
+}
 </script>
 
 <style lang="scss">
@@ -563,17 +503,18 @@ export default defineComponent({
 </style>
 
 <style lang="scss" scoped>
-.login-dialog :deep(.el-dialog) {
-  width: 824px;
-  height: 540px;
-  padding: 32px 32px 70px 32px;
-  box-sizing: border-box;
-  box-shadow: 0px 0px 30px 0px rgba(62, 115, 205, 0.4);
-  border-radius: 6px;
-}
-
-.login-dialog :deep(.el-dialog__header) {
-  padding: 0;
+.login-dialog :deep() {
+  .el-dialog {
+    width: 824px;
+    height: 540px;
+    padding: 32px 32px 70px 32px;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 30px 0px rgba(62, 115, 205, 0.4);
+    border-radius: 6px;
+    .el-dialog__header {
+      padding: 0;
+    }
+  }
 }
 .login-container {
   .login-logo {
@@ -591,170 +532,178 @@ export default defineComponent({
     width: 360px;
     margin-bottom: 30px;
     font-size: $font-size-large;
-    font-weight: 500;
-    color: $color-text-d;
-    .tips {
-      font-size: $font-size-small;
-      color: $color-text-l;
-      margin-top: 10px;
-    }
-  }
-  .login-success-title {
-    width: 360px;
-    margin-bottom: 30px;
-    font-size: $font-size-large;
-    font-weight: 500;
-    color: $color-text-d;
+    font-weight: 700;
     text-align: center;
+    .tips {
+      font-size: 12px;
+      line-height: 30px;
+      font-weight: 300;
+      color: #666666;
+    }
   }
   .login-content {
-    width: 360px;
-    margin: 0 auto;
-    margin-top: 30px;
-  }
-  .form-item {
-    margin-bottom: 20px;
-    .form-input {
-      width: 100%;
-      height: 40px;
-      border: 1px solid $color-border;
-      border-radius: 0;
-      color: $color-text-d;
-    }
-    .form-input-short {
-      width: 220px;
-    }
-  }
-  :deep(.form-item) {
-    .el-form-item__content {
-      display: flex;
-      align-items: center;
-    }
-    .el-form-item__error {
-      display: none;
-    }
-    .el-input__inner {
-      height: 40px;
-      line-height: 40px;
-      border: 1px solid $color-border;
-      border-radius: 0;
-      color: $color-text-d;
-    }
-    .el-input__prefix {
-      left: 10px;
-      color: $color-text-l;
-    }
-    .el-input__inner:focus {
-      border-color: $color-button-d;
-    }
-    .el-checkbox__inner {
-      border-radius: 0;
-    }
-    .el-checkbox__input.is-checked .el-checkbox__inner {
-      background-color: $color-button-d;
-      border-color: $color-button-d;
-    }
-    .el-checkbox__input.is-checked + .el-checkbox__label {
-      color: $color-text-l;
-    }
-  }
-  .form-item-agree {
-    margin-bottom: 10px;
-  }
-  .form-item-submit {
-    margin-top: 30px;
-    margin-bottom: 10px;
-  }
-  .form-item-service {
-    text-align: center;
-    color: $color-text-l;
-    .text {
-      color: $color-button-d;
-      cursor: pointer;
-    }
-  }
-  .icon-box {
-    position: absolute;
-    left: 10px;
-    top: 0;
-    height: 40px;
-    line-height: 40px;
-    color: $color-text-l;
-    z-index: 1;
-  }
-  .code-btn {
-    width: 130px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    background-color: $color-button-d;
-    color: #fff;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  .btn-disabled {
-    background-color: $color-button-l;
-    cursor: not-allowed;
-  }
-  .custom-error {
-    height: 0;
-    overflow: hidden;
-    transition: all 0.3s;
-    color: $color-error;
-    .iconfont {
-      margin-right: 5px;
-    }
-  }
-  .error-show {
-    height: 20px;
-  }
-  .login-btn {
-    width: 100%;
-    height: 40px;
-    background-color: $color-button-d;
-    color: #fff;
-    border-radius: 0;
-    border-color: $color-button-d;
-  }
-  .login-btn:hover {
-    background-color: $color-button-d;
-    color: #fff;
-    border-color: $color-button-d;
-  }
-  .noCaptcha-wrapper {
-    margin-bottom: 20px;
-  }
-}
-.reward-list {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  .reward-item {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    margin: 0 20px;
-    .reward-info {
-      margin-top: 10px;
-      font-size: 14px;
-      color: $color-text-d;
+    .form-item :deep() {
+      position: relative;
+      .is-error {
+        .form-input {
+          .el-input__inner {
+            border: 1px solid $color-theme-l;
+          }
+        }
+      }
+      .icon-box {
+        position: absolute;
+        top: 0;
+        left: 16px;
+        .iconfont {
+          color: $color-text-d;
+          font-size: $font-size-medium;
+        }
+      }
+      .form-input {
+        width: 360px;
+        .el-input__inner {
+          height: 40px;
+          line-height: 40px;
+          border: 1px solid $color-border;
+          border-radius: 4px;
+          padding-left: 45px;
+          color: $color-text-d;
+          &:focus {
+            border: 1px solid $color-theme;
+          }
+          &:focus + .el-input__prefix {
+            color: $color-text-d;
+          }
+        }
+        .el-input__prefix {
+          top: 4px;
+          left: 16px;
+          color: $color-text-ll;
+        }
+        &.form-input-short {
+          width: 220px;
+        }
+      }
     }
+    .vfcode {
+      margin-bottom: 18px;
+    }
+    .noCaptcha-wrapper {
+      margin-bottom: 22px;
+    }
+    .code-btn {
+      display: inline-block;
+      width: 126px;
+      height: 40px;
+      line-height: 40px;
+      margin-left: 14px;
+      cursor: pointer;
+      background-color: $color-theme;
+      text-align: center;
+      border-radius: 4px;
+      span {
+        color: $color-white;
+        padding: 0 10px;
+      }
+      &.btn-disabled {
+        background: $color-disabled;
+        border: 1px solid $color-disabled;
+        cursor: not-allowed;
+      }
+    }
+    .custom-error {
+      opacity: 0;
+      color: $color-theme-l;
+      .iconerror {
+        margin-right: 5px;
+        vertical-align: -1px;
+        font-size: $font-size-medium;
+      }
+      .error-text {
+        font-size: $font-size-small;
+      }
+      &.error-show {
+        opacity: 1;
+      }
+    }
+    .form-item-agree :deep() {
+      margin-top: -5px;
+      margin-bottom: 5px;
+      .el-radio__input.is-checked + .el-radio__label {
+        color: $color-text;
+      }
+      .text {
+        color: $color-theme;
+      }
+    }
+    .form-item-submit {
+      margin-top: 15px;
+      margin-bottom: 15px;
+      .btn {
+        width: 360px;
+        height: 40px;
+        padding: 0;
+        box-shadow: 0px 2px 6px 0px rgba(42, 77, 138, 0.2);
+        border-radius: 4px;
+        font-size: $font-size-medium;
+      }
+      .login-btn {
+        background: #487fff;
+      }
+      .login-btn:hover {
+        background: $color-theme-d;
+      }
+      .btn-disabled {
+        background: $color-disabled;
+        border: 1px solid $color-disabled;
+        cursor: not-allowed;
+      }
+    }
+    .form-item-service {
+      width: 360px;
+      text-align: center;
+      .text {
+        cursor: pointer;
+        color: $color-theme;
+        &:hover {
+          color: $color-theme-d;
+        }
+      }
+    }
+  }
+}
+
+.login-success-title {
+  font-size: 30px;
+  padding: 30px 0;
+}
+.reward-list {
+  display: flex;
+  width: 400px;
+  justify-content: space-around;
+  margin: 0 auto;
+  .reward-item {
+    width: 190px;
+    text-align: center;
   }
 }
 .register-success-bottom {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
+  padding-top: 100px;
   .register-success-button {
-    width: 120px;
-    height: 40px;
+    margin: 0 auto;
+    width: 300px;
     line-height: 40px;
     text-align: center;
-    background-color: $color-button-d;
-    color: #fff;
+    background-color: $color-theme;
+    color: white;
     cursor: pointer;
+    user-select: none;
+    border-radius: 6px;
   }
 }
 </style>

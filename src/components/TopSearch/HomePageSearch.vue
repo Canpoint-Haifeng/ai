@@ -6,18 +6,16 @@
     <div class="home-top-body content-container">
       <div class="home-top-logo-subject">
         <div class="logo-block">
-          <a href="//ti.canpoint.cn/"><img
-            src="@/assets/images/logo-slogan.svg"
-            alt="全品AI教研云"
-            height="46"
-          ></a>
+          <a href="//ti.canpoint.cn/"
+            ><img
+              src="@/assets/images/logo-slogan.svg"
+              alt="全品AI教研云"
+              height="46"
+          /></a>
         </div>
       </div>
       <div class="home-search-form-box">
-        <div
-          class="home-search-form"
-          :style="{ transform: searchTransform }"
-        >
+        <div class="home-search-form" :style="{ transform: searchTransform }">
           <div class="home-search-input">
             <!-- <div class="tab-btn">
               <div
@@ -31,85 +29,71 @@
               </div>
             </div> -->
             <el-input
-              v-model="keywords"
               popper-class="search-autocomplete-suggestions custom-dropdown-menu"
+              v-model="keywords"
               maxlength="100"
               class="search-input"
+              @keyup.enter="search"
               :placeholder="searchPlaceholder"
-              @keyup.enter.native="search"
               @focus="handleFocus"
               @blur="blurEvent"
-            />
+            >
+            </el-input>
             <!-- 处理 cookie 搜索缓存数据的组件 -->
             <HistoryMessageList
               ref="historyMsgListRef"
-              :curr-search-option="currSearchOption"
-              @change-his-text="changeHisText"
-              @change-hot-paper="changeHotPaper"
-            />
+              :currSearchOption="currSearchOption"
+              @changeHisText="changeHisText"
+              @changeHotPaper="changeHotPaper"
+            ></HistoryMessageList>
           </div>
-          <div
-            class="search-btn"
-            @click="search"
-          >
-            <i class="iconfont iconsearch" />
+          <div class="search-btn" @click="search">
+            <i class="iconfont iconsearch"></i>
           </div>
         </div>
 
         <div class="use-control-segment">
-          <div
-            class="edit-theme"
-            @click="onEditTheme"
-          >
-            换主题
-          </div>
+          <div class="edit-theme" @click="onEditTheme">换主题</div>
         </div>
       </div>
       <!-- <div class="cp-activity-goodgift-image" @click="skipToActivity"></div> -->
-      <HomePageBoxs
-        :list="boxList"
-        @show-login="showLogin"
-      />
+      <HomePageBoxs :list="boxList" @showLogin="showLogin"></HomePageBoxs>
 
       <div class="home-top-set-config">
         <span @click="openSetHomePageBlock">
-          <span class="iconfont icongengduo" />
-          <span class="text">定制我的快捷选题路径</span><i class="el-icon-arrow-right" />
+          <span class="iconfont icongengduo"></span>
+          <span class="text">定制我的快捷选题路径</span
+          ><i class="el-icon-arrow-right"></i>
         </span>
       </div>
     </div>
 
-    <div
-      v-if="showFixed"
-      class="home-page-search-fixed"
-    >
-      <app-top-search :curr-subject="currSubject" />
+    <div v-if="showFixed" class="home-page-search-fixed">
+      <app-top-search :currSubject="currSubject"></app-top-search>
     </div>
     <!-- 登录弹窗 -->
-    <app-login ref="appLogin" />
+    <app-login ref="appLogin"></app-login>
 
     <DiaHomeSetPageBlock
       ref="diaHomeSetPageBlockRef"
-      @change-success="onChangeSuccess"
-    />
+      @changeSuccess="onChangeSuccess"
+    ></DiaHomeSetPageBlock>
 
     <!-- 设置 主题 -->
-    <DiaSetUserTheme ref="diaSetUserThemeRef" />
+    <DiaSetUserTheme ref="diaSetUserThemeRef"></DiaSetUserTheme>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted, watch, inject } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import CTS from '@/common/js/constant'
 import { API } from '@/api/config'
+import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
 import { isLogin, setCookieSubjectVolume } from '@/common/js/util'
-import HomePageBoxs from './HomePageBoxs.vue'
-import DiaHomeSetPageBlock from './DiaHomeSetPageBlock.vue'
-import DiaSetUserTheme from './DiaSetUserTheme.vue'
+import { mapState, mapActions } from 'vuex'
+import HomePageBoxs from './HomePageBoxs'
+import DiaHomeSetPageBlock from './DiaHomeSetPageBlock'
+import DiaSetUserTheme from './DiaSetUserTheme'
 import HistoryMessageList from './HistoryMessageList.vue'
-
 export default {
   components: {
     HomePageBoxs,
@@ -117,78 +101,76 @@ export default {
     DiaSetUserTheme,
     HistoryMessageList,
   },
-  setup() {
-    const store = useStore()
-    const router = useRouter()
-    const Bus = inject('Bus')
-    
-    // Refs
-    const historyMsgListRef = ref(null)
-    const diaHomeSetPageBlockRef = ref(null)
-    const diaSetUserThemeRef = ref(null)
-    const appLogin = ref(null)
-    
-    // Reactive state
-    const showFixed = ref(false)
-    const boxList = ref([])
-    const listData = ref([]) // 学段学科筛选
-    const keywords = ref('')
-    const searchPlaceholder = ref('可输入教案名称搜索')
-    const currSearchOption = ref(1)
-    const searchOptions = ref([
-      {
-        label: 1,
-        name: '找教案',
-        className: 'btn-paper',
-        placeholder: '可输入教案名称搜索',
-      },
-    ])
-    const showSearchOptions = ref(false)
-    const sendEventFlag = ref(true) // 第一次 变化时 发出 事件
-    const searchTransform = ref('translate3d(0, 0, 0)') // translate3d(17px, 160px, 0px)
-    
-    // Computed
-    const currSubject = computed(() => store.state.currSubject)
-    const allVipDict = computed(() => store.state.allVipDict)
-    const userTheme = computed(() => store.state.userTheme)
-    
-    const defaultThemeUrlBg = computed(() => {
-      if (userTheme.value && userTheme.value.themeUrl) {
-        return `url('${userTheme.value.themeUrl}')`
+  mixins: [windowScrollResetMixin],
+  data() {
+    return {
+      showFixed: false,
+      boxList: [],
+      listData: [], // 学段学科筛选
+      keywords: '',
+      searchPlaceholder: '可输入教案名称搜索',
+      currSearchOption: 1,
+      searchOptions: [
+        // {
+        //   label: 1,
+        //   name: '找试题',
+        //   className: 'btn-ques',
+        //   placeholder: '请输入试题内容搜索',
+        // },
+        {
+          label: 1,
+          name: '找教案',
+          className: 'btn-paper',
+          placeholder: '可输入教案名称搜索',
+        },
+      ],
+      showSearchOptions: false,
+      sendEventFlag: true, // 第一次 变化时 发出 事件
+      searchTransform: 'translate3d(0, 0, 0)', // translate3d(17px, 160px, 0px)
+    }
+  },
+  computed: {
+    ...mapState(['currSubject', 'allVipDict', 'userTheme']),
+    defaultThemeUrlBg() {
+      if (this.userTheme && this.userTheme.themeUrl) {
+        return `url('${this.userTheme.themeUrl}')`
       } else {
         return ''
       }
-    })
-    
-    // Watchers
-    watch(() => currSubject.value, () => {
-      getDefaultConfigs()
-      if (!(userTheme.value && userTheme.value.themeUrl)) {
-        getDefaultUserTheme()
+    },
+  },
+  watch: {
+    currSubject() {
+      this.getDefaultConfigs()
+      if (!(this.userTheme && this.userTheme.themeUrl)) {
+        this.getDefaultUserTheme()
       }
-    })
-    
-    // Lifecycle hooks
-    onMounted(() => {
-      initWindowsEvent()
-      getDefaultConfigs()
-      if (!(userTheme.value && userTheme.value.themeUrl)) {
-        getDefaultUserTheme()
-      }
-      renderScrollFixed()
-    })
-    
-    onUnmounted(() => {
-      destroyedWindowsEvent()
-    });
-    
-    // Methods
-    const changeHisText = (item) => {
-      keywords.value = item
-      search()
+    },
+    // showFixed(nval) {
+    //   if (nval) {
+    //     this.$refs.msgListRef.closed()
+    //   }
+    // },
+  },
+  created() {
+    this.initWindowsEvent()
+  },
+  destroyed() {
+    this.destroyedWindowsEvent()
+  },
+  async mounted() {
+    this.getDefaultConfigs()
+    if (!(this.userTheme && this.userTheme.themeUrl)) {
+      this.getDefaultUserTheme()
     }
-    
-    const changeHotPaper = (paperItem) => {
+    this.renderScrollFixed()
+  },
+  methods: {
+    changeHisText(item) {
+      this.keywords = item
+      this.search()
+    },
+    changeHotPaper(paperItem) {
       let viewCount = paperItem.viewCount || paperItem.totalCountView || 0
       let queryStr =
         '?paperIdEnc=' +
@@ -200,195 +182,205 @@ export default {
         '&pn=' +
         (paperItem.provinceName || '')
 
-      queryStr += '&subject=' + currSubject.value.subjectCode
-      window.open(router.resolve('/paper/detail').href + queryStr)
-    }
-    
-    const handleFocus = () => {
-      historyMsgListRef.value.show()
-    }
-    
-    const blurEvent = () => {
-      historyMsgListRef.value.closed()
-    }
-    
-    // Action methods
-    const updateCurrentSubject = (subject) => {
-      store.dispatch('updateCurrentSubject', subject)
-    }
-    
-    const onEditTheme = () => {
+      queryStr += '&subject=' + this.currSubject.subjectCode
+      window.open(this.$router.resolve('/paper/detail').href + queryStr)
+    },
+    handleFocus() {
+      this.$refs.historyMsgListRef.show()
+    },
+    blurEvent() {
+      this.$refs.historyMsgListRef.closed()
+    },
+    // 提交更新学段学科state
+    ...mapActions(['updateCurrentSubject']),
+    onEditTheme() {
       if (isLogin()) {
-        diaSetUserThemeRef.value.show()
+        this.$refs.diaSetUserThemeRef.show()
       } else {
-        appLogin.value.showLogin()
+        this.$refs.appLogin.showLogin()
       }
-      // Track event
-      console.log('Track event: 学科主页, 点击换主题, 次数')
-    }
-    
-    const showLogin = () => {
-      appLogin.value.showLogin()
-    }
-    
-    const search = () => {
-      if (!keywords.value.trim()) {
-        console.log(keywords.value.trim())
+      this.czcTrackEvent(['_trackEvent', '学科主页', '点击换主题', '次数'])
+    },
+    skipToActivity() {
+      // http://ti.canpoint.cn/fullactive/springfestival
+      this.openSystemPathLink('fullactive/springfestival')
+    },
+    // 切换学段学科
+    selectSubject(item, subItem) {
+      let currSubject = {
+        periodCode: item.code,
+        periodName: item.name,
+        subjectCode: subItem.code,
+        subjectName: subItem.name,
+      }
+      if (!isLogin()) {
+        // 未登录本地无token
+        setCookieSubjectVolume(currSubject, '')
+        this.updateCurrentSubject(currSubject)
+        window.location.reload()
+      } else {
+        // 已登录本地有token
+        this.updateServerSubject(currSubject)
+      }
+      // 组卷编辑和组卷预览特殊处理学科切换
+    },
+    // 更新服务端默认学科
+    updateServerSubject(currSubject, isRefresh = true) {
+      let parms = {
+        periodCode: currSubject.periodCode,
+        subjectCode: currSubject.subjectCode,
+      }
+      let set = {
+        authCode: 2,
+      }
+      this.apiPost(API.UPDATE_DEFAULT_SUBJECT, parms, set).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          setCookieSubjectVolume(currSubject, '')
+          this.updateCurrentSubject(currSubject)
+          isRefresh && window.location.reload()
+        } else if (res.code === CTS.constant.AUTH_TOKEN_CALLBACK_CODE) {
+          // 本地token过期
+          setCookieSubjectVolume(currSubject, '')
+
+          this.updateCurrentSubject(currSubject)
+          isRefresh && window.location.reload()
+        }
+      })
+    },
+    // 获取学段学科数据
+    getSubjectList() {
+      if (this.listData && this.listData.length) return
+      return this.$store
+        .dispatch('getConfigData', { vm: this, type: 2, strParams: {} })
+        .then(res => {
+          this.listData = res || []
+
+          // console.log('getConfigData', this.listData)
+        })
+    },
+    renderScrollFixed(e) {
+      let comparisonTop = this.getPageScrollTop()
+      let destinationY = 370
+      // let startMoveY = destinationY - 125
+      if (comparisonTop > destinationY) {
+        this.showFixed = true
+        this.blurEvent() //  关闭消息框
+        if (this.sendEventFlag) {
+          this.sendEventFlag = false
+          this.Bus.$emit('sendShowFixedFlag')
+        }
+      } else {
+        this.showFixed = false
+        // if (comparisonTop > startMoveY) {
+        //   let differY = comparisonTop - startMoveY
+        //   let differX = Math.floor((differY / 125) * 17)
+        //   this.searchTransform = `translate3d(${differX}px,${differY}px,0)`
+        // } else {
+        //   this.searchTransform = 'translate3d(0,0,0)'
+        // }
+      }
+
+      // console.log(this.showFixed, 'showFix')
+    },
+
+    onChangeSuccess() {
+      this.Bus.$emit('updateUserAppConfig')
+      this.getDefaultConfigs()
+    },
+    openSetHomePageBlock() {
+      if (isLogin()) {
+        let list = {}
+        this.boxList.forEach(item => {
+          list[item.id] = true
+        })
+        this.$refs.diaHomeSetPageBlockRef.show(list, [...this.boxList])
+      } else {
+        this.$refs.appLogin.showLogin()
+      }
+    },
+    showLogin() {
+      this.$refs.appLogin.showLogin()
+    },
+    // 点击搜索  保存记录到cookie-历史搜索
+    search() {
+      if (!this.keywords.trim()) {
+        console.log(this.keywords.trim())
         return
       }
       let path =
-        currSearchOption.value === 1 ? 'search/question' : 'search/paper'
-      window.open(router.resolve(path + '?keywords=' + keywords.value).href)
+        this.currSearchOption === 1 ? 'search/question' : 'search/paper'
+      this.openSystemPathLink(path + '?keywords=' + this.keywords)
       //判断如果当前获取到搜索历史list长度大于5,不能添加，把数组的第一条的数据删除
-      historyMsgListRef.value.saveCookieData(keywords.value.trim())
-    }
-    
-    // Helper methods
-    const initWindowsEvent = () => {
-      window.addEventListener('scroll', renderScrollFixed)
-    }
-    
-    const destroyedWindowsEvent = () => {
-      window.removeEventListener('scroll', renderScrollFixed)
-    }
-    
-    const getPageScrollTop = () => {
-      let scrollPos = 0
-      if (window.pageYOffset) {
-        scrollPos = window.pageYOffset
-      } else if (document.documentElement && document.documentElement.scrollTop) {
-        scrollPos = document.documentElement.scrollTop
-      } else if (document.body) {
-        scrollPos = document.body.scrollTop
-      }
-      return scrollPos
-    }
-    
-    const renderScrollFixed = () => {
-      let comparisonTop = getPageScrollTop()
-      let destinationY = 370
-      if (comparisonTop > destinationY) {
-        showFixed.value = true
-        blurEvent() //  关闭消息框
-        if (sendEventFlag.value) {
-          sendEventFlag.value = false
-          Bus.$emit('sendShowFixedFlag')
-        }
+      this.$refs.historyMsgListRef.saveCookieData(this.keywords.trim())
+    },
+    // 搜索条件切换
+    handleCommand(event, command) {
+      event.preventDefault()
+      this.currSearchOption = command.label
+      this.searchPlaceholder = command.placeholder
+      if (
+        this.$route.name === 'searchPaper' &&
+        this.$route.query.keywords &&
+        command.label === 2
+      ) {
+        this.keywords = this.$route.query.keywords
+      } else if (
+        this.$route.name === 'searchQuestion' &&
+        this.$route.query.keywords &&
+        command.label === 1
+      ) {
+        this.keywords = this.$route.query.keywords
       } else {
-        showFixed.value = false
+        this.keywords = ''
       }
-    }
-    
-    const onChangeSuccess = () => {
-      Bus.$emit('updateUserAppConfig')
-      getDefaultConfigs()
-    }
-    
-    const openSetHomePageBlock = () => {
-      if (isLogin()) {
-        let list = {}
-        boxList.value.forEach(item => {
-          list[item.id] = true
-        })
-        diaHomeSetPageBlockRef.value.show(list, [...boxList.value])
-      } else {
-        appLogin.value.showLogin()
-      }
-    }
-    
-    // API methods
-    const getDefaultUserTheme = () => {
-      if (!(currSubject.value && currSubject.value.periodCode)) {
+    },
+    getDefaultUserTheme() {
+      if (!(this.currSubject && this.currSubject.periodCode)) {
         return
       }
       let url = API.USERTHEME_GETDEFAULTTHEME
       if (isLogin()) {
         url = API.USERTHEME_GETUSERTHEME
       }
-      
-      fetch(url)
-        .then(res => res.json())
-        .then(res => {
-          if (res.code === CTS.constant.SUCCESS_CODE) {
-            store.commit('UPDATE_USERTHEME', res.data)
-          }
-        })
-        .catch(err => {
-          console.error('Failed to get user theme', err)
-        })
-    }
-    
-    const getDefaultConfigs = async () => {
-      if (!(currSubject.value && currSubject.value.periodCode)) {
+      this.apiGet(url).then(res => {
+        if (this.checkoutRes(res)) {
+          // this.themeUrl = res.data.themeUrl
+          this.$store.commit('UPDATE_USERTHEME', res.data)
+        }
+      })
+    },
+    async getDefaultConfigs() {
+      if (!(this.currSubject && this.currSubject.periodCode)) {
         return
       }
       let params = {
-        stage: currSubject.value.periodCode,
-        subject: currSubject.value.subjectCode,
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
       }
-      
+      // console.log(params, 'parmas-----11')
       let url = API.MY_NOTOKEN_DEFAULTCONFIGS
       if (isLogin()) {
         url = API.MY_HOMEPAGECONFIG_USER_DEFAULTCONFIGS
       }
-      
-      try {
-        const response = await fetch(url + '?' + new URLSearchParams(params).toString())
-        const res = await response.json()
-        
-        if (res.code === CTS.constant.SUCCESS_CODE) {
-          boxList.value = res.data.map(v => {
+      await this.apiGet(url, params).then(res => {
+        if (this.checkoutRes(res)) {
+          this.boxList = res.data.map(v => {
             return {
               ...v,
               url: v.url.replace('ti.canpoint.cn', 'ti-demo.canpoint.cn:8433'),
             }
           })
         }
-        
-        await getSubjectList()
-      } catch (error) {
-        console.error('Failed to get default configs', error)
-      }
-    }
-    
-    const getSubjectList = async () => {
-      if (listData.value && listData.value.length) return
-      
-      try {
-        const res = await store.dispatch('getConfigData', { 
-          vm: this, 
-          type: 2, 
-          strParams: {} 
-        })
-        
-        listData.value = res || []
-      } catch (error) {
-        console.error('Failed to get subject list', error)
-      }
-    }
-    
-    return {
-      historyMsgListRef,
-      diaHomeSetPageBlockRef,
-      diaSetUserThemeRef,
-      appLogin,
-      showFixed,
-      boxList,
-      keywords,
-      searchPlaceholder,
-      currSearchOption,
-      searchTransform,
-      defaultThemeUrlBg,
-      changeHisText,
-      changeHotPaper,
-      handleFocus,
-      blurEvent,
-      onEditTheme,
-      openSetHomePageBlock,
-      showLogin,
-      search
-    }
-  }
+      })
+
+      await this.getSubjectList()
+    },
+    openGoodQuestion() {
+      this.$router.push({
+        path: '/question/goodquestions',
+      })
+    },
+  },
 }
 </script>
 
@@ -446,10 +438,7 @@ export default {
 .home-search-form {
   position: relative;
   z-index: 99;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
+  @include flex();
   width: 628px;
   height: 46px;
   margin-right: 25px;
@@ -459,10 +448,7 @@ export default {
   background-color: white;
 
   .home-search-input {
-    display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
+    @include flex();
     width: 528px;
     border: 1px solid #c1c9cd;
     border-right-width: 0;
@@ -491,7 +477,7 @@ export default {
     }
     .search-input {
       width: 430px;
-      :deep(.el-input__inner) {
+      :deep() .el-input__inner {
         height: 20px;
         line-height: 20px;
         border: none;

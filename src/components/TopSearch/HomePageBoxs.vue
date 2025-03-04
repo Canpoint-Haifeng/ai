@@ -7,50 +7,40 @@
         class="home-page-box"
         @click="onOpenBlock(item)"
       >
-        <img
-          class="home-img"
-          :src="item.iconImg"
-          alt=""
-        >
-        <div class="home-block-name">
-          {{ item.name }}
-        </div>
+        <img class="home-img" :src="item.iconImg" alt="" />
+        <div class="home-block-name">{{ item.name }}</div>
       </div>
     </div>
     <div v-else>
-      <div class="home-page-box-skeleton" />
+      <div class="home-page-box-skeleton"></div>
     </div>
   </div>
 </template>
 
 <script>
-  import { isLogin } from '@/common/js/util'
-  
+  // import { isLogin } from '@/common/js/util'
   export default {
     props: {
       list: {
         type: Array,
-        default: () => []
+        default: () => {
+          return []
+        },
       },
     },
-    emits: ['show-login'],
-    setup(props, { emit }) {
-      const onOpenBlock = (item) => {
-        if (item.url) {
-          window.open(item.url)
-        }
-        // Uncomment if login check is needed
+    data() {
+      return {}
+    },
+    methods: {
+      onOpenBlock(item) {
+        this.openWindowLink(item.url)
         // if (isLogin()) {
-        //   window.open(item.url)
+        //   this.openWindowLink(item.url)
         // } else {
-        //   emit('show-login')
+        //   this.$emit('showLogin')
         // }
-      }
-      
-      return {
-        onOpenBlock
-      }
-    }
+      },
+    },
   }
 </script>
 

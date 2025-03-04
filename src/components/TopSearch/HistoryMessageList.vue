@@ -5,34 +5,31 @@
     <!--类型为试卷，显示历史记录和试卷推荐，清空直接隐藏历史记录的盒子模块 -->
     <MessageList
       v-if="currSearchOption == '1' && quesHistoryList.length > 0"
-      :is-show="isShow"
-      :curr-search-option="currSearchOption"
-      :history-list="quesHistoryList"
-      @clear-list="clearList"
-      @change-history-text="changeHisText"
-    />
+      :isShow="isShow"
+      :currSearchOption="currSearchOption"
+      :historyList="quesHistoryList"
+      @clearList="clearList"
+      @changeHistoryText="changeHisText"
+    ></MessageList>
     <MessageList
       v-if="currSearchOption == '2'"
-      :is-show="isShow"
+      :isShow="isShow"
       :value="showMessage"
-      :curr-search-option="currSearchOption"
-      :history-list="paperHistoryList"
-      @clear-list="clearList"
-      @change-history-text="changeHisText"
-      @change-paper-name="changeHotPaper"
-    />
+      :currSearchOption="currSearchOption"
+      :historyList="paperHistoryList"
+      @clearList="clearList"
+      @changeHistoryText="changeHisText"
+      @changePaperName="changeHotPaper"
+    ></MessageList>
   </div>
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, defineComponent, getCurrentInstance } from 'vue'
-import { useStore } from 'vuex'
 import MessageList from './messageList.vue'
 import { API } from '@/api/config'
 import Cookies from 'js-cookie'
-
-export default defineComponent({
-  name: 'HistoryMessageList',
+import { mapState } from 'vuex'
+export default {
   components: {
     MessageList,
   },
@@ -42,160 +39,130 @@ export default defineComponent({
       default: 1,
     },
   },
-  emits: ['changeHisText', 'changeHotPaper'],
-  setup(props, { emit }) {
-    const instance = getCurrentInstance()
-    const store = useStore()
-    
-    // Reactive state
-    const paperList = ref([])
-    const quesHistoryList = ref([])
-    const paperHistoryList = ref([])
-    const showMessage = ref([])
-    const isShow = ref(false)
-    
-    // Computed properties
-    const currSubject = computed(() => store.state.currSubject)
-    
-    const searchHistoryCookie = computed(() => {
-      if (currSubject.value) {
-        return 'searchHistory' + currSubject.value.subjectCode
+  computed: {
+    ...mapState(['currSubject']),
+    searchHistoryCookie() {
+      if (this.currSubject) {
+        return 'searchHistory' + this.currSubject.subjectCode
       } else {
         return 'searchHistory'
       }
-    })
-    
-    const searchPaperHistoryCookie = computed(() => {
-      if (currSubject.value) {
-        return 'searchPaperHistory' + currSubject.value.subjectCode
+    },
+    searchPaperHistoryCookie() {
+      if (this.currSubject) {
+        return 'searchPaperHistory' + this.currSubject.subjectCode
       } else {
         return 'searchPaperHistory'
       }
-    })
-    
-    // Methods
-    const changeHisText = (item) => {
-      emit('changeHisText', item)
+    },
+  },
+  watch: {
+    currSubject() {
+      this.initSeachData()
+    },
+  },
+  data() {
+    return {
+      paperList: [],
+      quesHistoryList: [],
+      paperHistoryList: [],
+      showMessage: [],
+      isShow: false,
     }
-    
-    const changeHotPaper = (item) => {
-      emit('changeHotPaper', item)
-    }
-    
-    const initSeachData = () => {
-      if (!(currSubject.value && currSubject.value.subjectCode)) {
+  },
+  mounted() {
+    this.initSeachData()
+  },
+  methods: {
+    changeHisText(item) {
+      this.$emit('changeHisText', item)
+    },
+    changeHotPaper(item) {
+      this.$emit('changeHotPaper', item)
+    },
+    initSeachData() {
+      if (!(this.currSubject && this.currSubject.subjectCode)) {
         return
       }
-      getMessageList()
-      getSearchHistory()
-    }
-    
-    const getMessageList = () => {
+      this.getMessageList()
+      this.getSearchHistory()
+    },
+    getMessageList() {
       let parms = {
-        period: currSubject.value.periodCode,
-        subjectCode: currSubject.value.subjectCode,
+        period: this.currSubject.periodCode,
+        subjectCode: this.currSubject.subjectCode,
         sort: 2,
         pageSize: 5,
       }
-      // instance.proxy.apiGet(API.MANAGE_PAPER_LIST, parms).then(res => {
-      //   if (instance.proxy.checkoutRes(res)) {
-      //     showMessage.value = res.data.list
+      // this.apiGet(API.MANAGE_PAPER_LIST, parms).then(res => {
+      //   if (this.checkoutRes(res)) {
+      //     this.showMessage = res.data.list
       //   }
       // })
-    }
-    
-    const getSearchHistory = () => {
-      let arr = Cookies.get(searchHistoryCookie.value)
+    },
+    getSearchHistory() {
+      let arr = Cookies.get(this.searchHistoryCookie)
+    //   console.log(arr, '获取到历史的搜索记录', this.searchHistoryCookie, arr)
       if (arr != null) {
-        quesHistoryList.value = arr.split(',')
+        this.quesHistoryList = arr.split(',')
       }
       // 获取试卷历史的搜索记录
-      let paperHistory = Cookies.get(searchPaperHistoryCookie.value)
+      let paperHistory = Cookies.get(this.searchPaperHistoryCookie)
       if (paperHistory != null) {
-        paperHistoryList.value = paperHistory.split(',')
+        this.paperHistoryList = paperHistory.split(',')
       }
-    }
-    
-    const clearList = () => {
-      if (props.currSearchOption == '1') {
-        quesHistoryList.value = [] // 清空试题，隐藏弹框
-        Cookies.remove(searchHistoryCookie.value)
+    },
+    clearList() {
+      if (this.currSearchOption == '1') {
+        this.quesHistoryList = [] //清空试题，隐藏弹框
+        Cookies.remove(this.searchHistoryCookie)
       } else {
-        paperHistoryList.value = [] // 清空试卷搜索历史记录
-        Cookies.remove(searchPaperHistoryCookie.value)
+        this.paperHistoryList = [] //清空试卷搜索历史记录
+        Cookies.remove(this.searchPaperHistoryCookie)
       }
-    }
-    
+    },
     // 提供 给父级 保存 数据的  去重 新的数据往前unshift
-    const saveCookieData = (keywords) => {
-      // 保存数据到cookie
-      if (props.currSearchOption == '1') {
-        // tab为试题类型
-        if (quesHistoryList.value && quesHistoryList.value.length > 5) {
-          quesHistoryList.value.pop()
-          quesHistoryList.value.unshift(keywords.trim())
+    saveCookieData(keywords) {
+      //保存数据到cookie
+      if (this.currSearchOption == '1') {
+        //tab为试题类型
+        if (this.quesHistoryList && this.quesHistoryList.length > 5) {
+          this.quesHistoryList.pop()
+          this.quesHistoryList.unshift(keywords.trim())
         } else {
           if (keywords.trim()) {
-            quesHistoryList.value.unshift(keywords.trim())
+            this.quesHistoryList.unshift(keywords.trim())
           }
+          //   Cookies.set(this.searchHistoryCookie, this.quesHistoryList.join(','))
         }
-        let list = quesHistoryList.value
-        quesHistoryList.value = [...new Set(list)] // 去重
-        Cookies.set(searchHistoryCookie.value, quesHistoryList.value.join(','))
+        let list = this.quesHistoryList
+        this.quesHistoryList = [...new Set(list)] //去重
+        Cookies.set(this.searchHistoryCookie, this.quesHistoryList.join(','))
       } else {
-        if (paperHistoryList.value && paperHistoryList.value.length > 5) {
-          paperHistoryList.value.pop()
-          paperHistoryList.value.unshift(keywords.trim())
+        if (this.paperHistoryList && this.paperHistoryList.length > 5) {
+          this.paperHistoryList.pop()
+          this.paperHistoryList.unshift(keywords.trim())
         } else {
           if (keywords.trim()) {
-            paperHistoryList.value.unshift(keywords.trim())
+            this.paperHistoryList.unshift(keywords.trim())
           }
         }
-        let list = paperHistoryList.value
-        paperHistoryList.value = [...new Set(list)] // 去重
+        let list = this.paperHistoryList
+        this.paperHistoryList = [...new Set(list)] //去重
         Cookies.set(
-          searchPaperHistoryCookie.value,
-          paperHistoryList.value.join(','),
+          this.searchPaperHistoryCookie,
+          this.paperHistoryList.join(','),
         )
       }
-    }
-    
-    const show = () => {
-      isShow.value = true
-    }
-    
-    const closed = () => {
-      isShow.value = false
-    }
-    
-    // Watch for changes
-    watch(() => currSubject.value, () => {
-      initSeachData()
-    })
-    
-    // Lifecycle hooks
-    onMounted(() => {
-      initSeachData()
-    })
-    
-    return {
-      paperList,
-      quesHistoryList,
-      paperHistoryList,
-      showMessage,
-      isShow,
-      changeHisText,
-      changeHotPaper,
-      initSeachData,
-      getMessageList,
-      getSearchHistory,
-      clearList,
-      saveCookieData,
-      show,
-      closed
-    }
-  }
-})
+    },
+    show() {
+      this.isShow = true
+    },
+    closed() {
+      this.isShow = false
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>

@@ -1,8 +1,8 @@
 <template>
   <transition name="el-zoom-in-top">
     <div
-      v-show="isShow"
       class="messageList"
+      v-show="isShow"
       :class="{
         addClass: currSearchOption == '1',
         paperHeight: currSearchOption == '2',
@@ -12,50 +12,39 @@
         <div class="div_header">
           <span class="span_title"> 搜索历史 </span>
           <!--优先级  mousedown > blur > click  需要理解鼠标事件的 顺序-->
-          <span
-            class="span_clear"
-            @mousedown="clear"
-          > 清空 </span>
+          <span class="span_clear" @mousedown="clear"> 清空 </span>
         </div>
         <!-- 搜索历史 -->
         <div class="div_history">
           <div
+            class="div_item"
             v-for="(item, index) in historyList"
             :key="index"
-            class="div_item"
           >
             <!-- 最多可显示15个文字 -->
             <span
               class="span_name"
               :title="item"
               @mousedown="changeHistoryText(item)"
-            >{{ item }}</span>
+              >{{ item }}</span
+            >
           </div>
         </div>
       </div>
 
       <!-- tab切换到试卷的时候才显示 -->
-      <div
-        v-if="currSearchOption == '2'"
-        class="div_recommend"
-      >
+      <div class="div_recommend" v-if="currSearchOption == '2'">
         <span class="span_title">试卷推荐</span>
-        <i class="iconfont iconfire_fill icont-tip" />
+        <i class="iconfont iconfire_fill icont-tip"></i>
         <ul>
-          <li
-            v-for="(item, index) in value"
-            :key="item.paperId"
-          >
+          <li v-for="(item, index) in value" :key="item.paperId">
             <div
               :class="{
                 div_item_tag: index + 1 >= 4,
                 div_tag_bg: index + 1 < 4,
               }"
             >
-              <span
-                v-if="index >= 3"
-                class="span1"
-              >
+              <span class="span1" v-if="index >= 3">
                 {{ index + 1 }}
               </span>
             </div>
@@ -74,10 +63,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'MessageList',
+export default {
   props: {
     value: {
       type: Array,
@@ -100,32 +86,23 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ['clearList', 'changeHistoryText', 'changePaperName'],
-  setup(props, { emit }) {
-    // Methods
-    const clear = (event) => {
+  mounted() {},
+  methods: {
+    clear(event) {
       // 点击清除后 ，input 不失焦
       event.preventDefault()
-      emit('clearList')
-    }
-    
-    const changeHistoryText = (item) => {
+      this.$emit('clearList')
+    },
+    changeHistoryText(item) {
       console.log('底层事件触发')
-      emit('changeHistoryText', item)
-    }
-    
-    const changePaperName = (item) => {
-      emit('changePaperName', item)
+      this.$emit('changeHistoryText', item)
+    },
+    changePaperName(item) {
+      this.$emit('changePaperName', item)
       console.log(item, 'item--')
-    }
-    
-    return {
-      clear,
-      changeHistoryText,
-      changePaperName
-    }
-  }
-})
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>

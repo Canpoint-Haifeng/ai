@@ -4,100 +4,108 @@
       <section>
         <div class="img">
           <img
-            v-if="userInfo.profilePhoto"
             class="border50"
+            v-if="userInfo.profilePhoto"
             :src="userInfo.profilePhoto"
             alt=""
-          >
+          />
           <img
-            v-else
             class="border50"
+            v-else
             src="../../assets/images/avatar.png"
             alt=""
-          >
+          />
         </div>
         <div class="name_id">
           <div class="name">
             <span>{{ userInfo.username }}</span>
           </div>
-          <div
-            v-if="userInfo.isVip"
-            class="vip"
-          >
+          <div class="vip" v-if="userInfo.isVip">
             <img
               v-if="vipInfo.vipLevel === 0"
               src="../../assets/images/users/vip1.webp"
               alt=""
-            >
+            />
             <span
+              @click="skip('/vip')"
               v-if="vipInfo.vipLevel === 0"
               class="to-vip-text"
-              @click="skip('/vip')"
-            >开通会员</span>
+              >开通会员</span
+            >
             <img
               v-if="vipInfo.vipLevel === 1"
               src="../../assets/images/users/vip2.webp"
               alt=""
-            >
+            />
             <img
               v-if="vipInfo.vipLevel === 2"
               src="../../assets/images/users/vip3.webp"
               alt=""
-            >
+            />
             <img
               v-if="vipInfo.vipLevel === 3"
               src="../../assets/images/users/vip4.webp"
               alt=""
-            >
-            <span
-              v-if="vipInfo.vipEndTime > 0"
-              class="endtime"
-            >有效期至 endTime
+            />
+            <span class="endtime" v-if="vipInfo.vipEndTime > 0"
+              >有效期至 endTime
             </span>
           </div>
-          <div
-            v-else
-            class="no-vip vip"
-          >
-            <img
-              src="../../assets/images/users/vip1.webp"
-              alt=""
-            >
+          <div v-else class="no-vip vip">
+            <img src="../../assets/images/users/vip1.webp" alt="" />
             <span class="to-vip-text">开通会员</span>
           </div>
         </div>
       </section>
       <div class="popper-nav-box">
         <div
+          class="popper-nav-item-box"
           v-for="(item, index) in naveList"
           :key="index"
-          class="popper-nav-item-box"
           @click="skip(item.path)"
         >
-          <img
-            class="popper-nav-img"
-            :src="item.icon"
-          >
+          <img class="popper-nav-img" :src="item.icon" />
           <div class="popper-nav-item-text">
             {{ item.title }}
           </div>
         </div>
       </div>
     </div>
-    <el-button
-      class="popover-content-my-button"
-      @click="logout()"
+    <el-button class="popover-content-my-button" @click="logout()"
+      >退出登录</el-button
     >
-      退出登录
-    </el-button>
   </div>
+  <!-- <div slot="reference">
+    <div>
+      <span class="el-dropdown-link top">
+        <img
+          v-if="userInfo.avatar"
+          :src="userInfo.avatar"
+          :alt="userInfo.username"
+          class="new-avatar-img"
+          style="width: 24px;height:24px;object-fit:cover;border-radius: 50%;"
+        />
+        <img
+          class="new-avatar-img"
+          v-else
+          style="width: 24px;height:24px;object-fit:cover;border-radius: 50%;"
+          :alt="userInfo.username"
+          src="./img/IP.webp"
+        />
+        我的
+        <img
+          src="./img/down_small_line.png"
+          style="width: 24px;height:24px"
+          alt="展开"
+        />
+      </span>
+    </div>
+  </div> -->
 </template>
 <script>
-import { ref, onMounted, defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
-
-export default defineComponent({
-  name: 'UserCenterPopover',
+import { mapState } from 'vuex'
+export default {
+  name: 'userCenterPopover',
   props: {
     userInfo: {
       type: Object,
@@ -106,51 +114,41 @@ export default defineComponent({
       },
     },
   },
-  emits: ['logout'],
-  setup(props, { emit }) {
-    const router = useRouter()
-    
-    const vipInfo = ref({})
-    const naveList = ref([
-      {
-        path: '',
-        title: '个人中心',
-        icon: require('../../assets/images/users/user_center.png'),
-      },
-      {
-        path: '/preparation/myTeaching',
-        title: '我的备课',
-        icon: require('../../assets/images/users/user_paper.png'),
-      },
-      {
-        path: '/preparation/myTeaching?type=1',
-        title: '我的收藏',
-        icon: require('../../assets/images/users/user_collection.png'),
-      },
-    ])
-    
-    // Methods
-    const skip = (path) => {
-      router.push(path)
-    }
-    
-    const logout = () => {
-      emit('logout')
-    }
-    
-    // Lifecycle hooks
-    onMounted(() => {
-      console.log('userInfo', props.userInfo)
-    })
-    
+  computed: {},
+  data() {
     return {
-      vipInfo,
-      naveList,
-      skip,
-      logout
+      vipInfo: {},
+      naveList: [
+        {
+          path: '',
+          title: '个人中心',
+          icon: require('../../assets/images/users/user_center.png'),
+        },
+        {
+          path: '/preparation/myTeaching',
+          title: '我的备课',
+          icon: require('../../assets/images/users/user_paper.png'),
+        },
+        {
+          path: '/preparation/myTeaching?type=1',
+          title: '我的收藏',
+          icon: require('../../assets/images/users/user_collection.png'),
+        },
+      ],
     }
-  }
-})
+  },
+  mounted() {
+    console.log('userInfo', this.userInfo)
+  },
+  methods: {
+    skip(path) {
+      this.$router.push(path)
+    },
+    logout() {
+      this.$emit('logout')
+    },
+  },
+}
 </script>
 <style lang="scss" scoped>
 .popover-content-my {

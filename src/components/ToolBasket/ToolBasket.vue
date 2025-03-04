@@ -1,20 +1,12 @@
 <template>
   <div>
-    <div
-      class="cp-basket-handler"
-      @click="toggleBasket"
-    >
-      <div
-        id="basket-btn"
-        class="basket-btn"
-      >
+    <div class="cp-basket-handler" @click="toggleBasket">
+      <div class="basket-btn" id="basket-btn">
         <div class="basket-num">
           <span class="text">{{ basketData.totalCount || 0 }}</span>
         </div>
-        <i class="iconfont icon-basket_fill" />
-        <p class="text">
-          试题篮
-        </p>
+        <i class="iconfont icon-basket_fill"></i>
+        <p class="text">试题篮</p>
       </div>
     </div>
     <div class="cp-new-tool-basket">
@@ -22,98 +14,79 @@
         class="new-tool-basket-body"
         :class="isShowBasket ? 'show-baseket' : ''"
       >
-        <div
-          class="basket-handler"
-          @click="toggleBasket"
-        >
-          <div
-            id="basket-btn"
-            class="basket-btn"
-          >
-            <i class="iconfont icon-arrows_right_line" />
-            <p class="text">
-              收起
-            </p>
+        <div class="basket-handler" @click="toggleBasket">
+          <div class="basket-btn" id="basket-btn">
+            <i class="iconfont icon-arrows_right_line"></i>
+            <p class="text">收起</p>
           </div>
         </div>
 
         <div class="tool-basket-segment">
           <div class="tool-basket-handler">
             <div class="title-clear">
-              <span class="title-name">共<span class="title-num">{{
-                basketData.totalCount || 0
-              }}</span>题</span>
+              <span class="title-name"
+                >共<span class="title-num">{{
+                  basketData.totalCount || 0
+                }}</span
+                >题</span
+              >
               <span
-                v-if="basketData.totalCount"
                 class="clear-ques"
+                v-if="basketData.totalCount"
                 @click="showEmptyDialog"
-              >清空试题</span>
+                >清空试题</span
+              >
             </div>
             <div class="preview-paper">
               <span
-                v-if="basketData.totalCount"
                 class="perview-paper-btn"
+                v-if="basketData.totalCount"
                 @click="previewPaper"
-              ><i class="icon el-icon-view" />试卷预览</span>
+                ><i class="icon el-icon-view"></i>试卷预览</span
+              >
             </div>
           </div>
           <div class="basket-group-list">
             <div
+              class="basket-group-item"
               v-for="(item, index) in basketData.list"
               :key="index"
-              class="basket-group-item"
             >
-              <span
-                class="item-type"
-                :title="item.typeName"
-              >{{
+              <span class="item-type" :title="item.typeName">{{
                 item.typeName
               }}</span>
               <span class="item-num font-12">
-                <em class="text">{{ item.count }}</em>题
+                <em class="text">{{ item.count }}</em
+                >题
               </span>
-              <span
-                class="item-del"
-                @click="showDeleteDialog(item.type)"
-              >
-                <i class="el-icon-delete" />
+              <span class="item-del" @click="showDeleteDialog(item.type)">
+                <i class="el-icon-delete"></i>
               </span>
             </div>
           </div>
 
           <div
-            v-if="questionsData && questionsData.length"
             class="basket-question-list"
+            v-if="questionsData && questionsData.length"
           >
-            <div
-              v-for="item in questionsData"
-              :key="item.id"
-            >
+            <div v-for="item in questionsData" :key="item.id">
               <div class="basket-paper-type-name">
                 {{ item.name }}
               </div>
-              <div
-                v-for="ques in item.list"
-                :key="ques.questionId"
-              >
+              <div v-for="ques in item.list" :key="ques.questionId">
                 <BasketQuestionItem
-                  :question-item="ques"
-                  @delete-question="onDeleteQuestion"
-                />
+                  :questionItem="ques"
+                  @deleteQuestion="onDeleteQuestion"
+                ></BasketQuestionItem>
               </div>
             </div>
           </div>
 
-          <div
-            v-show="basketData.list.length === 0"
-            class="basket-noresult"
-          >
+          <div class="basket-noresult" v-show="basketData.list.length === 0">
             <div class="icon-box">
-              <i class="noresult-icon" />
+              <i class="noresult-icon"></i>
             </div>
-            <p class="noresult-text font-16 color-3">
-              试题篮空空的~
-            </p>
+            <p class="noresult-text font-16 color-3">试题篮空空的~</p>
             <p class="noresult-text1 font-12 color-9">
               您还没有添加试题，赶快去添加吧！
             </p>
@@ -121,179 +94,176 @@
         </div>
       </div>
     </div>
-    <base-dialog
-      ref="deleteDialog"
-      :addbody="true"
-      @comfirm="onDeleteBasket"
-    >
-      <template #dialogTips>
-        <div class="dialog-tips">
-          确认删除试题？
-        </div>
-      </template>
+    <base-dialog @comfirm="onDeleteBasket" :addbody="true" ref="deleteDialog">
+      <div slot="dialogTips" class="dialog-tips">确认删除试题？</div>
     </base-dialog>
-    <base-dialog
-      ref="emptyDialog"
-      :addbody="true"
-      @comfirm="onEmptyBasket"
-    >
-      <template #dialogTips>
-        <div class="dialog-tips">
-          确认清空全部试题吗？
-        </div>
-      </template>
+    <base-dialog :addbody="true" @comfirm="onEmptyBasket" ref="emptyDialog">
+      <div slot="dialogTips" class="dialog-tips">确认清空全部试题吗？</div>
     </base-dialog>
     <!-- 登录弹窗 -->
-    <app-login ref="appLogin" />
+    <app-login ref="appLogin"></app-login>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted, inject } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import CTS from '@/common/js/constant'
 import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
 import BaseDialog from '@/components/BaseDialog/BaseDialog'
 import BasketQuestionItem from '@/components/QuestionItem/BasketQuestionItem'
 import { isLogin, getDigitalChinese } from '@/common/js/util'
 import { decrypt } from '@/common/js/util.js'
-
 export default {
-  name: 'ToolBasket',
   components: { BasketQuestionItem, BaseDialog },
-  setup() {
-    const store = useStore()
-    const router = useRouter()
-    const Bus = inject('Bus')
-    
-    const deleteDialog = ref(null)
-    const emptyDialog = ref(null)
-    const appLogin = ref(null)
-    const currentType = ref(null)
-    const basketData = ref({
-      list: [],
-      totalCount: 0,
-    })
-    const isShowBasket = ref(false)
-    const questionsData = ref([])
-    const basketInit = ref(false)
-    const questionTypes = ref([])
-    
-    // Computed properties
-    const currSubject = computed(() => store.state.currSubject)
-    
-    // Methods
-    const showDeleteDialog = (type) => {
-      currentType.value = type
-      deleteDialog.value.show()
+  mixins: [windowScrollResetMixin],
+  computed: {
+    ...mapState(['currSubject']),
+  },
+  data() {
+    return {
+      basketData: {
+        list: [],
+        totalCount: 0,
+      },
+      isShowBasket: false,
+      questionsData: [],
+      basketInit: false,
     }
-    
-    const onDeleteBasket = async () => {
+  },
+  created() {
+    if (isLogin()) {
+      this.getBasketList()
+    }
+    this.initWindowsEvent()
+  },
+  mounted() {
+    // 监听添加试题
+    this.Bus.$on('addBasket', this.onAddBasket)
+    this.Bus.$on('refreshBasket', this.onAddBasket)
+  },
+  destroyed() {
+    this.Bus.$off('addBasket')
+    this.Bus.$off('refreshBasket')
+    this.destroyedWindowsEvent()
+  },
+  methods: {
+    // 显示删除提示框
+    showDeleteDialog(currentType) {
+      this.currentType = currentType
+      this.$refs.deleteDialog.show()
+    },
+    // 删除单项试题
+    async onDeleteBasket() {
       let parms = {
         removeType: 2,
-        stage: currSubject.value.periodCode,
-        subject: currSubject.value.subjectCode,
-        type: currentType.value,
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: this.currentType,
       }
-      let res = await newPost(API.DELETE_BASKET, parms)
+      let res = await this.newPost(API.DELETE_BASKET, parms)
       if (res.code === CTS.constant.SUCCESS_CODE) {
-        deleteDialog.value.hide()
-        await getBasketList()
-        Bus.emit('deleteBasket', getBaskQuesList())
+        this.$refs.deleteDialog.hide()
+        await this.getBasketList()
+        this.Bus.$emit('deleteBasket', this.getBaskQuesList())
       }
-    }
-    
-    const onDeleteQuestion = async (questionItem) => {
+    },
+    async onDeleteQuestion(questionItem) {
       // 判断有没有登录
       if (!isLogin()) {
-        appLogin.value.showLogin()
+        this.$refs.appLogin.showLogin()
         return
       }
       let parms = {
         questionId: questionItem.questionInfo.questionId,
-        stage: currSubject.value.periodCode,
-        subject: currSubject.value.subjectCode,
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
         source: questionItem.source || 1,
         removeType: 1,
+        // type: questionItem.questionType,
       }
       let set = {
         authCode: 1,
         showLoading: true,
       }
-      let res = await newPost(API.DELETE_BASKET, parms, set)
+      let res = await this.newPost(API.DELETE_BASKET, parms, set)
       if (res && res.code === CTS.constant.SUCCESS_CODE) {
-        await getBasketList()
-        Bus.emit('deleteBasket', getBaskQuesList())
+        await this.getBasketList()
+        this.Bus.$emit('deleteBasket', this.getBaskQuesList())
       }
-    }
-    
-    const previewPaper = () => {
-      router.push('/paper/maker')
-    }
-    
-    const getBaskQuesList = () => {
+    },
+    previewPaper() {
+      this.$router.push('/paper/maker')
+    },
+    getBaskQuesList() {
       let dict = {}
-      if (basketData.value && basketData.value.list) {
-        for (let sub of basketData.value.list) {
+      if (this.basketData && this.basketData.list) {
+        for (let sub of this.basketData.list) {
           for (let ques of sub.list) {
             dict[ques] = 1
           }
         }
       }
       return dict
-    }
-    
-    const showEmptyDialog = () => {
-      emptyDialog.value.show()
-    }
-    
-    const onEmptyBasket = async () => {
+    },
+    // 显示清空提示框
+    showEmptyDialog() {
+      this.$refs.emptyDialog.show()
+    },
+    // 清空试题篮
+    async onEmptyBasket() {
       let parms = {
-        stage: currSubject.value.periodCode,
-        subject: currSubject.value.subjectCode,
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
         removeType: 3,
       }
-      let res = await newPost(API.DELETE_BASKET, parms)
+      let res = await this.newPost(API.DELETE_BASKET, parms)
       if (res.code === CTS.constant.SUCCESS_CODE) {
-        emptyDialog.value.hide()
-        await getBasketList()
-        Bus.emit('deleteBasket', {})
+        this.$refs.emptyDialog.hide()
+        await this.getBasketList()
+        this.Bus.$emit('deleteBasket', {})
       }
-    }
-    
-    const getBasketList = async () => {
-      let parms = {}
+    },
+    // 获取试题篮列表
+    async getBasketList() {
+      let parms = {
+        // stage: this.currSubject.periodCode,
+        // subject: this.currSubject.subjectCode,
+      }
       let set = {
         authCode: 2,
       }
 
-      return apiGet(API.BASKET_LIST, parms, set).then(res => {
+      return this.apiGet(API.BASKET_LIST, parms, set).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
-          basketInit.value = true
-          basketData.value = res.data
-          if (isShowBasket.value) {
-            getPaperDetail()
+          this.basketInit = true
+          this.basketData = res.data
+          if (this.isShowBasket) {
+            this.getPaperDetail()
           }
         }
       })
-    }
-    
-    const getPaperDetail = () => {
+    },
+    getPaperDetail() {
       let baseUrl = API.TEMP_PAPER_PREVIEW
       let parms = {
-        stage: currSubject.value.periodCode,
-        subject: currSubject.value.subjectCode,
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
       }
-      return apiGet(baseUrl, parms).then(res => {
+      return this.apiGet(baseUrl, parms).then(res => {
         if (res.code === CTS.constant.SUCCESS_CODE) {
-          executePaperData(res.data.list)
+          this.executePaperData(res.data.list)
+          // let data = decrypt(res.data)
+          // if (data) {
+          //   data = JSON.parse(data)
+          //   this.executePaperData(data.list)
+          // }
         }
       })
-    }
-    
-    const executePaperData = (arrList) => {
-      questionTypes.value = []
+    },
+    // 处理PaperData数据
+    executePaperData(arrList) {
+      this.questionTypes = []
       let questionListOrder = {
         questionTypeOrderDtoList: [],
         questionOrderDtoList: [],
@@ -305,7 +275,7 @@ export default {
       let typeIndex = 0
       let questionNum = 0
       arrList.forEach((item, index) => {
-        item.list.sort(sortNumber)
+        item.list.sort(this.sortNumber)
         item.id = getIndexId()
         item.makertype = 1
         item.groupName = {
@@ -323,14 +293,14 @@ export default {
           element: 'groupDescInput',
         }
         item.list.forEach((subItem, subIndex) => {
-          subItem.list.sort(sortNumber)
+          subItem.list.sort(this.sortNumber)
           typeIndex = typeIndex + 1
           subItem.id = getIndexId()
 
           subItem.name =
             getDigitalChinese(typeIndex) + '、' + subItem.questionTypeName
           subItem.makertype = 2
-          questionTypes.value.push(subItem.questionTypeName)
+          this.questionTypes.push(subItem.questionTypeName)
           questionListOrder.questionTypeOrderDtoList.push({
             type: subItem.questionType,
             ordinal: typeIndex,
@@ -359,86 +329,27 @@ export default {
           })
         })
       })
-      questionsData.value = [...arrList[0].list, ...arrList[1].list]
-      console.log(questionsData.value)
-    }
-    
-    const sortNumber = (a, b) => {
-      return a.ordinal - b.ordinal
-    }
-    
-    const onAddBasket = () => {
-      getBasketList()
-    }
-    
-    const toggleBasket = () => {
+      this.questionsData = [...arrList[0].list, ...arrList[1].list]
+      console.log(this.questionsData)
+    },
+    // 监听添加试题/删除
+    onAddBasket() {
+      this.getBasketList()
+    },
+    toggleBasket() {
       if (!isLogin()) {
-        appLogin.value.showLogin()
+        this.$refs.appLogin.showLogin()
         return
       }
-      if (!basketInit.value) return
+      if (!this.basketInit) return
 
-      isShowBasket.value = !isShowBasket.value
+      this.isShowBasket = !this.isShowBasket
 
-      if (isShowBasket.value) {
-        getPaperDetail()
+      if (this.isShowBasket) {
+        this.getPaperDetail()
       }
-    }
-    
-    // Window event handlers for scroll reset
-    const initWindowsEvent = () => {
-      window.addEventListener('scroll', handleScroll)
-    }
-    
-    const destroyedWindowsEvent = () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-    
-    const handleScroll = () => {
-      // Implementation of scroll reset logic
-    }
-    
-    // Lifecycle hooks
-    onMounted(() => {
-      if (isLogin()) {
-        getBasketList()
-      }
-      initWindowsEvent()
-      
-      // Listen for events
-      Bus.on('addBasket', onAddBasket)
-      Bus.on('refreshBasket', onAddBasket)
-    })
-    
-    onUnmounted(() => {
-      Bus.off('addBasket', onAddBasket)
-      Bus.off('refreshBasket', onAddBasket)
-      destroyedWindowsEvent()
-    })
-    
-    return {
-      deleteDialog,
-      emptyDialog,
-      appLogin,
-      currentType,
-      basketData,
-      isShowBasket,
-      questionsData,
-      basketInit,
-      showDeleteDialog,
-      onDeleteBasket,
-      onDeleteQuestion,
-      previewPaper,
-      getBaskQuesList,
-      showEmptyDialog,
-      onEmptyBasket,
-      getBasketList,
-      getPaperDetail,
-      executePaperData,
-      onAddBasket,
-      toggleBasket
-    }
-  }
+    },
+  },
 }
 </script>
 

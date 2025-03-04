@@ -1,0 +1,101 @@
+// 颜色定义规范
+$color-theme: #487FFF;
+$color-theme-l: #FF6E5D;
+$color-theme-l-hover: #FF4B36;
+$color-theme-ll: #F4986A;
+$color-theme-d: #3E73CD;
+$color-theme-nav-d: #4783EA;
+$color-background-d: #202A3B;
+$color-background-l: #ECEFF3;
+$color-menu-l-hover: #F3F7FB;
+// $color-nav: #5692F3;
+// $color-nav-d: #d5d8de;
+$color-button-d: #487FFF;
+$color-button-d-hover: #3E73CD;
+$color-button-l: #66D7DD;
+$color-button-l-hover: #36c3ca;
+$color-button-l-disabled: #BBF2F5;
+$color-border: #E2E2E2;
+$color-list-title: #f5f5f5;
+$color-table-border: #e4ecfd;
+$color-list-content: #fafbfd;
+$color-table-bg: #F6F6F6;
+$color-table-hover: #f3f6fd;
+$color-dialog: #f8fafd;
+$color-disabled: #c2dbff;
+
+
+
+//字体颜色定义规范
+$color-text-d: #333;
+$color-text: #666;
+$color-text-l: #999;
+$color-text-ll: #BABABA;
+$color-white: #fff;
+
+//字体大小定义规范
+$font-size-small-s: 10px;
+$font-size-small: 12px;
+$font-size-medium: 14px;
+$font-size-medium-x: 16px;
+$font-size-large: 18px;
+$font-size-large-x: 20px;
+$font-size-large-4x: 28px;
+
+//布局定义规范
+@mixin flex($direction: row, $inline: block) {
+  display: if($inline==block, flex, inline-flex);
+  flex-direction: $direction;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+//常用方法定义
+@mixin triangle($width: 10px, $borderColor: $color-text) {
+  width: 0;
+  height: 0;
+  line-height: 0;
+  border-width: $width;
+  border-style: solid dashed dashed;
+  border-color: $borderColor transparent transparent;
+  font-size: 0;
+}
+
+@mixin arrow($width: 8px, $height: 8px, $borderColor: $color-text) {
+  display: inline-block;
+  width: $width;
+  height: $height;
+  border-right: 2px solid $borderColor;
+  border-bottom: 2px solid $borderColor;
+  transform: rotate(-45deg);
+  border-radius: 2px;
+}
+
+@mixin btn($size: 14px, $color: #fff, $bgcolor: $color-button-d-hover, $padding: 13px 30px, $radius: 6px) {
+  cursor: pointer;
+  padding: $padding;
+  background: $bgcolor;
+  border-radius: $radius;
+  border: 1px solid $bgcolor;
+  font-size: $size;
+  color: $color;
+  text-align: center;
+  line-height: 1;
+  display: inline-block;
+}
+
+@mixin textEllipsis() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* mixin for multiline */
+@mixin multiLineEllipsis($lineCount: 2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  // display: box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lineCount;
+}

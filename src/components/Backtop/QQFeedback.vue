@@ -1,66 +1,50 @@
 <template>
   <el-popover
-    v-model="showPopover"
     popper-class="company-weixin-qr"
     placement="left-start"
     width="482"
+    v-model="showPopover"
     trigger="hover"
   >
     <div class="popover-box">
       <UserFeedBackBody
-        :show-popover="showPopover"
-        @show-login="showLogin"
-        @confirm-success="confirmSuccess"
-      />
+        :showPopover="showPopover"
+        @showLogin="showLogin"
+        @confirmSuccess="confirmSuccess"
+      ></UserFeedBackBody>
     </div>
-    <template #reference>
-      <div class="app-feed-back">
-        <span class="iconfont iconshiliangzhinengduixiang-05" />
-        <div class="text">
-          问题<br>反馈
-        </div>
-      </div>
-    </template>
+    <div slot="reference" class="app-feed-back">
+      <span class="iconfont iconshiliangzhinengduixiang-05"></span>
+      <div class="text">问题<br />反馈</div>
+    </div>
   </el-popover>
 </template>
 
 <script>
   import { mapState } from 'vuex'
-  import UserFeedBackBody from './components/UserFeedBackBody.vue'
-  import { defineComponent, ref, computed } from 'vue'
-  import { useStore } from 'vuex'
-  
-  export default defineComponent({
-    name: 'QQFeedback',
+  import UserFeedBackBody from './components/UserFeedBackBody'
+  export default {
     components: { UserFeedBackBody },
-    emits: ['showLogin'],
-    setup(props, { emit }) {
-      const store = useStore()
-      const showPopover = ref(false)
-      
-      const userInfo = computed(() => store.state.userInfo)
-      
-      const showLogin = () => {
-        emit('showLogin')
-      }
-      
-      const upDateCurrHref = () => {
-        // 进入反馈页面
-      }
-      
-      const confirmSuccess = () => {
-        showPopover.value = false
-      }
-      
+    data() {
       return {
-        showPopover,
-        userInfo,
-        showLogin,
-        upDateCurrHref,
-        confirmSuccess
+        showPopover: false,
       }
-    }
-  })
+    },
+    computed: {
+      ...mapState(['userInfo']),
+    },
+    methods: {
+      showLogin() {
+        this.$emit('showLogin')
+      },
+      upDateCurrHref() {
+        // 进入反馈页面
+      },
+      confirmSuccess() {
+        this.showPopover = false
+      },
+    },
+  }
 </script>
 
 <style lang="scss" scoped>

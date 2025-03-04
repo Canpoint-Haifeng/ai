@@ -1,7 +1,7 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import Register from './Register'
-
-let instance
+const CbRegister = Vue.extend(Register)
+var instance
 
 Register.install = function (data) {
   if (instance) {
@@ -12,19 +12,13 @@ Register.install = function (data) {
       }
     }
   } else {
-    // Create a div to mount our component
-    const mountNode = document.createElement('div')
-    document.body.appendChild(mountNode)
-    
-    // Create the app instance
-    const app = createApp(Register, { ...data })
-    
-    // Mount the app
-    instance = app.mount(mountNode)
+    instance = new CbRegister({
+      data,
+    }).$mount()
+    document.body.appendChild(instance.$el)
   }
-  
-  // Use nextTick from Vue 3
-  Promise.resolve().then(() => {
+
+  Vue.nextTick(() => {
     instance.visible = data.visible || false
   })
 }

@@ -3,107 +3,58 @@
     <div class="top-nav-body">
       <div class="top-nav">
         <div class="content-container">
-          <el-menu
-            :default-active="activeMenu"
-            class="top-nav-content"
-            mode="horizontal"
-            placement="bottom-start"
-            :router="false"
-            @select="handleSelect"
-          >
-            <el-submenu
-              v-if="!currDisabledNav"
-              index="-1"
-              popper-class="custom-dropdown-menu-nav subject-dropdown-menu"
-              :popper-append-to-body="true"
-              :show-timeout="10"
-              class="subject-nav-item"
-            >
-              <template #title>
+          <el-menu :default-active="activeMenu" class="top-nav-content" mode="horizontal" placement="bottom-start"
+            :router="false" @select="handleSelect">
+            <el-submenu v-if="!currDisabledNav" index="-1" popper-class="custom-dropdown-menu-nav subject-dropdown-menu"
+              :popper-append-to-body="true" :show-timeout="10" class="subject-nav-item">
+              <template slot="title">
                 <span class="text">
-                  <span class="iconfont icon-location_fill" />
+                  <span class="iconfont icon-location_fill"></span>
                   <em class="dropdown-text">{{ currSubject.periodName
-                  }}{{ currSubject.subjectName }}</em>
+                    }}{{ currSubject.subjectName }}</em>
                 </span>
               </template>
-              <el-menu-item
-                v-for="item in listData"
-                v-show="item.children && item.children.length"
-                :key="item.dictId"
-                class="subject-menu-item"
-              >
+              <el-menu-item class="subject-menu-item" v-for="item in listData" :key="item.dictId"
+                v-show="item.children && item.children.length">
                 <div class="title">
-                  <span class="line" />
+                  <span class="line"></span>
                   {{ item.name }}
                 </div>
                 <div class="content">
-                  <span
-                    v-for="subItem in item.children"
-                    :key="subItem.dictId"
-                    class="text"
-                    :class="{
-                      active:
-                        (item.code || item.id) == currSubject.periodCode &&
-                        (subItem.code || subItem.id) == currSubject.subjectCode,
-                      vip: allVipDict[subItem.code],
-                    }"
-                    @click="selectSubject(item, subItem)"
-                  >
+                  <span class="text" v-for="subItem in item.children" :key="subItem.dictId" :class="{
+                    active:
+                      (item.code || item.id) == currSubject.periodCode &&
+                      (subItem.code || subItem.id) == currSubject.subjectCode,
+                    vip: allVipDict[subItem.code],
+                  }" @click="selectSubject(item, subItem)">
                     {{ subItem.name }}
                   </span>
                 </div>
               </el-menu-item>
             </el-submenu>
-            <el-menu-item
-              v-else
-              class="subject-nav-item"
-            >
-              <template #title>
-                <span class="iconfont icon-location_fill" />
+            <el-menu-item v-else class="subject-nav-item">
+              <template slot="title">
+                <span class="iconfont icon-location_fill"></span>
                 <span class="text">
                   {{ currSubject.periodName }}{{ currSubject.subjectName }}
                 </span>
               </template>
             </el-menu-item>
-            <el-menu-item
-              index="/index"
-              class="top-nav-item"
-              @click="entryFirstMenu('/index')"
-            >
-              首页
-            </el-menu-item>
-            <el-submenu
-              index="/smartpaper/chapter"
-              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu"
-              :popper-append-to-body="true"
-              :show-timeout="10"
-              class="top-nav-item custom-dropdown-chapter"
-              @click="entryFirstMenu('/smartpaper/chapter')"
-            >
-              <template #title>
+            <el-menu-item index="/index" class="top-nav-item"
+              @click="entryFirstMenu('/index')">首页</el-menu-item>
+            <el-submenu index="/smartpaper/chapter"
+              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu" :popper-append-to-body="true"
+              :show-timeout="10" class="top-nav-item custom-dropdown-chapter"
+              @click="entryFirstMenu('/smartpaper/chapter')">
+              <template slot="title">
                 <span class="text">智能备课</span>
               </template>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/smartpaper/chapter"
-                @click="entryFirstMenu('/smartpaper/chapter')"
-              >
-                按章节
-              </el-menu-item>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/smartpaper/knowledge"
-                @click="entryFirstMenu('/smartpaper/knowledge')"
-              >
-                按知识点
-              </el-menu-item>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/smartpaper/special"
-                @click="entryFirstMenu('/smartpaper/special')"
-              >
-                按专题
-              </el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/smartpaper/chapter"
+                @click="entryFirstMenu('/smartpaper/chapter')">按章节</el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/smartpaper/knowledge"
+                @click="entryFirstMenu('/smartpaper/knowledge')">按知识点</el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/smartpaper/special"
+                @click="entryFirstMenu('/smartpaper/special')">按专题</el-menu-item>
             </el-submenu>
             <!-- <el-menu-item
               index="/paper/chapterques/selection"
@@ -117,93 +68,45 @@
               @click="entryFirstMenu('/paper/center')"
               :class="isPaper ? 'is-active' : ''"
               >精品试卷</el-menu-item> -->
-            <el-submenu
-              index="/tmanualPrepare"
-              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu"
-              :popper-append-to-body="true"
-              :show-timeout="10"
-              class="top-nav-item custom-dropdown-chapter"
-              @click="entryFirstMenu('/manualPrepare')"
-            >
-              <template #title>
+            <el-submenu index="/tmanualPrepare"
+              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu" :popper-append-to-body="true"
+              :show-timeout="10" class="top-nav-item custom-dropdown-chapter"
+              @click="entryFirstMenu('/manualPrepare')">
+              <template slot="title">
                 <span class="text">手动备课</span>
               </template>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/manualPrepare"
-                @click="entryFirstMenu('/manualPrepare')"
-              >
-                按章节
-              </el-menu-item>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/manualPrepare?type=2"
-                @click="entryFirstMenu('/manualPrepare?type=2')"
-              >
-                按知识点
-              </el-menu-item>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/manualPrepare?type=3"
-                @click="entryFirstMenu('/manualPrepare?type=3')"
-              >
-                按专题
-              </el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/manualPrepare"
+                @click="entryFirstMenu('/manualPrepare')">按章节</el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/manualPrepare?type=2"
+                @click="entryFirstMenu('/manualPrepare?type=2')">按知识点</el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/manualPrepare?type=3"
+                @click="entryFirstMenu('/manualPrepare?type=3')">按专题</el-menu-item>
             </el-submenu>
-            <el-menu-item
-              index="/lessonPreparation"
-              class="top-nav-item"
-              @click="entryFirstMenu('/lessonPreparation')"
-            >
-              以课备课
-            </el-menu-item>
-            <el-submenu
-              index="/preparation/myTeaching"
-              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu"
-              :popper-append-to-body="true"
-              :show-timeout="10"
-              class="top-nav-item custom-dropdown-chapter"
-              @click="entryFirstMenu('/preparation/myTeaching')"
-            >
-              <template #title>
+            <el-menu-item index="/lessonPreparation" class="top-nav-item"
+              @click="entryFirstMenu('/lessonPreparation')">以课备课</el-menu-item>
+            <el-submenu index="/preparation/myTeaching"
+              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu" :popper-append-to-body="true"
+              :show-timeout="10" class="top-nav-item custom-dropdown-chapter"
+              @click="entryFirstMenu('/preparation/myTeaching')">
+              <template slot="title">
                 <span class="text">我的备课</span>
               </template>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/preparation/myTeaching"
-                @click="entryFirstMenu('/preparation/myTeaching')"
-              >
-                我的教案
-              </el-menu-item>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/preparation/myTeaching?type=1"
-                @click="entryFirstMenu('/preparation/myTeaching?type=1')"
-              >
-                我的收藏
-              </el-menu-item>
-              <el-menu-item
-                class="dropdown-menu-item dropdown-menu-item2"
-                index="/preparation/myTeaching?type=2"
-                @click="entryFirstMenu('/preparation/myTeaching?type=2')"
-              >
-                我的投稿
-              </el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/preparation/myTeaching"
+                @click="entryFirstMenu('/preparation/myTeaching')">我的教案</el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/preparation/myTeaching?type=1"
+                @click="entryFirstMenu('/preparation/myTeaching?type=1')">我的收藏</el-menu-item>
+              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/preparation/myTeaching?type=2"
+                @click="entryFirstMenu('/preparation/myTeaching?type=2')">我的投稿</el-menu-item>
             </el-submenu>
-            <div
-              class="go-paper"
-              onclick="window.location.href='https://exam.canpoint.cn/paper/index'"
-            >
-              <img
-                src="../../assets/images/index/goPaper.png"
-                alt=""
-              >
+            <div class="go-paper" onclick="window.location.href='https://exam.canpoint.cn/paper/index'">
+              <img src="../../assets/images/index/goPaper.png" alt="">
               <span>去组卷</span>
             </div>
           </el-menu>
+
         </div>
 
-        <app-login ref="appLogin" />
+        <app-login ref="appLogin"></app-login>
       </div>
     </div>
   </div>
@@ -330,7 +233,7 @@ export default {
   mounted() {
     this.renderScrollFixed()
   },
-  unmounted() {
+  destroyed() {
     this.destroyedWindowsEvent()
   },
   methods: {
