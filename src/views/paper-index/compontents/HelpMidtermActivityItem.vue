@@ -1,6 +1,7 @@
 <template>
   <el-dialog
-    v-model:visible="dialogData.visible"
+    :visible="dialogData.visible"
+    @update:visible="dialogData.visible = $event"
     custom-class="dia-three-gift-success"
     :title="dialogData.title"
     :modal-append-to-body="false"

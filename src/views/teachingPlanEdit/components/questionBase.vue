@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-drawer
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="试题库"
       direction="rtl"
       size="800px"

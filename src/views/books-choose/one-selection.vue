@@ -47,7 +47,8 @@
           class="pagination-container pagination-container-right"
         >
           <el-pagination
-            v-model:current-page="questionsData.page"
+            :current-page="questionsData.page"
+            @update:current-page="questionsData.page = $event"
             :page-size="questionsData.pageSize"
             layout="prev, pager, next, jumper"
             :total="questionsData.count"

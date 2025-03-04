@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import legacy from '@vitejs/plugin-legacy'
 
 export default defineConfig({
   plugins: [
@@ -28,13 +29,11 @@ export default defineConfig({
         }
       }
     }),
+    legacy({
+      targets: ['defaults', 'not IE 11']
+    })
   ],
   base: '/lesson/',
-  build: {
-    outDir: 'dist',
-    assetsDir: 'static',
-    sourcemap: true
-  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -42,7 +41,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8083,
+    port: 8080,
     host: '0.0.0.0',
     proxy: {
       '/api': {
@@ -55,14 +54,14 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         charset: false,
-        additionalData: `
-          @import "@/assets/css/variables.scss";
-          @import "@/assets/css/mixins.scss";
-        `
+        additionalData: `@import "@/assets/css/variables.scss"; @import "@/assets/css/mixins.scss";`
       }
     }
   },
-  optimizeDeps: {
-    include: ['vue', 'vue-router', 'vuex', 'element-plus']
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1500
   }
 })

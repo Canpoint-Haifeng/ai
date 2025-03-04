@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-dialog
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="新增考向"
       width="480px"
     >
@@ -67,7 +68,7 @@ export default {
         return this.value
       },
       set(val) {
-        this.$emit('input', val)
+        this.$emit('update:value', val)
       },
     },
   },

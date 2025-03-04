@@ -1,4 +1,4 @@
-import Topbar from './Topbar/Topbar.vue'
+import Topbar from './Topbar/NewTopbar.vue'
 import NewTopbar from './Topbar/NewTopbar.vue'
 import TopSearch from './TopSearch/TopSearch.vue'
 import Nav from './Nav/Nav.vue'

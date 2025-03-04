@@ -12,7 +12,7 @@
           <div class="item" v-for="(v, index) in schoolData" :key="index">
             <div>
               <h6 class="school_name" :title="v.name">{{ v.name }}</h6>
-              <span class="more" @click="morePaper(true, v)">更多组卷<i class="el-icon-arrow-right"></i></span>
+              <span class="more" @click="morePaper(true, v)">更多组卷<i class="el-icon-arrow-right"></i></template></template></span>
             </div>
             <img :src="v.icon" alt="">
           </div>
@@ -227,7 +227,7 @@
             <!-- <span class="paper-time">{{
               item.timeModified | datetime('YYYY-MM-DD')
             }}</span> -->
-            <!-- <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></span> -->
+            <!-- <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></template></span> -->
           </div>
         </div>
         <div class="line-box" />
@@ -237,7 +237,7 @@
               src="./img//hot.svg"
               alt=""
             >
-            <!-- <span class="more" @click="onMorePaper">更多<i class="el-icon-arrow-right"></i></span> -->
+            <!-- <span class="more" @click="onMorePaper">更多<i class="el-icon-arrow-right"></i></template></template></span> -->
           </div>
           <div
             v-for="(item, index) in hotPaperList"
@@ -306,12 +306,12 @@
                 {{ item.name || item.fileName || item.paperName }}
               </span>
               <span class="paper-time">浏览量
-                <i style="color:#ff6900">{{ item.previewNum || 0 }}</i></span>
+                <i style="color:#ff6900">{{ item.previewNum || 0 }}</i></template></template></span>
             </div>
 
             <!-- <span v-else class="paper-name" :class="'paper-sort-' + index" :title="item.name">
               {{ item.name  }}
-              <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></span>
+              <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></template></span>
             </span> -->
           </div>
         </div>

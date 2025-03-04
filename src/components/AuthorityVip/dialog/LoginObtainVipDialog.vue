@@ -1,7 +1,7 @@
-import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
 <template>
   <el-dialog
-    v-model:visible="visible"
+    :visible="visible"
+    @update:visible="visible = $event"
     title="每日VIP"
     width="676px"
     class="login-vip-dialog"
@@ -12,124 +12,67 @@ import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
   >
     <div class="login-vip-container">
       <div class="login-vip-left">
-        <img
-          class="login-vip-title"
-          src="@/assets/images/activity/viplogin4.png"
-        >
-        <ul class="login-vip-list">
-          <li>
-            <span class="l">按章节选题</span>
-            <span class="r">
-              <img
-                class="mini-image"
-                src="@/assets/images/activity/viplogin2.png"
-              >
-            </span>
-          </li>
-          <li>
-            <span class="l">按知识点选题</span>
-            <span class="r">
-              <img
-                class="mini-image"
-                src="@/assets/images/activity/viplogin2.png"
-              >
-            </span>
-          </li>
-          <li>
-            <span class="l">按试卷选题</span>
-            <span class="r">
-              <img
-                class="mini-image"
-                src="@/assets/images/activity/viplogin2.png"
-              >
-            </span>
-          </li>
-          <li>
-            <span class="l">智能选题</span>
-            <span class="r">
-              <img
-                class="mini-image"
-                src="@/assets/images/activity/viplogin2.png"
-              >
-            </span>
-          </li>
-          <li>
-            <span class="l">双向细目表组卷</span>
-            <span class="r">
-              <img
-                class="mini-image"
-                src="@/assets/images/activity/viplogin2.png"
-              >
-            </span>
-          </li>
-          <li>
-            <span class="l">平行组卷</span>
-            <span class="r">
-              <img
-                class="mini-image"
-                src="@/assets/images/activity/viplogin2.png"
-              >
-            </span>
-          </li>
-          <li>
-            <span class="l">组卷题数</span>
-            <span class="r"> 70题/卷 </span>
-          </li>
-          <li>
-            <span class="l">免费下载</span>
-            <span class="r"> 1000题/月 </span>
-          </li>
-          <li>
-            <span class="l">组卷下载</span>
-            <span class="r"> 10次/日 </span>
-          </li>
-          <li>
-            <span class="l">试卷下载</span>
-            <span class="r"> 10次/日 </span>
-          </li>
-          <li>
-            <span class="l">试卷收藏</span>
-            <span class="r"> <i class="iconfont iconwuxian" />无限 </span>
-          </li>
-          <li>
-            <span class="l">试题收藏</span>
-            <span class="r"> <i class="iconfont iconwuxian" />无限 </span>
-          </li>
-          <li>
-            <span class="l">浏览解析</span>
-            <span class="r"> <i class="iconfont iconwuxian" />无限 </span>
-          </li>
-        </ul>
+        <div class="login-vip-title">
+          <img src="@/assets/images/activity/viplogin1.png" alt="">
+        </div>
+        <div class="login-vip-list">
+          <div class="login-vip-list-item">
+            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span>每日VIP权限下组卷免费下载次数<span class="c">10次/天</span>，试卷免费下载次数<span class="c">10次/天</span>，每月免费下载总题量<span class="c">1000道</span>；</span>
+          </div>
+          <div class="login-vip-list-item">
+            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span>每日VIP权限期内无限次使用细目表组卷功能；</span>
+          </div>
+          <div class="login-vip-list-item">
+            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span>单张试卷最大试题量70题；</span>
+          </div>
+          <div class="login-vip-list-item">
+            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span>超出每日VIP权限范围的试题收费具体请查看"用户权限"。</span>
+          </div>
+        </div>
       </div>
       <div class="login-vip-right">
-        <!-- <img class="login-vip-r-bg" src="@/assets/images/activity/viplogin1.png" /> -->
-        <img
-          class="login-vip-r-title"
-          src="@/assets/images/activity/viplogin6.png"
-        >
-        <div class="login-vip-r-content">
-          为满足广大用户对于全品AI教研云的体验需要现<span>每日免费发放10个VIP体验名额</span>，每日发完即止，单个账号在VIP有效期内不可重复领取。
+        <div class="login-vip-right-title">
+          <img src="@/assets/images/activity/viplogin2.png" alt="">
         </div>
-        <div class="login-vip-condition">
-          <span class="t">活动范围：</span>
-          <span class="c">非VIP个人用户登录即可领取。</span>
-        </div>
-        <div v-if="isloading">
-          <div class="login-vip-condition">
-            <span class="t">活动时间：</span>
-            <span class="c">{{ dateStrBig(stime, 'YYYY/MM/DD') }} -
-              {{ dateStrBig(etime, 'YYYY/MM/DD') }}</span>
+        <div class="login-vip-right-content">
+          <div class="login-vip-right-content-title">
+            <span>选择学科：</span>
           </div>
-          <div class="residue-degree">
-            今日剩余：<span>{{ surplus }}</span>/{{ total }}
+          <div class="login-vip-right-content-subject">
+            <cp-subject-select
+              ref="subject1Ref"
+              @change-subject="changeSubject"
+            />
           </div>
-          <div class="login-vip-btn">
-            <el-button
-              class="btn"
-              :disabled="!surplus"
-              @click="getVipHttp"
+          <div class="login-vip-right-content-title">
+            <span>选择VIP类型：</span>
+          </div>
+          <div class="login-vip-right-content-type">
+            <div
+              v-for="(item, index) in vipTypeList"
+              :key="index"
+              class="login-vip-right-content-type-item"
+              :class="{ active: vipType === item.type }"
+              @click="vipType = item.type"
             >
-              领取
+              <div class="login-vip-right-content-type-item-title">
+                <span>{{ item.title }}</span>
+              </div>
+              <div class="login-vip-right-content-type-item-price">
+                <span>{{ item.price }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="login-vip-right-content-btn">
+            <el-button
+              class="btn btn-shadow-pay"
+              @click="onPay"
+            >
+              立即开通
             </el-button>
           </div>
         </div>
@@ -139,18 +82,48 @@ import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
 </template>
 
 <script>
-import { ref, defineComponent } from "vue"
+import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
+import CpSubjectSelect from "@/components/CpFan/Components/CpSubjectSelect.vue"
 
 export default defineComponent({
   name: "LoginObtainVipDialog",
-  setup() {
-    const getVipHttp = () => {
+  components: { CpSubjectSelect },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ["update:visible"],
+  setup(props, { emit }) {
+    const subject1Ref = ref(null)
+    const vipType = ref(1)
+    const vipTypeList = ref([
+      { type: 1, title: '1天', price: '免费' },
+      { type: 2, title: '1个月', price: '¥29.9' },
+      { type: 3, title: '1年', price: '¥299' }
+    ])
+    
+    const changeSubject = () => {
       // Implementation
     }
     
-    return ({
-      getVipHttp
-    })
+    const onPay = () => {
+      // Implementation
+    }
+    
+    const hide = () => {
+      emit('update:visible', false)
+    }
+    
+    return {
+      subject1Ref,
+      vipType,
+      vipTypeList,
+      changeSubject,
+      onPay,
+      hide
+    }
   }
 })
 </script>
@@ -186,85 +159,77 @@ export default defineComponent({
       }
     }
   }
-})
   .login-vip-right {
     box-sizing: border-box;
     position: relative;
     width: 310px;
     height: 425px;
     background: #fbfbfb;
-    border: 1px solid #e5e5e5;
     border-radius: 6px;
-    padding: 40px 20px;
-    background-image: url('../../../assets/images/activity/viplogin1.png');
-    background-size: 126px 156px;
-    background-repeat: no-repeat;
-    background-position: 184px 249px;
-    .login-vip-r-title {
-      width: 89px;
-      height: 24px;
-      padding-bottom: 20px;
+    .login-vip-right-title {
+      width: 310px;
+      height: 64px;
+      border-radius: 6px 6px 0px 0px;
     }
-    .login-vip-r-content {
-      font-size: 14px;
-      font-weight: 400;
-      color: #666666;
-      line-height: 22px;
-      padding-bottom: 35px;
-      span {
-        color: #ff7e3d;
-        font-weight: bold;
-      }
-    }
-    .login-vip-condition {
-      font-size: 12px;
-      padding-bottom: 20px;
-      &::before {
-        content: counter(sub-item, disc);
-        display: block;
-        position: absolute;
-      }
-      .t {
-        padding-left: 10px;
+    .login-vip-right-content {
+      box-sizing: border-box;
+      padding: 20px 40px;
+      border: 1px solid #e5e5e5;
+      border-top-width: 0px;
+      height: 362px;
+      border-radius: 0px 0px 6px 6px;
+      .login-vip-right-content-title {
+        font-size: 14px;
         color: #333333;
-        font-weight: bold;
+        line-height: 32px;
       }
-      .c {
-        color: #666666;
+      .login-vip-right-content-subject {
+        margin-bottom: 20px;
       }
-    }
-    .residue-degree {
-      padding-top: 28px;
-      padding-bottom: 20px;
-      text-align: center;
-      font-size: 16px;
-      font-weight: bold;
-      color: #666666;
-      span {
-        color: #487fff;
-        font-size: 30px;
+      .login-vip-right-content-type {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        .login-vip-right-content-type-item {
+          width: 100px;
+          height: 60px;
+          background: #ffffff;
+          border-radius: 4px;
+          border: 1px solid #e5e5e5;
+          cursor: pointer;
+          &.active {
+            border: 1px solid #ff7e3d;
+            background: rgba(255, 126, 61, 0.05);
+          }
+          .login-vip-right-content-type-item-title {
+            font-size: 14px;
+            color: #333333;
+            line-height: 32px;
+            text-align: center;
+          }
+          .login-vip-right-content-type-item-price {
+            font-size: 12px;
+            color: #ff7e3d;
+            line-height: 20px;
+            text-align: center;
+          }
+        }
       }
-    }
-    .login-vip-btn {
-      text-align: center;
-      .btn {
-        padding: 10px 30px;
+      .login-vip-right-content-btn {
+        text-align: center;
+        margin-top: 30px;
+        .btn.btn-shadow-pay {
+          width: 100px;
+          background: #487FFF;
+          border-radius: 4px;
+          padding: 0;
+          line-height: 30px;
+          border: none;
+          box-shadow: 0px 1px 6px 0px rgba(206, 89, 75, 0.18);
+        }
       }
-      .is-disabled.btn {
-        background-color: #ebeef5;
-        color: #c0c4cc;
-      }
-    }
-
-    .login-vip-r-bg {
-      position: absolute;
-      bottom: 20px;
-      right: 0;
-      width: 126px;
-      height: 156px;
     }
   }
-})
 }
 
 .login-vip-list {
@@ -279,11 +244,9 @@ export default defineComponent({
       color: #b9884e;
     }
   }
-})
   .iconfont {
     font-size: 12px;
     padding-right: 5px;
   }
-})
 }
 </style>

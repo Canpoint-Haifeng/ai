@@ -22,7 +22,8 @@
           class="paper-top-pagintion"
         >
           <top-pagintion
-            v-model:current-page="paperData.currPage"
+            :current-page="paperData.currPage"
+            @update:current-page="paperData.currPage = $event"
             direction="left"
             suffix="份试卷"
             :total="paperData.totalCount"

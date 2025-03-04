@@ -65,7 +65,7 @@
                   v-if="c.modelLevel || c.importance"
                   class="el-icon-star-on coefficient"
                   :class="formatClass(c.importance)"
-                ></i> -->
+                ></i></template></template> -->
                 <i
                   v-if="c.types === 2"
                   class="el-icon-star-on coefficient"
@@ -75,7 +75,7 @@
                 <i
                   v-if="c.num"
                   class="num"
-                >{{ c.num }}</i>
+                >{{ c.num }}</i></template></template>
               </el-tag>
             </div>
           </li>
@@ -282,7 +282,8 @@
     <no-que-message ref="knowledgeMessage" />
     <!---->
     <el-dialog
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="添加题型"
       width="30%"
       @close="visible = false"
@@ -308,7 +309,8 @@
       </template>
     </el-dialog>
     <el-dialog
-      v-model:visible="questionTypeVisible"
+      :visible="questionTypeVisible"
+      @update:visible="questionTypeVisible = $event"
       title="添加题型"
       width="30%"
       @close="questionTypeVisible = false"

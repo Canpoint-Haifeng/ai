@@ -6,7 +6,8 @@
         @select-time="OnSelectTime"
       />
       <top-pagintion
-        v-model:current-page="pageData.currPage"
+        :current-page="pageData.currPage"
+        @update:current-page="pageData.currPage = $event"
         :total="pageData.totalCount"
         :page-size="pageData.pageSize"
         @change-page="handleCurrentChange"

@@ -17,7 +17,7 @@
       </el-button>
     </div>
     <div class="item">
-      <!-- <el-button class="btn btn-border" @click="queryOrderLogin(paperData)"><i class="iconfont iconxiazai"></i>下载试卷</el-button> -->
+      <!-- <el-button class="btn btn-border" @click="queryOrderLogin(paperData)"><i class="iconfont iconxiazai"></i></template></template>下载试卷</el-button> -->
       <el-button
         class="btn btn-border"
         @click="onShowAnalysisDialogLogin(paperData)"
@@ -54,7 +54,7 @@
     </div>
     <!-- <div class="item item-download" @click="queryOrderLogin(paperData)">
       <el-button class="btn btn-border">
-        <i class="iconfont iconplus-download"></i> 下载试卷
+        <i class="iconfont iconplus-download"></i></template></template> 下载试卷
       </el-button>
     </div>
     <div class="item item-download" @click="grouppaperLogin(paperData)">

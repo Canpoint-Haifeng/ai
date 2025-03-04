@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-drawer
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="碎片库"
       direction="rtl"
       size="800px"
@@ -48,7 +49,7 @@
         <div class="list">
           <noresult-common
             v-if="!pagination.total"
-            slot="empty"
+            #empty"
             text="很遗憾，没有找到您要的内容"
           />
           <div

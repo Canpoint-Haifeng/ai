@@ -95,7 +95,7 @@
       </div> -->
     </div>
     <el-dialog
-      v-model:visible="dialogVisible"
+      :visible="dialogVisible"
       title="文件上传"
       width="1050px"
       custom-class="upload-dia"

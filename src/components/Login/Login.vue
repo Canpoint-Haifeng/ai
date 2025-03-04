@@ -8,7 +8,8 @@
       :append-to-body="true"
       :lock-scroll="false"
       :close-on-click-modal="false"
-      :visible.sync="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       :closed="hide"
     >
       <div class="login-container">
@@ -42,7 +43,9 @@
                     autocomplete="off"
                     class="form-input"
                   >
-                    <i slot="prefix" class="el-icon-user"></i>
+                    <template #prefix>
+                      <i class="el-icon-user"></i></template></template>
+                    </template>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password" class="form-item">
@@ -54,7 +57,9 @@
                     @keyup.enter="login('loginForm')"
                     class="form-input"
                   >
-                    <i slot="prefix" class="el-icon-key"></i>
+                    <template #prefix>
+                      <i class="el-icon-key"></i></template></template>
+                    </template>
                   </el-input>
                 </el-form-item>
                 <div
@@ -107,7 +112,9 @@
                     @blur="onFocus"
                     class="form-input"
                   >
-                    <i slot="prefix" class="el-icon-mobile-phone"></i>
+                    <template #prefix>
+                      <i class="el-icon-mobile-phone"></i></template></template>
+                    </template>
                   </el-input>
                 </el-form-item>
                 <div class="noCaptcha-wrapper">
@@ -125,7 +132,9 @@
                     @keyup.enter="login('loginForm')"
                     class="form-input"
                   >
-                    <i slot="prefix" class="el-icon-key"></i>
+                    <template #prefix>
+                      <i class="el-icon-key"></i></template></template>
+                    </template>
                   </el-input>
                   <div
                     class="append-btn"
@@ -600,8 +609,7 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.login-dialog :deep() {
-  .el-dialog {
+.login-dialog :deep(.el-dialog) {
     width: 824px;
     padding: 0px;
     box-sizing: border-box;
@@ -671,10 +679,9 @@ export default {
     .noCaptcha-wrapper {
       margin-bottom: 22px;
     }
-    .form-item :deep() {
+    .form-item :deep(.icon-box) {
       position: relative;
       margin-bottom: 30px;
-      .icon-box {
         position: absolute;
         top: 0;
         left: 16px;
@@ -818,7 +825,7 @@ export default {
     }
 
     .form-item-agree {
-      :deep() .el-checkbox__label {
+      :deep(.el-checkbox__label) {
         font-size: 12px;
         padding-left: 6px;
         .text {
@@ -890,7 +897,7 @@ export default {
     color: #487fff;
     font-size: 12px;
   }
-  :deep() .el-checkbox__label {
+  :deep(.el-checkbox__label) {
     font-size: 12px;
     padding-left: 6px;
   }

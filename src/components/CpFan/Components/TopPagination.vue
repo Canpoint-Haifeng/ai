@@ -1,7 +1,8 @@
 <template>
   <div class="top-pagination">
     <el-pagination
-      v-model:current-page="currentPage"
+      :current-page="currentPage"
+      @update:current-page="currentPage = $event"
       :page-size="pageSize"
       :total="total"
       layout="prev, pager, next"

@@ -5,7 +5,7 @@
       <span class="span_text">
         选择场景:
         <!-- <el-tooltip class="scsne_tip" effect="dark" placement="top">
-          <template slot="content">
+          <template #content">
             <span>中高考复习试卷更适合细目表组卷或平行组卷</span>
           </template>
           <span class="dot el-icon-warning"></span>
@@ -133,7 +133,7 @@
                   <span class="tree-node-label">
                     <!-- <el-tooltip class="item" effect="dark" placement="right">
                   </el-tooltip> -->
-                    <!-- <template slot="content">
+                    <!-- <template #content">
                       <span v-html="data.name"></span>
                     </template> -->
                     <i
@@ -164,7 +164,7 @@
               @check="checkClick"
               node-key="chapterCode"
             >
-              <div class="custom-tree-node" slot-scope="{ node, data }">
+              <div class="custom-tree-node" v-slot:{ node, data }">
                 <span
                   class="tree-node-label"
                   :title="data.chapterName"

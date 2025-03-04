@@ -5,12 +5,14 @@
     width="128"
     trigger="hover"
   >
-    <div class="popover-box">
-      <img :src="weixinQr">
-      <div class="title">
-        全品AI教研云-体验交流群
+    <template #default>
+      <div class="popover-box">
+        <img :src="weixinQr">
+        <div class="title">
+          全品AI教研云-体验交流群
+        </div>
       </div>
-    </div>
+    </template>
     <template #reference>
       <div class="app-feed-back">
         <span class="iconfont iconshiliangzhinengduixiang-06" />

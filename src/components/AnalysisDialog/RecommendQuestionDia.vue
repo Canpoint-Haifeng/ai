@@ -47,7 +47,8 @@
         class="pagination"
       >
         <el-pagination
-          v-model:current-page="pageNum"
+          :current-page="pageNum"
+          @update:current-page="pageNum = $event"
           :page-size="pageSize"
           :total="total"
           layout="prev, pager, next"

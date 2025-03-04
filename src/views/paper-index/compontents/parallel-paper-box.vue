@@ -1,6 +1,7 @@
 <template>
   <el-dialog
-    v-model:visible="visible"
+    :visible="visible"
+    @update:visible="visible = $event"
     :title="title"
     width="500px"
     class="login-vip-dialog"

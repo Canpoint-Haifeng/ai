@@ -256,7 +256,7 @@
           />
           <noresult-common
             v-else
-            slot="empty"
+            #empty"
             text="很遗憾，没有找到您要的教案"
           />
         </div>

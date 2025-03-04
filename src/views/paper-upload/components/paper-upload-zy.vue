@@ -12,7 +12,7 @@
           我的自用
           <i class="el-icon-arrow-right icon_right" />
         </span>
-        <!-- <i class="icon iconfont iconshangchuan"></i> -->
+        <!-- <i class="icon iconfont iconshangchuan"></i></template></template> -->
       </p>
       <el-form
         ref="ruleForm"
@@ -181,7 +181,8 @@
       </div>
     </div>
     <el-dialog
-      v-model:visible="dialogVisible"
+      :visible="dialogVisible"
+      @update:visible="dialogVisible = $event"
       class="dialog-wrapper"
       title="提示"
       :modal-append-to-body="false"

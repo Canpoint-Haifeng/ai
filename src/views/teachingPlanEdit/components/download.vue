@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-dialog
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="下载教案"
       width="600px"
     >

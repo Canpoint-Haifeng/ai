@@ -4,7 +4,8 @@
     :class="atRight ? 'at-right' : ''"
   >
     <el-pagination
-      v-model:current-page="currPage"
+      :current-page="currPage"
+      @update:current-page="currPage = $event"
       background
       :page-size="pageData.pageSize"
       layout="prev, pager, next, jumper"

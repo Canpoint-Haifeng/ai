@@ -39,7 +39,7 @@
         <div class="user-content-left-route">
           <!-- <div class="header">
             <span>{{ bookName }}</span>
-            <i slot="reference" class="iconfont iconqiehuan" @click="goBookIndex"></i>
+            <i #reference" class="iconfont iconqiehuan" @click="goBookIndex"></i></template></template>
           </div> -->
           <div
             v-loading="treeLoading"
@@ -72,7 +72,7 @@
                     <!--placement="top-start"-->
                     <!--effect="light"-->
                     <!--popper-class="page-tooltip">-->
-                    <!--<span slot="content">-->
+                    <!--<span #content">-->
                     <!--{{data.chapterName}}-->
                     <!--</span>-->
                     <!--<span>{{data.chapterName}}</span>-->
@@ -84,7 +84,7 @@
             </el-tree>
             <noresult-common
               v-else
-              slot="empty"
+              #empty"
               text="很遗憾，没有找到您要的数据"
             />
           </div>

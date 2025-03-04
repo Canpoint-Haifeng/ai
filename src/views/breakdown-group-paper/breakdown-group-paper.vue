@@ -2,19 +2,19 @@
   <div class="breakdown-group-paper">
     <!-- <ul class="my-resources-list">
       <li :class="{ active: activeName == 'classBooks' }" @click="activeName = 'classBooks'">
-        <i class="el-icon-office-building"></i>课时卷
+        <i class="el-icon-office-building"></i></template></template>课时卷
       </li>
       <li :class="{ active: activeName == 'unitBooks' }" @click="activeName = 'unitBooks'">
-        <i class="el-icon-office-building"></i>单元卷
+        <i class="el-icon-office-building"></i></template></template>单元卷
       </li>
       <li :class="{ active: activeName == 'monthBooks' }" @click="activeName = 'monthBooks'">
-        <i class="el-icon-office-building"></i>月考卷
+        <i class="el-icon-office-building"></i></template></template>月考卷
       </li>
       <li :class="{ active: activeName == 'interimBooks' }" @click="activeName = 'interimBooks'">
-        <i class="el-icon-office-building"></i>期中卷
+        <i class="el-icon-office-building"></i></template></template>期中卷
       </li>
       <li :class="{ active: activeName == 'endBooks' }" @click="activeName = 'endBooks'">
-        <i class="el-icon-office-building"></i>期末卷
+        <i class="el-icon-office-building"></i></template></template>期末卷
       </li>
     </ul> -->
     <!-- <breadcrumb :crumbsData="crumbsData"></breadcrumb> -->
@@ -23,14 +23,14 @@
         <span>细目表组卷</span>
         <!-- {{ type }} -->
         <!-- <div class="icon-div" @click="goMyBreakdown">
-          <i class="icon iconfont iconwodezujuan"></i>
+          <i class="icon iconfont iconwodezujuan"></i></template></template>
           <span>我的细目表</span>
         </div> -->
       </h1>
       <div class="breakdown-content">
         <h3 class="tit-item">
           <span />
-          <i>*</i>
+          <i>*</i></template></template>
           试卷标题
         </h3>
         <div class="paper-name">
@@ -313,7 +313,8 @@
     </div>
     <div class="dialog-wrapper">
       <el-dialog
-        v-model:visible="addDialog.visible"
+        :visible="addDialog.visible"
+        @update:visible="addDialog.visible = $event"
         title="添加知识点"
         custom-class="knowledge-dia"
         :modal-append-to-body="false"
@@ -401,7 +402,8 @@
         </template>
       </el-dialog>
       <el-dialog
-        v-model:visible="reminderDialog.visible"
+        :visible="reminderDialog.visible"
+        @update:visible="reminderDialog.visible = $event"
         title="温馨提示"
         custom-class="reminder-dia"
         :modal-append-to-body="false"

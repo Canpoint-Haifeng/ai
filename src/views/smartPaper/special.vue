@@ -52,7 +52,7 @@
                       :style="{
                         background: colors[Math.ceil(data.importance)].color,
                       }"
-                    >{{ colors[Math.ceil(data.importance)].name }}</span></i>
+                    >{{ colors[Math.ceil(data.importance)].name }}</span></i></template></template>
                     <span
                       class="nodeName"
                       :style="{

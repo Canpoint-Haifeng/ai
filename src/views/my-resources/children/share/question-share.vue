@@ -40,7 +40,7 @@
               v-slot:suffix
               @click="handleCurrentChange(1)"
             >
-            </i>
+            </i></template></template>
           </el-input> -->
         </div>
         <div class="paper-show-answer el-cyy-rewrite">

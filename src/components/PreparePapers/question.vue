@@ -70,10 +70,10 @@
           <el-button type="text" @click="change">换题</el-button>
           <el-button type="text">报错</el-button>
            <template v-if="sort">
-              <el-button type="text"><i class="el-icon-top"></i></el-button>
-              <el-button type="text"><i class="el-icon-bottom"></i></el-button>
+              <el-button type="text"><i class="el-icon-top"></i></template></template></el-button>
+              <el-button type="text"><i class="el-icon-bottom"></i></template></template></el-button>
           </template>
-          <i class="icon el-icon-delete" @click="del"></i>
+          <i class="icon el-icon-delete" @click="del"></i></template></template>
       </div>-->
     <div
       v-if="[2, 3].includes(+type)"

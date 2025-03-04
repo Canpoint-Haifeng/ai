@@ -6,7 +6,7 @@
       <div class="top-menu fr">
         <ul class="top-menu-list" v-if="!loginStatus">
           <li class="list-item item-login" @click="showLogin">
-            <span class="text"><i class="iconfont iconuser"></i>登录</span>
+            <span class="text"><i class="iconfont iconuser"></i></template></template>登录</span>
             <em class="line">|</em>
           </li>
           <li class="list-item" @click="showRegister">
@@ -52,7 +52,7 @@
                 <span class="username">{{ userInfo.nickname }}</span>
               </el-button>
               <el-dropdown-menu
-                slot="dropdown"
+                #dropdown"
                 class="user-dropdown-menu custom-dropdown-menu"
               >
                 <el-dropdown-item class="dropdown-menu-item">
@@ -111,7 +111,7 @@
     <div class="dialog-wrapper">
       <el-dialog
         :title="selectServiceDialog.title"
-        :visible.sync="selectServiceDialog.visible"
+        v-model="selectServiceDialog.visible"
         :modal-append-to-body="false"
         :lock-scroll="false"
         :show-close="selectServiceDialog.showClose"
@@ -138,7 +138,7 @@
               <i
                 v-if="item.currId === selectServiceDialog.currId"
                 class="iconfont iconxuanzhong"
-              ></i>
+              ></i></template></template>
             </li>
           </ul>
           <p>
@@ -148,7 +148,7 @@
             >&nbsp;&nbsp;记住选择，不再提示
           </p>
         </div>
-        <div slot="footer" class="dialog-footer">
+        <div #footer class="dialog-footer">
           <el-button class="btn btn-shadow" @click="getCurrentService"
             >确定</el-button
           >

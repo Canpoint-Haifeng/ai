@@ -8,7 +8,8 @@
       :append-to-body="true"
       :lock-scroll="false"
       :close-on-click-modal="false"
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       @close="hide"
     >
       <div class="subject-sync-segment">

@@ -184,7 +184,7 @@
       <div class="dia-content"><h1>请先完善您需要上传的试卷相关信息后再上传文件！</h1></div>
     </el-dialog> -->
     <el-dialog
-      v-model:visible="dialogVisible"
+      :visible="dialogVisible"
       class="dialog-wrapper"
       title="提示"
       :modal-append-to-body="false"

@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-dialog
-      v-model:visible="dialog.visible"
+      :visible="dialog.visible"
+      @update:visible="dialog.visible = $event"
       class="dialog"
       :title="dialogTitle"
       :modal-append-to-body="false"

@@ -304,7 +304,8 @@
     </div>
     <div class="dialog-wrapper">
       <el-dialog
-        v-model:visible="addDialog.visible"
+        :visible="addDialog.visible"
+        @update:visible="addDialog.visible = $event"
         title="添加知识点"
         custom-class="knowledge-dia"
         :modal-append-to-body="false"
@@ -379,7 +380,8 @@
         </template>
       </el-dialog>
       <el-dialog
-        v-model:visible="reminderDialog.visible"
+        :visible="reminderDialog.visible"
+        @update:visible="reminderDialog.visible = $event"
         title="温馨提示"
         custom-class="reminder-dia"
         :modal-append-to-body="false"

@@ -13,7 +13,7 @@
               />
               {{ userInfo.nickname || '--' }}
             </span> 
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-menu #dropdown">
               <el-dropdown-item @click="logout"
                 >退出登录</el-dropdown-item
               >
@@ -56,7 +56,7 @@
                 :userInfo="userInfo"
                 @logout="logout"
               ></user-center-popover>
-              <div slot="reference" class="user-center" v-if="loginStatus">
+              <div #reference" class="user-center" v-if="loginStatus">
                 <span class="el-dropdown-link top">
                   <img
                     style="width: 24px;"
@@ -68,7 +68,7 @@
                   />
                   我的
                 </span>
-                <i class="el-icon-arrow-down"></i>
+                <i class="el-icon-arrow-down"></i></template></template>
               </div>
             </el-popover>
             <!-- @click="helpCenter" -->
@@ -120,20 +120,20 @@
             </div>
 
             <div class="search-btn" @click="search">
-              <i class="iconfont icon-search_3_line"></i>
+              <i class="iconfont icon-search_3_line"></i></template></template>
             </div>
           </div>
         </div>
         <div class="right">
           <!-- <div class="help">
-            <i class="iconfont icon-question_line"></i>
+            <i class="iconfont icon-question_line"></i></template></template>
             <span>帮助中心</span>
           </div>
           <div class="login">
-            <i class="iconfont icon-touxiang_avatar"></i>
+            <i class="iconfont icon-touxiang_avatar"></i></template></template>
             <el-dropdown v-if="loginStatus">
               <span class="el-dropdown-link">{{ userInfo.nickname || '--'}}</span>
-              <el-dropdown-menu slot="dropdown">
+              <el-dropdown-menu #dropdown">
                 <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -145,7 +145,7 @@
         </div> -->
         <!-- <div class="top-upload fl" @click="entryUpload">
             <span class="icon-box">
-              <i class="iconfont iconupload"></i>
+              <i class="iconfont iconupload"></i></template></template>
             </span>
             <span class="text">上传试卷</span>
           </div> -->
@@ -160,7 +160,7 @@
 import CTS from '@/common/js/constant'
 import { API } from '@/api/config'
 import { mapState } from 'vuex'
-import HistoryMessageList from './HistoryMessageList'
+import HistoryMessageList from './HistoryMessageList.vue'
 import userCenterPopover from './userCenterPopover.vue'
 import {
   isLogin,

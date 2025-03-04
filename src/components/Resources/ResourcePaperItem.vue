@@ -28,7 +28,7 @@
         </span>
         <!-- v-if="(paperItem.paperType=='0'&&paperItem.status>=30)||paperItem.status==25||paperItem.status==15" -->
         <!-- <span class="operate-item"  @click.stop="deletePaper(paperItem)">
-          <i class="iconfont iconshanchu"></i>
+          <i class="iconfont iconshanchu"></i></template></template>
           <div class="t">删除试卷</div>
         </span> -->
         <span
@@ -66,7 +66,7 @@
           <!-- 或
           <span class="item-btn" style="color: #487FFF" @click="reuploadWord(paperItem)">重新上传</span> -->
         </span>
-        <!-- <i class="delete-item iconfont iconshanchu1" v-if="isDeleteStatus" @click.stop="deletePaper(paperItem)"></i> -->
+        <!-- <i class="delete-item iconfont iconshanchu1" v-if="isDeleteStatus" @click.stop="deletePaper(paperItem)"></i></template></template> -->
 
         <!-- <span class="operate-btn" @click="checkPaperDetail(paperItem.paperIdEnc)">查看</span>
         <span class="operate-btn" v-show="isMyPaper" @click="paperEdit(paperItem.paperIdEnc)">编辑</span> -->

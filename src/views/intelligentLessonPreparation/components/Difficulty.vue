@@ -4,7 +4,7 @@
       <div class="title_border">
         选择难度
       </div>
-      <span>当前试卷难度（整卷的难度）：<i>{{ getCoefficient }}</i></span>
+      <span>当前试卷难度（整卷的难度）：<i>{{ getCoefficient }}</i></template></template></span>
     </div>
     <!-- <div class="title">
       选择难度及年份
@@ -47,7 +47,7 @@
             <span>低</span>
           </div>
           <div class="bar">
-            <i :style="{height: (1-getCoefficient)*100+'%'}"></i>
+            <i :style="{height: (1-getCoefficient)*100+'%'}"></i></template></template>
           </div>
         </div> -->
         <div class="flex difficultyLevel">

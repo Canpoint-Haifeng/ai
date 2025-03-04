@@ -5,7 +5,7 @@
         <div class="basket-num">
           <span class="text">{{ basketData.totalCount || 0 }}</span>
         </div>
-        <i class="iconfont icon-basket_fill"></i>
+        <i class="iconfont icon-basket_fill"></i></template></template>
         <p class="text">试题篮</p>
       </div>
     </div>
@@ -16,7 +16,7 @@
       >
         <div class="basket-handler" @click="toggleBasket">
           <div class="basket-btn" id="basket-btn">
-            <i class="iconfont icon-arrows_right_line"></i>
+            <i class="iconfont icon-arrows_right_line"></i></template></template>
             <p class="text">收起</p>
           </div>
         </div>
@@ -42,7 +42,7 @@
                 class="perview-paper-btn"
                 v-if="basketData.totalCount"
                 @click="previewPaper"
-                ><i class="icon el-icon-view"></i>试卷预览</span
+                ><i class="icon el-icon-view"></i></template></template>试卷预览</span
               >
             </div>
           </div>
@@ -60,7 +60,7 @@
                 >题
               </span>
               <span class="item-del" @click="showDeleteDialog(item.type)">
-                <i class="el-icon-delete"></i>
+                <i class="el-icon-delete"></i></template></template>
               </span>
             </div>
           </div>
@@ -84,7 +84,7 @@
 
           <div class="basket-noresult" v-show="basketData.list.length === 0">
             <div class="icon-box">
-              <i class="noresult-icon"></i>
+              <i class="noresult-icon"></i></template></template>
             </div>
             <p class="noresult-text font-16 color-3">试题篮空空的~</p>
             <p class="noresult-text1 font-12 color-9">
@@ -95,10 +95,10 @@
       </div>
     </div>
     <base-dialog @comfirm="onDeleteBasket" :addbody="true" ref="deleteDialog">
-      <div slot="dialogTips" class="dialog-tips">确认删除试题？</div>
+      <div #dialogTips" class="dialog-tips">确认删除试题？</div>
     </base-dialog>
     <base-dialog :addbody="true" @comfirm="onEmptyBasket" ref="emptyDialog">
-      <div slot="dialogTips" class="dialog-tips">确认清空全部试题吗？</div>
+      <div #dialogTips" class="dialog-tips">确认清空全部试题吗？</div>
     </base-dialog>
     <!-- 登录弹窗 -->
     <app-login ref="appLogin"></app-login>
@@ -110,8 +110,8 @@ import CTS from '@/common/js/constant'
 import { API } from '@/api/config'
 import { mapState } from 'vuex'
 import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
-import BaseDialog from '@/components/BaseDialog/BaseDialog'
-import BasketQuestionItem from '@/components/QuestionItem/BasketQuestionItem'
+import BaseDialog from '@/components/BaseDialog/BaseDialog.vue'
+import BasketQuestionItem from '@/components/QuestionItem/BasketQuestionItem.vue'
 import { isLogin, getDigitalChinese } from '@/common/js/util'
 import { decrypt } from '@/common/js/util.js'
 export default {

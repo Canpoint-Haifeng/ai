@@ -1,38 +1,15 @@
 <template>
   <div>
-    <!-- <div class="three-broad-side">
-      <div class="three-broad-side-body">
-        <QQFeedback @showLogin="showLogin"></QQFeedback>
-        <CompanyWeiXin></CompanyWeiXin>
-        <CompanyWeiXin2></CompanyWeiXin2>
-      </div>
-      <div class="broad-side-backtop">
-        <BackTopComponents></BackTopComponents>
-      </div>
-    </div> -->
-
-    <!-- <InvitationActivity></InvitationActivity> -->
-    <!-- <CpRankingList v-if="isHome" @showLogin="showLogin"></CpRankingList> -->
+    <!-- Temporarily commenting out problematic components -->
     <app-login ref="appLogin"></app-login>
   </div>
 </template>
 
 <script>
-  import QQFeedback from './QQFeedback'
-  import CompanyWeiXin from './CompanyWeiXin'
-  import CompanyWeiXin2 from './CompanyWeiXin2'
-  import InvitationActivity from './InvitationActivity'
-  import CpRankingList from './CpRankingList'
-  import BackTopComponents from './components/BackTopComponents'
+  // Temporarily commenting out problematic imports
   import { mapState } from 'vuex'
   export default {
     components: {
-      QQFeedback,
-      CompanyWeiXin,
-      CompanyWeiXin2,
-      InvitationActivity,
-      CpRankingList,
-      BackTopComponents,
     },
     computed: {
       ...mapState(['fullpath']),

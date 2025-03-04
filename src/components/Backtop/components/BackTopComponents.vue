@@ -1,89 +1,64 @@
 <template>
-  <div
-    v-show="visible"
-    class="back-top-components"
-    @click="backToTop"
-  >
-    <span class="iconfont iconshiliangzhinengduixiang-08" />
-    <div class="text">
-      顶部
-    </div>
+  <div class="back-top-components" v-show="visible" @click="backToTop">
+    <span class="iconfont iconshiliangzhinengduixiang-08"></span>
+    <div class="text">顶部</div>
   </div>
 </template>
 
 <script>
   import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
-  import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
-  
   const cubic = (value) => Math.pow(value, 3)
   const easeInOutCubic = (value) => {
     return value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2
   }
 
-  export default defineComponent({
-    name: 'BackTopComponents',
-    setup() {
-      // Reactive state
-      const el = ref(null)
-      const visible = ref(false)
-      
-      // Methods from mixin
-      const initWindowsEvent = windowScrollResetMixin.methods.initWindowsEvent
-      const destroyedWindowsEvent = windowScrollResetMixin.methods.destroyedWindowsEvent
-      const getPageScrollTop = windowScrollResetMixin.methods.getPageScrollTop
-      
-      // Component methods
-      const renderScrollFixed = () => {
-        let comparisonTop = getPageScrollTop()
-        if (comparisonTop > 200) {
-          visible.value = true
-        } else {
-          visible.value = false
-        }
+  export default {
+    mixins: [windowScrollResetMixin],
+    data() {
+      return {
+        el: null,
+        visible: false,
       }
-      
-      const scrollToTop = () => {
-        const element = el.value
+    },
+    mounted() {
+      this.el = document.documentElement
+      this.initWindowsEvent()
+      this.renderScrollFixed()
+    },
+    destroyed() {
+      this.destroyedWindowsEvent()
+    },
+    methods: {
+      renderScrollFixed(e) {
+        let comparisonTop = this.getPageScrollTop()
+        if (comparisonTop > 200) {
+          this.visible = true
+        } else {
+          this.visible = false
+        }
+      },
+      backToTop() {
+        this.scrollToTop()
+      },
+      scrollToTop() {
+        const el = this.el
         const beginTime = Date.now()
-        const beginValue = element.scrollTop
+        const beginValue = el.scrollTop
         const rAF =
           window.requestAnimationFrame || ((func) => setTimeout(func, 16))
         const frameFunc = () => {
           const progress = (Date.now() - beginTime) / 500
           if (progress < 1) {
-            element.scrollTop = beginValue * (1 - easeInOutCubic(progress))
+            el.scrollTop = beginValue * (1 - easeInOutCubic(progress))
             rAF(frameFunc)
           } else {
-            element.scrollTop = 0
+            el.scrollTop = 0
           }
         }
         rAF(frameFunc)
-      }
-      
-      const backToTop = () => {
-        scrollToTop()
-      }
-      
-      // Lifecycle hooks
-      onMounted(() => {
-        el.value = document.documentElement
-        initWindowsEvent()
-        renderScrollFixed()
-      })
-      
-      onUnmounted(() => {
-        destroyedWindowsEvent()
-      })
-      
-      return {
-        el,
-        visible,
-        renderScrollFixed,
-        backToTop,
-        scrollToTop
-      }
-    }
-  })
+      },
+    },
+  }
 </script>
 
 <style scoped lang="scss">

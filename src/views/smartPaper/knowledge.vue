@@ -11,7 +11,7 @@
             :class="{ addClass: item.paperTypeId == currScence.paperTypeId }"
             @click="changeCurrScence(item)"
           >
-            <i class="iconfont icon-bookmark_fill1"></i>
+            <i class="iconfont icon-bookmark_fill1"></i></template></template>
             {{ item.paperTypeName }}
           </div>
         </div>
@@ -70,8 +70,8 @@
                       :style="{
                         background: colors[Math.ceil(data.importance)].color,
                       }"
-                    >{{ colors[Math.ceil(data.importance)].name }}</span></i>
-                    <!-- <i v-if="data.types === 2" class="el-icon-star-on coefficient" style=""></i> -->
+                    >{{ colors[Math.ceil(data.importance)].name }}</span></i></template></template>
+                    <!-- <i v-if="data.types === 2" class="el-icon-star-on coefficient" style=""></i></template></template> -->
                     <span
                       class="nodeName"
                       :style="{

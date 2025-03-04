@@ -127,7 +127,7 @@
                           background: colors[Math.ceil(v.importance)].color,
                         }"
                       >{{ colors[Math.ceil(v.importance)].name }}</span>
-                    </i>
+                    </i></template></template>
                     <span>{{ v.name }}</span>
                   </div>
                   <!-- <i
@@ -135,7 +135,7 @@
                     class="el-icon-circle-plus-outline"
                     style="color:#487FFF"
                     @click="addExampleQue(item, v)"
-                  ></i> -->
+                  ></i></template></template> -->
                 </div>
                 <div class="flex flex-col example-config-wrap">
                   <div
@@ -294,14 +294,14 @@
                           background: colors[Math.ceil(v.importance)].color,
                         }"
                       >{{ colors[Math.ceil(v.importance)].name }}</span>
-                    </i>
+                    </i></template></template>
                     <span>{{ v.name }}</span>
                   </div>
                   <!-- <i
                     class="el-icon-circle-plus-outline"
                     style="color:#487FFF"
                     @click="addExampleQue(item, v)"
-                  ></i> -->
+                  ></i></template></template> -->
                 </div>
                 <div class="flex flex-col example-config-wrap">
                   <div
@@ -384,7 +384,8 @@
       <no-que-message ref="knowledgeMessage" />
       <!---->
       <el-dialog
-        v-model:visible="visible"
+        :visible="visible"
+        @update:visible="visible = $event"
         title="添加题型"
         width="30%"
         @close="visible = false"
@@ -410,7 +411,8 @@
         </template>
       </el-dialog>
       <el-dialog
-        v-model:visible="questionTypeVisible"
+        :visible="questionTypeVisible"
+        @update:visible="questionTypeVisible = $event"
         title="添加题型"
         width="30%"
         @close="questionTypeVisible = false"

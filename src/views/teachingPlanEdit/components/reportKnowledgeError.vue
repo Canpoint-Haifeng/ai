@@ -1,7 +1,8 @@
 <template>
   <div class="report-wrapper">
     <el-dialog
-      v-model:visible="reportDialog.visible"
+      :visible="reportDialog.visible"
+      @update:visible="reportDialog.visible = $event"
       v-dialogDrag
       :title="reportDialog.title"
       :modal-append-to-body="false"

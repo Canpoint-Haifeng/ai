@@ -7,7 +7,7 @@
       :visibility-height="10"
     >
       <div class="app-top-back-part">
-        <i class="iconfont iconshiliangzhinengduixiang-08"></i>
+        <i class="iconfont iconshiliangzhinengduixiang-08"></i></template></template>
         <div class="text">置顶</div>
       </div>
     </el-backtop>

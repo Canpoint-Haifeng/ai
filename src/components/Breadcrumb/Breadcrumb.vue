@@ -1,7 +1,7 @@
 <template>
   <div class="breadcrumb-wrapper clearfix">
     <!-- <div class="breadcrumb-left fl">
-      <i class="iconfont iconposition"></i>
+      <i class="iconfont iconposition"></i></template></template>
       <span class="text">当前位置：</span>
     </div>
     <el-breadcrumb class="breadcrumb-container fl" separator-class="el-icon-arrow-right">

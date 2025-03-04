@@ -14,7 +14,7 @@
       <!-- <filterItem v-for="(v, i) in filterOptions" :key="i" :label="v.label" :list="v.list" @change="filterChange(v.key, $event)" :allowMultiple="v.allowMultiple" />
       <more @change="moreChange"/> -->
       <!-- <div class="expand">
-        <span @click="filterExpand=!filterExpand"><i class="iconfont icon-down_line" :class="{rotate: filterExpand}"></i>{{ filterExpand? '收起':'展开'  }}</span>
+        <span @click="filterExpand=!filterExpand"><i class="iconfont icon-down_line" :class="{rotate: filterExpand}"></i></template></template>{{ filterExpand? '收起':'展开'  }}</span>
       </div> -->
     </div>
     <div class="gray-line" />
@@ -92,7 +92,7 @@
         />
         <noresult-common
           v-else
-          slot="empty"
+          #empty"
           text="很遗憾，没有找到您要的试题"
         />
       </div>

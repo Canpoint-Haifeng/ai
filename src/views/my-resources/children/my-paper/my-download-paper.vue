@@ -8,7 +8,8 @@
       <down-load-type @select-type="OnSelectType" />
 
       <top-pagintion
-        v-model:current-page="pageData.currPage"
+        :current-page="pageData.currPage"
+        @update:current-page="pageData.currPage = $event"
         :total="pageData.totalCount"
         :page-size="pageData.pageSize"
         @change-page="handleCurrentChange"
@@ -44,7 +45,7 @@
         </div> -->
         <noresult-common
           v-else
-          slot="empty"
+          #empty"
           text="很遗憾，没有找到您要的试卷"
         />
       </div>

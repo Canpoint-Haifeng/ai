@@ -1,0 +1,462 @@
+/*
+ * @Author: gfc
+ * @Date: 2019-11-13 10:27:23
+ * @LastEditors  : gfc
+ * @LastEditTime : 2019-12-19 09:00:01
+ * @Description: Do not edit
+ * @FilePath: \itembank-vue-v1-0-2\src\common\helper\log.js
+ * this.$log.d('asdasd', 'asdasd')
+    this.$log.e('asdasd', 'asdasd')
+ */
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { sendGoodQuestionCount } from './tiboatStatistics'
+import { isLogin, ScrollIt, cpflattenFinal } from '@/common/js/util'
+import CpCommonDialog from '@/components/AuthorityVip/CpCommonDialog'
+const tinyNumlist = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳'
+const smallLetterlist = 'abcdefghijklmnopqrstuvwxyz'
+import axios from 'axios'
+import {
+  getToken,
+} from '@/common/js/util'
+
+const Helper = (Vue) => {
+  // ApiGateway - 通过api获取云平台数据
+  // apiUrl 网关协议：user/v1/ext/user/user-org-list apiId：调用协议的 apiid paramJson：json类型的传参 httpMethod：post get 默认get
+  Vue.prototype.apiGetData = function apiGetData(
+    apiUrl,
+    apiId,
+    paramObj,
+    httpMethod = 'get',
+    set = {},
+  ) {
+    let params = {
+      apiUrl: apiUrl,
+      apiId: apiId,
+      paramJson: JSON.stringify(paramObj),
+      httpMethod: httpMethod.toLocaleLowerCase(),
+    }
+    if (params.httpMethod === 'get') {
+      return this.apiGet(
+        {
+          urlPath:
+            process.env.VUE_APP_PAPER_GENERATOR + '/apiGateway/apiGetData',
+        },
+        params,
+        set,
+      )
+    } else {
+      return this.apiPost(
+        {
+          urlPath:
+            process.env.VUE_APP_PAPER_GENERATOR + '/apiGateway/apiGetData',
+        },
+        params,
+        set,
+      )
+    }
+  }
+  // 根据categoryId获取根节点下所有的子节点 categoryId:100106 性别
+  Vue.prototype.apiCategoryId = function (categoryId) {
+    let apiUrl = 'cfg-dict/biz/v1/dictionaryapi/list-all-dicts'
+    let apiId = '100084'
+    return this.apiGetData(apiUrl, apiId, {
+      categoryId: categoryId,
+      isFilterDeprecated: 1,
+    })
+  }
+  // /users/v1/ext/user/users-by-ids
+  Vue.prototype.dict2Indexes = function (list, key) {
+    // list.children 通过数据字典 构建起索引
+    let arr = [...list]
+    let dict = {}
+    let sub
+    while (arr.length > 0) {
+      sub = arr.pop()
+      if (sub.children && sub.children.length > 0) {
+        arr.push(...sub.children)
+      } else {
+        sub.children = null
+        sub.leaf = true
+      }
+
+      dict[sub.code] = sub
+    }
+    return dict
+  }
+  // 通过id 获取数据字典 ， 可以传 dictId 和 categoryId 获取根节点下的子节点信息 树结构一层
+
+  Vue.prototype.getInvokeData = function (type, strParams, userGuid) {
+    let parms = {
+      type: type,
+      strParams: strParams,
+      userGuid: userGuid,
+    }
+    // return this.apiGet(
+    //   { urlPath: process.env.VUE_APP_PAPER_GENERATORS + '/sys/config/invoke' },
+    //   parms,
+    // )
+    return axios.get(process.env.VUE_APP_BASE_URL+process.env.VUE_APP_PAPER_GENERATOR+'/config/invoke', { params: parms,headers: {
+      CANPOINTTOKEN: getToken()}, })
+  }
+  Vue.prototype.helperBackToTop = function () {
+    ScrollIt()
+  }
+  // 设置 tree 的level
+  Vue.prototype.setTreeLevel = function (tree) {
+    let stack = []
+    stack = tree.map((item) => {
+      item.level = 1
+      return item
+    })
+    while (stack.length > 0) {
+      let item = stack.pop()
+      if (item.children && item.children.length > 0) {
+        let level = item.level + 1
+        let list = item.children.map((item) => {
+          item.level = level
+          return item
+        })
+        stack.push(...list)
+      }
+    }
+    return tree
+  }
+  //  获取 tree 的 第一层 和 最后一层
+  Vue.prototype.getFirstAndFinal = function (tree) {
+    let listData = []
+    //  展平
+    for (let node of tree) {
+      let item = { ...node }
+      if (item.children && item.children.length) {
+        item.children = cpflattenFinal(item.children)
+      }
+
+      listData.push(item)
+    }
+    // console.log(listData)
+    return listData
+  }
+
+  // 根据 level 和 index 获取 序号 序号从1 开始
+  Vue.prototype.getQuestionSuffixNO = function (level, index) {
+    // 一级 1  二级 （1） 三级 ①  四级 1) 五级 a. 六级 a)
+    switch (level) {
+      case 2:
+        return '(' + index + ')'
+      case 3:
+        return tinyNumlist[index - 1] || tinyNumlist[0]
+      case 4:
+        return smallLetterlist[index - 1] || smallLetterlist[0] + '.'
+      case 5:
+        return smallLetterlist[index - 1] || smallLetterlist[0] + ')'
+      default:
+        return index + '.'
+    }
+  }
+
+  // 查询 试卷是否 下架
+  Vue.prototype.paperStatusOnLine = async function (paperIdEnc, source) {
+    return this.apiGet(
+      API.RESOURCE_PAPERSTATUS_ONLINE,
+      { paperIdEnc, source },
+      { showLoading: true },
+    )
+  }
+
+  // 新开页面
+  Vue.prototype.openWindowLink = function (url, target) {
+    // var tempwindow = window.open('_blank') // 新打开页面
+    // tempwindow.location = url // 后更改页面地址
+    var a = document.getElementById('opennewWindowsid')
+    if (!a) {
+      a = document.createElement('a')
+      a.setAttribute('id', 'opennewWindowsid')
+      document.body.appendChild(a)
+    }
+    console.log(url,target,'opennewWindowsid')
+    a.setAttribute('href', url)
+    a.setAttribute('target', target || '_blank')
+    a.click()
+  }
+  Vue.prototype.openSystemPathLink = function (url) {
+    window.open(this.$router.resolve('/' + url).href)
+    // this.openWindowLink(process.env.VUE_APP_SRC + url)
+    // this.openWindowLink(location.origin+ '/' + url)
+    
+  }
+
+  Vue.prototype.skinToVipHelper = function () {
+    this.openWindowLink(
+      'http://help.canpoint.cn/#/help-doc/detail?lid=26807f49cc77ab14&fid=ca9573d7697a3eb0',
+    )
+    // window.open('http://help.canpoint.cn/#/help-doc/detail?lid=26807f49cc77ab14&fid=ca9573d7697a3eb0')
+  }
+
+  // 新增用户选择配置
+  // /sys/user/addChooseConfig
+  /**
+   *
+   题库-甘壮 2021/8/25 10:41:12
+   {POST} /sys/user/addChooseConfig 新增用户选择配置
+   @NotNull(message = "学段学科不能为空") Integer stageSubject,
+   @NotBlank(message = "数据不能为空") String chooseValue
+
+   题库-甘壮 2021/8/25 10:41:39
+   chooseValue 传这种json  {"grade": "12121117", "volume": "121211171", "version": "121211"}
+   */
+  Vue.prototype.addChooseConfig = function (stageSubject, chooseValue) {
+    if (!isLogin()) {
+      return null
+    } else {
+      let params = {
+        stageSubject: stageSubject,
+        chooseValue: JSON.stringify(chooseValue),
+      }
+      return this.apiPost(API.CONFIG_ADDCHOOSECONFIG, params)
+    }
+  }
+
+  // 章节选题处理数据
+  Vue.prototype.chapterSelectQuesRange = function (dTree, chapterCode) {
+    let list = []
+    let stack = [...dTree]
+    let isFind = false
+    while (stack.length) {
+      let item = stack.shift()
+      if (!isFind) {
+        if (item.chapterCode === chapterCode) {
+          isFind = true
+        } else if (item.children && item.children.length) {
+          stack.unshift(...item.children)
+        }
+      } else {
+        list.push(item.chapterCode)
+      }
+    }
+    return list
+  }
+
+  Vue.prototype.getLastTextBookChapterCode = function (dTree, chapterCode) {
+    //  查询当前节点 的位置
+    let stack = [...dTree]
+    let currentNode = null
+    while (stack.length) {
+      let item = stack.shift()
+      if (item.chapterCode === chapterCode) {
+        currentNode = item
+        break
+      } else if (item.children && item.children.length) {
+        stack.unshift(...item.children)
+      }
+    }
+
+    if (currentNode && currentNode.children && currentNode.children.length) {
+      stack = [...currentNode.children]
+      let lastCode = chapterCode
+      while (stack.length) {
+        let item = stack.shift()
+        if (item.children && item.children.length) {
+          stack.unshift(...item.children)
+        }
+        lastCode = item.chapterCode
+      }
+      return lastCode
+    } else {
+      return chapterCode
+    }
+  }
+  // 通过音视频的 id 获取音视频
+  Vue.prototype.apiQueryAudiosData = function (params) {
+    let parms = {
+      id: params,
+    }
+    return this.wayGet(API.GET_AUDIOS_DATA, parms)
+
+    // if (process.env.VUE_APP_ENV === 'prod') {
+
+    // } else {
+    //   // 平台不给力，  没法 测试服 只能用这种 不清晰的
+    //   parms = {
+    //     remoteId: params,
+    //   }
+    //   return this.wayGet(API.GET_AUDIOS_DATA_DEV, parms).then((res) => {
+    //     if (res.code === 200) {
+    //       res.data.url = res.data.playUrl
+    //     }
+    //     return res
+    //   })
+    // }
+  }
+
+  // latex 渲染 页面
+  Vue.prototype.onRenderJaxPage = function (refName) {
+    var el = this.$refs[refName]
+    if (el) {
+      this.$nextTick(() => {
+        // console.log('开发 渲染 ')
+        if (window.MathJax && window.MathJax.Hub) {
+          window.MathJax.Hub.Queue(['Typeset', window.MathJax.Hub, el])
+        }
+      })
+    }
+  }
+
+  Vue.prototype.czcTrackEvent = function (list) {
+    if (window._czc) {
+      window._czc.push(list)
+    }
+  }
+
+  Vue.prototype.offsetDis = function (obj) {
+    var l = 0
+    var t = 0
+    while (obj) {
+      l = l + obj.offsetLeft + obj.clientLeft
+      t = t + obj.offsetTop + obj.clientTop
+      obj = obj.offsetParent
+    }
+    return { left: l, top: t }
+  }
+
+  Vue.prototype.cpsleep = function (time) {
+    return new Promise((resolve) => setTimeout(resolve, time))
+  }
+
+  Vue.prototype.showMessage = function (text, type = 'error') {
+    this.$message({
+      showClose: true,
+      message: text,
+      type: type,
+    })
+  }
+
+  // CTS  http 返回 验证通过 并且 弹出警告
+  Vue.prototype.checkoutRes = function (res, flag = true) {
+    if (res.code === CTS.constant.SUCCESS_CODE) {
+      return true
+    } else {
+      // this.showMessage(res.msg);
+    }
+    return false
+  }
+  //  获取奖励的物品 []
+  Vue.prototype.showCpReceiveReward = function (prizes) {
+    CpCommonDialog.openDialog({
+      moduleC: 'CpReceiveReward',
+      data: {
+        rewards: prizes,
+      },
+    })
+  }
+
+  // 将 paperId 转换为
+  Vue.prototype.paperIdUniversityEntrance = function (paperId) {
+    let params = {
+      paperId: paperId,
+    }
+    return this.apiGet(API.RESOURCE_UNIVERSITYENTRANCE, params).then(
+      (res) => {
+        if (this.checkoutRes(res)) {
+          return res.data
+        } else {
+          return ''
+        }
+      },
+      () => {
+        return ''
+      },
+    )
+  }
+
+  // 通过 网关 获取 图书 章节
+  Vue.prototype.apiGetBookChapterTree = function (bookId) {
+    let apiUrl = '/content-plan/book/api/chapterList'
+    let apiId = '101469'
+    return this.apiGetData(apiUrl, apiId, {
+      bookId: bookId,
+      isTree: 1,
+    })
+  }
+  // 通过 网关 获取 试题集明细
+  Vue.prototype.apiGetExamDetail = function (bookId, chapterCode) {
+    let apiUrl = '/content-plans/examSample/viewExam'
+    let apiId = '101463'
+    return this.apiGetData(apiUrl, apiId, {
+      bookId: bookId,
+      chapterCode: chapterCode,
+    })
+  }
+  // 获取 图书详情
+  // 通过 网关 获取 试题集明细
+  Vue.prototype.apiGetBookDetail = function (bookId) {
+    let apiUrl = '/content-plan/book/api/queryBookInfo'
+    let apiId = '101467'
+    return this.apiGetData(apiUrl, apiId, {
+      bookId: bookId,
+      isIntegrated: true,
+    })
+  }
+
+  //   根据 图书类型 获取 内容策划平台 图书列表
+  Vue.prototype.apiBookList = function (params) {
+    // currPage pageSize bookName stageSubject type
+    let apiUrl = '/content-plan/book/api/bookList'
+    let apiId = '101466'
+    return this.apiGetData(apiUrl, apiId, params)
+  }
+
+  Vue.prototype.goBackPreviousPage = function (defaultPath = '') {
+    if (window.history.length <= 1) {
+      if (defaultPath) {
+        this.$router.push({ path: defaultPath })
+      } else {
+        this.$router.push({ path: '/' })
+      }
+    } else {
+      this.$router.go(-1)
+    }
+  }
+
+  // 过滤过期的 字典
+  Vue.prototype.filterDeprecated = function (list) {
+    if (list && list.length) {
+      list = list.filter((item) => item.isDeprecated == 0)
+      for (let sub of list) {
+        if (sub.children && sub.children.length) {
+          sub.children = this.filterDeprecated(sub.children)
+        }
+      }
+    }
+    return list
+  }
+  // 友盟事件统计
+  Vue.prototype.eventStatistics = function (list) {
+    if (list && list.length) {
+      window._czc.push(list)
+    }
+    return window._czc
+  }
+  // 题舟 好题统计
+  Vue.prototype.eventQuestionStatistics = function (questionId, type) {
+    sendGoodQuestionCount(questionId, type)
+  }
+
+  Vue.prototype.filterIdStock = function (list, adds, uniqueKey) {
+    let dict = {}
+    for (let sub of list) {
+      dict[sub[uniqueKey]] = true
+    }
+    let realadds = []
+    for (let sub of adds) {
+      if (!dict[sub[uniqueKey]]) {
+        realadds.push(sub)
+      } else {
+        // console.log(sub[uniqueKey],'重复了')
+      }
+    }
+    list.push(...realadds)
+    return list
+  }
+}
+export default Helper

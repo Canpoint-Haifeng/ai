@@ -6,7 +6,8 @@
 <template>
   <div>
     <el-dialog
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       :title="title"
       width="500px"
       class="login-vip-dialog"
@@ -45,8 +46,8 @@ export default defineComponent({
     }
   },
   setup() {
-    return ({})
-  })
+    return {}
+  }
 })
 </script>
 
@@ -62,16 +63,15 @@ export default defineComponent({
     box-shadow: 0px 1px 6px 0px rgba(206, 89, 75, 0.18);
     margin-left: 20px;
   }
-})
+  
   .cp-comfirm-block {
     padding: 40px 20px 20px 20px;
     text-align: center;
     line-height: 25px;
   }
-})
+  
   .cp-comfirm-bottom-place {
     padding: 30px 20px;
     text-align: center;
   }
-})
 </style>

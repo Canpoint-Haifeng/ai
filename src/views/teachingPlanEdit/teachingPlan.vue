@@ -589,7 +589,7 @@
                                     <span class="type ">选做</span>
                                     <div class="hover_view">
                                         <el-button type="text" @click="addQuestion(planTreeData[0][0].children[4].children[1].children)">新增试题</el-button>
-                                        <i class="icon iconfont icon-view" @click="planTreeData[0][0].children[4].children[1].visible = false"></i>
+                                        <i class="icon iconfont icon-view" @click="planTreeData[0][0].children[4].children[1].visible = false"></i></template></template>
                                     </div>
                                 </div>
                                 <div>
@@ -1153,7 +1153,7 @@
                               </div>
 
                               <!-- <div class="operation">
-                                                                <i class="el-icon-delete" @click="delItem(y.children, 0)"></i>
+                                                                <i class="el-icon-delete" @click="delItem(y.children, 0)"></i></template></template>
                                                                 <el-button type="text" @click="changeKnowledgeStructure">更换</el-button>
                                                             </div> -->
                             </section>
@@ -1181,8 +1181,8 @@
                                   >
                                     更换碎片
                                   </el-button>
-                                  <!-- <el-button type="text"><i class="el-icon-top"></i></el-button>
-                                                                    <el-button type="text"><i class="el-icon-bottom"></i></el-button> -->
+                                  <!-- <el-button type="text"><i class="el-icon-top"></i></template></template></el-button>
+                                                                    <el-button type="text"><i class="el-icon-bottom"></i></template></template></el-button> -->
                                   <i
                                     class="el-icon-delete"
                                     @click="delItem(y.child, b + 1)"
@@ -1249,7 +1249,7 @@
                                         <!-- <i
                                           class="el-icon-delete"
                                           @click="delItem(a.child, d, 'child')"
-                                        ></i> -->
+                                        ></i></template></template> -->
                                       </div>
                                     </div>
                                     <section class="">
@@ -1311,7 +1311,7 @@
                                                                             <h5>课后作业</h5>
                                                                             <div class="hover_view">
                                                                                 <el-button type="text" @click="addQuestion(a.child[d].content)">新增试题</el-button>
-                                                                                <i class="el-icon-delete" @click="delItem(a.child, d+1)"></i>
+                                                                                <i class="el-icon-delete" @click="delItem(a.child, d+1)"></i></template></template>
                                                                             </div>
                                                                         </div>
                                                                         <section class="">

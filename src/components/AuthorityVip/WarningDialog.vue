@@ -1,6 +1,7 @@
 <template>
   <el-dialog
-    v-model:visible="visible"
+    :visible="visible"
+    @update:visible="visible = $event"
     title="提示"
     width="600px"
     class="auth-dialog"

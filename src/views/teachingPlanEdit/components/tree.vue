@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-drawer
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="请选择备课范围"
       direction="ltr"
       size="320px"
@@ -134,7 +135,8 @@
       </div>
     </el-drawer>
     <el-dialog
-      v-model:visible="dialogVisible"
+      :visible="dialogVisible"
+      @update:visible="dialogVisible = $event"
       title="提示"
       width="450px"
       custom-class="confirm_dialog"

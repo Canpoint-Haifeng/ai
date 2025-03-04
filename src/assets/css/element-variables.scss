@@ -1,30 +1,7 @@
-/* Element Plus Variables */
-:root {
-  --el-color-primary: #487FFF;
-  --el-color-success: #67c23a;
-  --el-color-warning: #e6a23c;
-  --el-color-danger: #f56c6c;
-  --el-color-error: #f56c6c;
-  --el-color-info: #909399;
-  
-  /* Additional Element Plus variables */
-  --el-color-primary-light-3: #79a1ff;
-  --el-color-primary-light-5: #a6c0ff;
-  --el-color-primary-light-7: #d3dfff;
-  --el-color-primary-light-9: #f0f4ff;
-  --el-color-primary-dark-2: #3a66cc;
-  
-  /* Font sizes */
-  --el-font-size-base: 14px;
-  --el-font-size-small: 12px;
-  --el-font-size-large: 16px;
-  
-  /* Border radius */
-  --el-border-radius-base: 4px;
-  --el-border-radius-small: 2px;
-  --el-border-radius-round: 20px;
-  --el-border-radius-circle: 100%;
-}
+/* 改变主题色变量 */
+$--color-primary: $color-theme;
 
-/* Import Element Plus styles */
-@use "element-plus/dist/index.css";
+/* 改变 icon 字体路径变量，必需 */
+// $--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+// @import "~element-ui/packages/theme-chalk/src/index";

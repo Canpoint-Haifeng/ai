@@ -1,0 +1,43 @@
+<template>
+  <div class="top-nav-position">
+    <div class="top-nav-body">
+      <div class="top-nav">
+        <div class="content-container">
+          <el-menu class="top-nav-content" mode="horizontal">
+            <el-menu-item index="/index">首页</el-menu-item>
+          </el-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'Nav',
+  data() {
+    return {
+      showFixed: false
+    }
+  }
+})
+</script>
+
+<style lang="scss">
+.top-nav-position {
+  height: 50px;
+  position: relative;
+}
+
+.top-nav-body {
+  width: 100%;
+
+  &.show-fixed {
+    position: fixed;
+    z-index: 1002;
+    top: 0;
+  }
+}
+</style>

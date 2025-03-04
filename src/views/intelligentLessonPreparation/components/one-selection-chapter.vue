@@ -2,7 +2,7 @@
   <div class="ai-container">
     <div class="ai-header">
       <div class="show-info-title">
-        <span />已选章节<i>（{{ interCheckNodeCodeKnowledgeArr.length }}）</i>
+        <span />已选章节<i>（{{ interCheckNodeCodeKnowledgeArr.length }}）</i></template></template>
       </div>
       <div class="show-clear">
         <span @click="deleteAllNode"><i class="iconfont iconnonebg-delete" />清空</span>
@@ -25,7 +25,7 @@
     </ul>
     <div class="ai-header">
       <div class="show-info-title">
-        <span />设置难度及年份 <i>（选填）</i>
+        <span />设置难度及年份 <i>（选填）</i></template></template>
       </div>
     </div>
     <div class="ai-select-box">
@@ -58,7 +58,7 @@
     </div>
     <div class="ai-header">
       <div class="show-info-title">
-        <span />设置题型和数量 <i>（必填）</i>
+        <span />设置题型和数量 <i>（必填）</i></template></template>
       </div>
     </div>
     <div class="ai-setting-box">
@@ -160,7 +160,7 @@
         </div>
         <noresult-common
           v-else
-          slot="empty"
+          #empty"
           text="暂未查询到题目数据！"
         />
       </div>

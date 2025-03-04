@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-drawer
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="多媒体库"
       direction="rtl"
       size="900px"
@@ -57,7 +58,7 @@
         <div class="sort_total">
           <div class="sort_list">
             <!-- <span :class="{ active: params.sortType === 1 }" @click="changeSortState(1)">
-                            综合<i class="iconfont icon-transfer_2_line"></i>
+                            综合<i class="iconfont icon-transfer_2_line"></i></template></template>
                         </span> -->
             <span
               :class="formData.sortType === 2 ? 'active' : ''"
@@ -79,7 +80,7 @@
         <div class="multimedia_list">
           <noresult-common
             v-if="!pagination.total"
-            slot="empty"
+            #empty"
             text="很遗憾，没有找到您要的内容"
           />
           <div

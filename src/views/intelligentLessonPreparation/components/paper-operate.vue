@@ -22,7 +22,7 @@
         <i class="iconfont icon-baocun" /> 保存试卷
       </el-button>
       <!-- <el-button class="btn btn-border" @click="showAnswerSheet"
-        ><i class="iconfont icondatika"></i> 下载答题卡</el-button
+        ><i class="iconfont icondatika"></i></template></template> 下载答题卡</el-button
       > -->
       <el-button
         class="btn btn-border"
@@ -59,12 +59,13 @@
         :paperIdEnc="paperIdEnc"
         :source="source"
         :reloadImgUrl="true"
-        ><span slot="reference"></span></SharePaperPopover
+        ><span #reference"></span></SharePaperPopover
       >分享组卷
     </div> -->
     <el-dialog
       v-if="scoreDialog.visible"
-      v-model:visible="scoreDialog.visible"
+      :visible="scoreDialog.visible"
+      @update:visible="scoreDialog.visible = $event"
       :title="scoreDialog.title"
       :modal-append-to-body="false"
       :lock-scroll="false"
@@ -234,7 +235,8 @@
     <!-- 保存组卷 -->
     <el-dialog
       v-if="saveDialog.visible"
-      v-model:visible="saveDialog.visible"
+      :visible="saveDialog.visible"
+      @update:visible="saveDialog.visible = $event"
       :title="saveDialog.title"
       :modal-append-to-body="false"
       :lock-scroll="false"

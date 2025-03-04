@@ -1,7 +1,8 @@
 import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
 <template>
   <el-dialog
-    v-model:visible="visible"
+    :visible="visible"
+    @update:visible="visible = $event"
     title="VIP激活"
     width="676px"
     class="login-vip-dialog"
@@ -64,8 +65,8 @@ export default defineComponent({
   name: "LoginActivationVipDialog",
   components: { CpSubjectSelect },
   setup() {
-    return ({})
-  })
+    return {}
+  }
 })
 </script>
 
@@ -125,5 +126,4 @@ export default defineComponent({
       }
     }
   }
-})
 </style>

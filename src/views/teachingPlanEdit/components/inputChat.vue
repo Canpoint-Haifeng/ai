@@ -21,7 +21,7 @@
     >
       <template #prefix>
         <div class="prefix-icon">
-          <!-- <i class="el-icon-magic-stick"></i> AI -->
+          <!-- <i class="el-icon-magic-stick"></i></template></template> AI -->
           <img
             src="../../../assets/images/ai/bling_fill.png"
             alt="AI备课"
@@ -43,7 +43,7 @@
           >
 
 
-          <!-- <i class="el-icon-position right-icon"></i> -->
+          <!-- <i class="el-icon-position right-icon"></i></template></template> -->
         </div>
       </template>
     </el-input>

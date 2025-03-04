@@ -2,8 +2,8 @@ import { defineComponent } from 'vue'
 import LoginObtainVipDialog from './LoginObtainVipDialog.vue'
 import LoginActivationVipDialog from './LoginActivationVipDialog.vue'
 import CpConfigDialog from './CpConfigDialog.vue'
-import CpMessageDialog from './CpMessageDialog'
-import CpReceiveReward from './CpReceiveReward'
+import CpMessageDialog from './CpMessageDialog.vue'
+import CpReceiveReward from './CpReceiveReward.vue'
 
 const dialogsConfig = {
   LoginObtainVipDialog: {

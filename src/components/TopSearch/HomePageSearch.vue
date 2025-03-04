@@ -48,7 +48,7 @@
             ></HistoryMessageList>
           </div>
           <div class="search-btn" @click="search">
-            <i class="iconfont iconsearch"></i>
+            <i class="iconfont iconsearch"></i></template></template>
           </div>
         </div>
 
@@ -63,7 +63,7 @@
         <span @click="openSetHomePageBlock">
           <span class="iconfont icongengduo"></span>
           <span class="text">定制我的快捷选题路径</span
-          ><i class="el-icon-arrow-right"></i>
+          ><i class="el-icon-arrow-right"></i></template></template>
         </span>
       </div>
     </div>

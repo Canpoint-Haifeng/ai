@@ -131,7 +131,7 @@
                       :style="{
                         background: colors[Math.ceil(data.importance)].color,
                       }"
-                    >{{ colors[Math.ceil(data.importance)].name }}</span></i>
+                    >{{ colors[Math.ceil(data.importance)].name }}</span></i></template></template>
 
                     <span
                       class="nodeName"
@@ -168,10 +168,10 @@
               node-key="id"
               :expand-on-click-node="false"
               >
-              <div class="custom-tree-node" slot-scope="{ data }">
+              <div class="custom-tree-node" v-slot:{ data }">
                 <span class="tree-node-label">
                     <span class="knowledge" v-if="data.types == 1" :style="{color: colors[Math.ceil(data.importance)].color}">知</span>
-                    <i v-if="data.importance && data.types === 2" class="el-icon-star-on coefficient" :style="{color: colors[Math.ceil(data.importance)].color}"></i>
+                    <i v-if="data.importance && data.types === 2" class="el-icon-star-on coefficient" :style="{color: colors[Math.ceil(data.importance)].color}"></i></template></template>
                     <span class="nodeName" :title="data.name" v-html="data.name"></span>
                 </span>
               </div>
@@ -190,7 +190,7 @@
               @check="checkClick"
               node-key="chapterCode"
             >
-              <div class="custom-tree-node" slot-scope="{ node, data }">
+              <div class="custom-tree-node" v-slot:{ node, data }">
                 <span
                   class="tree-node-label"
                   :title="data.chapterName"

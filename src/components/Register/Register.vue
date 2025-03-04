@@ -7,7 +7,8 @@
       top="11.5%"
       :append-to-body="true"
       :lock-scroll="false"
-      :visible.sync="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       :closed="hide"
     >
       <div
@@ -34,12 +35,12 @@
                 autocomplete="off"
                 @blur="onFocus"
               >
-                <i slot="prefix" class="el-icon-mobile-phone"></i>
+                <template #prefix><i class="el-icon-mobile-phone"></i></template></template>
               </el-input>
             </el-form-item>
             <el-form-item prop="password" class="form-item">
               <span class="icon-box">
-                <i class="el-icon-key"></i>
+                <i class="el-icon-key"></i></template></template>
               </span>
               <el-input
                 class="form-input"
@@ -49,7 +50,7 @@
                 type="password"
                 @blur="onFocus"
               >
-                <i slot="prefix" class="el-icon-key"></i>
+                <template #prefix><i class="el-icon-key"></i></template></template>
               </el-input>
             </el-form-item>
             <div class="noCaptcha-wrapper">
@@ -66,7 +67,7 @@
                 autocomplete="off"
                 @blur="onFocus"
               >
-                <i slot="prefix" class="el-icon-key"></i>
+                <template #prefix><i class="el-icon-key"></i></template></template>
               </el-input>
               <div class="code-btn" v-if="loginData.vfcodeStatus">
                 <span>{{ loginData.vfcodeText }}</span>
@@ -503,8 +504,7 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.login-dialog :deep() {
-  .el-dialog {
+.login-dialog :deep(.el-dialog) {
     width: 824px;
     height: 540px;
     padding: 32px 32px 70px 32px;

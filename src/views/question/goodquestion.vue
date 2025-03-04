@@ -10,7 +10,8 @@
           </div>
           <div class="content">
             <top-pagintion
-              v-model:current-page="questionsData.page"
+              :current-page="questionsData.page"
+              @update:current-page="questionsData.page = $event"
               suffix="题"
               :total="questionsData.count"
               :page-size="questionsData.pageSize"

@@ -35,7 +35,7 @@
       <!-- tab切换到试卷的时候才显示 -->
       <div class="div_recommend" v-if="currSearchOption == '2'">
         <span class="span_title">试卷推荐</span>
-        <i class="iconfont iconfire_fill icont-tip"></i>
+        <i class="iconfont iconfire_fill icont-tip"></i></template></template>
         <ul>
           <li v-for="(item, index) in value" :key="item.paperId">
             <div

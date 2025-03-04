@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-drawer
-      v-model:visible="visible"
+      :visible="visible"
+      @update:visible="visible = $event"
       title="换题"
       direction="rtl"
       size="800px"
@@ -33,9 +34,9 @@
         <div class="sort_total">
           <div class="sort_list">
             <!-- <span :class="formData.sortType === 2 ? 'active' : ''" @click="changeSortType(2)">最新<i
-                            class="iconfont icon-transfer_2_line"></i></span>
+                            class="iconfont icon-transfer_2_line"></i></template></template></span>
                         <span :class="formData.sortType === 3 ? 'active' : ''" @click="changeSortType(3)">最热<i
-                            class="iconfont icon-transfer_2_line"></i></span> -->
+                            class="iconfont icon-transfer_2_line"></i></template></template></span> -->
           </div>
           <div class="total">
             共 <span>{{ pagination.total }}</span> 题
@@ -44,7 +45,7 @@
         <div class="question_list">
           <noresult-common
             v-if="!pagination.total"
-            slot="empty"
+            #empty"
             text="很遗憾，没有找到您要的试题"
           />
           <div
