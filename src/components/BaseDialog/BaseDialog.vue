@@ -20,17 +20,14 @@
         <slot></slot>
       </div>
       <template #footer>
-        <div v-if="$slots.footer || showFooter">
-          <slot name="footer">
-            <div class="dialog-footer">
-              <el-button @click="cancel" v-if="showCancelBtn">
-                {{ cancelBtnText }}
-              </el-button>
-              <el-button type="primary" @click="confirm" v-if="showConfirmBtn">
-                {{ confirmBtnText }}
-              </el-button>
-            </div>
-          </slot>
+        <slot name="footer" v-if="$slots.footer"></slot>
+        <div class="dialog-footer" v-else-if="showFooter">
+          <el-button @click="cancel" v-if="showCancelBtn">
+            {{ cancelBtnText }}
+          </el-button>
+          <el-button type="primary" @click="confirm" v-if="showConfirmBtn">
+            {{ confirmBtnText }}
+          </el-button>
         </div>
       </template>
     </el-dialog>
