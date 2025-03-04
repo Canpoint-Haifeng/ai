@@ -1,24 +1,23 @@
 <template>
   <div id="app">
-    <router-view />
+    <h1>Vue 3 Migration Test</h1>
+    <p>This is a minimal test page to verify Vue 3 compatibility.</p>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
+export default {
   name: 'App'
-})
+}
 </script>
 
-<style lang="scss">
-@import '@/assets/css/index.scss';
-
+<style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: center;
   color: #2c3e50;
+  margin-top: 60px;
 }
 </style>
