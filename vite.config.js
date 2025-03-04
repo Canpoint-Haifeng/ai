@@ -1,30 +1,37 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
-  base: '/lesson/',
   plugins: [
     vue({
       template: {
         compilerOptions: {
-          isCustomElement: (tag) => tag.includes('-'),
-          compatConfig: {
-            MODE: 2
-          }
+          isCustomElement: (tag) => tag.includes('-')
+        }
+      },
+      // Configure Vue 3 compatibility mode
+      // https://v3-migration.vuejs.org/migration-build.html
+      compilerOptions: {
+        compatConfig: {
+          MODE: 2,
+          COMPONENT_V_MODEL: false,
+          COMPILER_V_BIND_SYNC: false,
+          COMPILER_V_BIND_OBJECT_ORDER: false,
+          COMPILER_V_ON_NATIVE: false,
+          COMPILER_NATIVE_TEMPLATE: false,
+          INSTANCE_ATTRS_CLASS_STYLE: false,
+          INSTANCE_LISTENERS: false,
+          INSTANCE_SCOPED_SLOTS: false,
+          RENDER_FUNCTION: false,
+          GLOBAL_MOUNT: false
         }
       }
     }),
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()],
-    })
+    vueJsx()
   ],
+  base: '/lesson/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -32,29 +39,32 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8080,
-    hmr: true,
-    fs: {
-      strict: false
+    port: 8085,
+    host: '0.0.0.0',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      }
     }
   },
   css: {
     preprocessorOptions: {
       scss: {
         charset: false,
-        additionalData: `@use "@/assets/styles/variables.scss" as *;`
+        additionalData: `@import "@/assets/css/variables.scss";`
       }
     }
   },
-  define: {
-    'process.env': {
-      ...process.env,
-      VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version),
-      VITE_APP_TITLE: JSON.stringify('备课助手'),
-      VUE_APP_PAPER_GENERATOR: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR),
-      VUE_APP_PAPER_GENERATOR_UPLOAD: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR_UPLOAD),
-      VUE_APP_PAPER_GENERATOR_DOWNLOAD: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR_DOWNLOAD),
-      VUE_APP_PAPER_GENERATOR_PREVIEW: JSON.stringify(process.env.VITE_APP_PAPER_GENERATOR_PREVIEW)
+  build: {
+    outDir: 'dist',
+    assetsDir: 'static',
+    sourcemap: false,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
     }
   }
 })

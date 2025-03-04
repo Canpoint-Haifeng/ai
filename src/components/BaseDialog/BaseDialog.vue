@@ -1,123 +1,151 @@
 <template>
-  <div class="dialog-wrapper">
-    <el-dialog
-      v-model="visible"
-      :title="title"
-      :top="top"
-      :modal-append-to-body="addbody"
-      :append-to-body="addbody"
-      :show-close="showClose"
-      :width="width"
-    >
-      <div class="dialog-content">
-        <slot name="dialogTips" />
+  <el-dialog
+    :visible="visible"
+    @update:visible="$emit('update:visible', $event)"
+    :title="title"
+    :width="width"
+    :close-on-click-modal="closeOnClickModal"
+    :close-on-press-escape="closeOnPressEscape"
+    :show-close="showClose"
+    :before-close="beforeClose"
+    :append-to-body="appendToBody"
+    :lock-scroll="lockScroll"
+    :custom-class="customClass"
+    :center="center"
+    :destroy-on-close="destroyOnClose"
+    :top="top"
+    :modal="modal"
+    :modal-append-to-body="modalAppendToBody"
+    @close="handleClose"
+  >
+    <slot></slot>
+    <template #footer>
+      <div class="dialog-footer" v-if="showFooter">
+        <el-button @click="handleCancel" v-if="showCancelBtn">
+          {{ cancelBtnText }}
+        </el-button>
+        <el-button type="primary" @click="handleConfirm" v-if="showConfirmBtn">
+          {{ confirmBtnText }}
+        </el-button>
+        <slot name="footer"></slot>
       </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button
-            v-if="showCancelBtn"
-            class="btn btn-gray"
-            @click="cancel"
-          >
-            {{
-              cancelBtnText
-            }}
-          </el-button>
-          <el-button
-            v-if="showConfirmBtn"
-            class="btn btn-shadow"
-            @click="comfirm"
-          >
-            {{ confirmBtnText }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
   name: 'BaseDialog',
   props: {
-    addbody: {
+    visible: {
       type: Boolean,
-      default: false,
+      default: false
     },
     title: {
       type: String,
-      default: '提示',
-    },
-    showClose: {
-      type: Boolean,
-      default: true,
+      default: '提示'
     },
     width: {
       type: String,
-      default: '500px',
+      default: '500px'
     },
     showConfirmBtn: {
       type: Boolean,
-      default: true,
+      default: true
     },
     showCancelBtn: {
       type: Boolean,
-      default: true,
+      default: true
     },
     confirmBtnText: {
       type: String,
-      default: '确定',
+      default: '确定'
     },
     cancelBtnText: {
       type: String,
-      default: '取消',
+      default: '取消'
+    },
+    closeOnClickModal: {
+      type: Boolean,
+      default: true
+    },
+    closeOnPressEscape: {
+      type: Boolean,
+      default: true
+    },
+    showClose: {
+      type: Boolean,
+      default: true
+    },
+    beforeClose: {
+      type: Function,
+      default: null
+    },
+    appendToBody: {
+      type: Boolean,
+      default: false
+    },
+    lockScroll: {
+      type: Boolean,
+      default: true
+    },
+    customClass: {
+      type: String,
+      default: ''
+    },
+    center: {
+      type: Boolean,
+      default: false
+    },
+    destroyOnClose: {
+      type: Boolean,
+      default: false
     },
     top: {
       type: String,
-      default: '15vh',
+      default: '15vh'
     },
+    modal: {
+      type: Boolean,
+      default: true
+    },
+    modalAppendToBody: {
+      type: Boolean,
+      default: true
+    },
+    showFooter: {
+      type: Boolean,
+      default: true
+    }
   },
+  emits: ['update:visible', 'cancel', 'confirm', 'close'],
   setup(props, { emit }) {
-    const visible = ref(false)
-    
-    const show = () => {
-      visible.value = true
+    const handleCancel = () => {
+      emit('update:visible', false)
+      emit('cancel')
     }
     
-    const hide = () => {
-      visible.value = false
+    const handleConfirm = () => {
+      emit('confirm')
     }
     
-    const cancel = () => {
-      hide()
-      emit('cancle')
-    }
-    
-    const comfirm = () => {
-      show()
-      emit('comfirm')
+    const handleClose = () => {
+      emit('close')
     }
     
     return {
-      visible,
-      show,
-      hide,
-      cancel,
-      comfirm
+      handleCancel,
+      handleConfirm,
+      handleClose
     }
   }
-}
+})
 </script>
 
-<style lang="scss">
-  .dialog-content {
-    text-align: center;
-    .dialog-tips {
-      padding-top: 50px;
-      padding-bottom: 20px;
-      color: $color-text-d;
-    }
-  }
+<style lang="scss" scoped>
+.dialog-footer {
+  text-align: center;
+}
 </style>
