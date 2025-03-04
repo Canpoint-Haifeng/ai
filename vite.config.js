@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
 
 export default defineConfig({
@@ -29,9 +28,13 @@ export default defineConfig({
         }
       }
     }),
-    vueJsx()
   ],
   base: '/lesson/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'static',
+    sourcemap: true
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -39,7 +42,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8085,
+    port: 8083,
     host: '0.0.0.0',
     proxy: {
       '/api': {
@@ -52,19 +55,14 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         charset: false,
-        additionalData: `@import "@/assets/css/variables.scss";`
+        additionalData: `
+          @import "@/assets/css/variables.scss";
+          @import "@/assets/css/mixins.scss";
+        `
       }
     }
   },
-  build: {
-    outDir: 'dist',
-    assetsDir: 'static',
-    sourcemap: false,
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    }
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'vuex', 'element-plus']
   }
 })

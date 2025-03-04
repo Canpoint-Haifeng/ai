@@ -1,36 +1,38 @@
 <template>
-  <el-dialog
-    :visible="visible"
-    @update:visible="$emit('update:visible', $event)"
-    :title="title"
-    :width="width"
-    :close-on-click-modal="closeOnClickModal"
-    :close-on-press-escape="closeOnPressEscape"
-    :show-close="showClose"
-    :before-close="beforeClose"
-    :append-to-body="appendToBody"
-    :lock-scroll="lockScroll"
-    :custom-class="customClass"
-    :center="center"
-    :destroy-on-close="destroyOnClose"
-    :top="top"
-    :modal="modal"
-    :modal-append-to-body="modalAppendToBody"
-    @close="handleClose"
-  >
-    <slot></slot>
-    <template #footer>
-      <div class="dialog-footer" v-if="showFooter">
-        <el-button @click="handleCancel" v-if="showCancelBtn">
-          {{ cancelBtnText }}
-        </el-button>
-        <el-button type="primary" @click="handleConfirm" v-if="showConfirmBtn">
-          {{ confirmBtnText }}
-        </el-button>
-        <slot name="footer"></slot>
+  <div class="dialog-wrapper">
+    <el-dialog
+      :visible="visible"
+      @update:visible="$emit('update:visible', $event)"
+      :title="title"
+      :width="width"
+      :close-on-click-modal="closeOnClickModal"
+      :close-on-press-escape="closeOnPressEscape"
+      :show-close="showClose"
+      :before-close="beforeClose"
+      :append-to-body="appendToBody"
+      :lock-scroll="lockScroll"
+      :custom-class="customClass"
+      :top="top"
+      :destroy-on-close="destroyOnClose"
+      @close="cancel"
+    >
+      <div class="dialog-content">
+        <slot></slot>
       </div>
-    </template>
-  </el-dialog>
+      <template #footer v-if="$slots.footer || showFooter">
+        <slot name="footer">
+          <div class="dialog-footer">
+            <el-button @click="cancel" v-if="showCancelBtn">
+              {{ cancelBtnText }}
+            </el-button>
+            <el-button type="primary" @click="confirm" v-if="showConfirmBtn">
+              {{ confirmBtnText }}
+            </el-button>
+          </div>
+        </slot>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -50,6 +52,10 @@ export default defineComponent({
     width: {
       type: String,
       default: '500px'
+    },
+    showFooter: {
+      type: Boolean,
+      default: true
     },
     showConfirmBtn: {
       type: Boolean,
@@ -95,57 +101,44 @@ export default defineComponent({
       type: String,
       default: ''
     },
-    center: {
-      type: Boolean,
-      default: false
-    },
-    destroyOnClose: {
-      type: Boolean,
-      default: false
-    },
     top: {
       type: String,
       default: '15vh'
     },
-    modal: {
+    destroyOnClose: {
       type: Boolean,
-      default: true
-    },
-    modalAppendToBody: {
-      type: Boolean,
-      default: true
-    },
-    showFooter: {
-      type: Boolean,
-      default: true
+      default: false
     }
   },
-  emits: ['update:visible', 'cancel', 'confirm', 'close'],
+  emits: ['update:visible', 'cancel', 'confirm'],
   setup(props, { emit }) {
-    const handleCancel = () => {
+    const cancel = () => {
       emit('update:visible', false)
       emit('cancel')
     }
     
-    const handleConfirm = () => {
+    const confirm = () => {
       emit('confirm')
     }
-    
-    const handleClose = () => {
-      emit('close')
-    }
-    
+
     return {
-      handleCancel,
-      handleConfirm,
-      handleClose
+      cancel,
+      confirm
     }
   }
 })
 </script>
 
-<style lang="scss" scoped>
-.dialog-footer {
-  text-align: center;
+<style lang="scss">
+.dialog-wrapper {
+  .dialog-content {
+    padding: 20px 0;
+  }
+  
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
 }
 </style>

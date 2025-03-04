@@ -1,73 +1,380 @@
-/* Base styles */
-@use 'sass:color';
-@use './_variables' as *;
-@use './base';
-@use './element-rewrite';
-@use './cp-tiku-ui';
-@use './temp/deep-fix';
-@use './temp/element-plus-fix';
+@import './base.scss';
+@import './element-rewrite.scss';
+@import './cp-tiku-ui.scss';
+@import './mixins.scss';
+// 遮罩层透明度修改
+// .v-model {
+//   opacity: 0.1;
+// }
 
-// Global styles
-html, body {
+// 全局样式
+body {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
-  font-size: $font-size-base;
-  color: $text-color;
-  background-color: $background-color;
+  font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica,
+    'Hiragino Sans GB', Arial, sans-serif;
+  font-size: $font-size-medium;
+  color: $color-text;
+  background-color: $color-background;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 a {
-  color: $primary-color;
   text-decoration: none;
-  
-  &:hover, &:focus {
-    color: color.adjust($primary-color, $lightness: 10%);
+  color: $color-text;
+}
+
+ul,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+img {
+  border: none;
+  vertical-align: middle;
+}
+
+i,
+em {
+  font-style: normal;
+}
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+input,
+textarea {
+  outline: none;
+}
+
+// 清除浮动
+.clearfix {
+  &::after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: ' ';
+    clear: both;
+    height: 0;
   }
 }
 
-// Common utility classes
-.text-center {
-  text-align: center;
+// 浮动
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+// 文字对齐
+.text-left {
+  text-align: left;
 }
 
 .text-right {
   text-align: right;
 }
 
-.text-left {
-  text-align: left;
+.text-center {
+  text-align: center;
 }
 
-.flex {
-  display: flex;
+// 文字颜色
+.text-primary {
+  color: $color-theme;
 }
 
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.text-success {
+  color: $color-success;
 }
 
-.flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.text-warning {
+  color: $color-warning;
 }
 
-.flex-column {
-  display: flex;
-  flex-direction: column;
+.text-danger {
+  color: $color-danger;
 }
 
-.hidden {
-  display: none !important;
+.text-info {
+  color: $color-info;
 }
 
-.clearfix::after {
-  content: "";
-  display: table;
-  clear: both;
+// 文字大小
+.text-small {
+  font-size: $font-size-small;
+}
+
+.text-medium {
+  font-size: $font-size-medium;
+}
+
+.text-large {
+  font-size: $font-size-large;
+}
+
+// 文字粗细
+.text-bold {
+  font-weight: bold;
+}
+
+// 文字省略
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.ellipsis-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+// 边距
+.m-0 {
+  margin: 0;
+}
+
+.m-10 {
+  margin: 10px;
+}
+
+.m-20 {
+  margin: 20px;
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mr-0 {
+  margin-right: 0;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.mr-20 {
+  margin-right: 20px;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.ml-0 {
+  margin-left: 0;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+
+.ml-20 {
+  margin-left: 20px;
+}
+
+.p-0 {
+  padding: 0;
+}
+
+.p-10 {
+  padding: 10px;
+}
+
+.p-20 {
+  padding: 20px;
+}
+
+.pt-0 {
+  padding-top: 0;
+}
+
+.pt-10 {
+  padding-top: 10px;
+}
+
+.pt-20 {
+  padding-top: 20px;
+}
+
+.pr-0 {
+  padding-right: 0;
+}
+
+.pr-10 {
+  padding-right: 10px;
+}
+
+.pr-20 {
+  padding-right: 20px;
+}
+
+.pb-0 {
+  padding-bottom: 0;
+}
+
+.pb-10 {
+  padding-bottom: 10px;
+}
+
+.pb-20 {
+  padding-bottom: 20px;
+}
+
+.pl-0 {
+  padding-left: 0;
+}
+
+.pl-10 {
+  padding-left: 10px;
+}
+
+.pl-20 {
+  padding-left: 20px;
+}
+
+// 分页
+.pagination-container {
+  padding-top: 4px;
+}
+.pagination-container :deep(.el-pagination) {
+    color: $color-text-l;
+    font-weight: 400;
+    text-align: center;
+    margin-top: 20px;
+    
+    .btn-prev,
+    .btn-next {
+      background-color: $color-white;
+      border: 1px solid $color-border;
+      border-radius: 4px;
+      padding: 0;
+      height: 28px;
+      line-height: 28px;
+      
+      &:disabled {
+        background-color: $color-white;
+        color: $color-disabled;
+      }
+    }
+    
+    .el-pager {
+      li {
+        min-width: 28px;
+        height: 28px;
+        line-height: 28px;
+        font-size: $font-size-small;
+        border: 1px solid $color-border;
+        border-radius: 4px;
+        margin: 0 5px;
+        background-color: $color-white;
+        
+        &.active {
+          background-color: $color-theme;
+          color: $color-white;
+          border-color: $color-theme;
+        }
+      }
+    }
+    
+    .el-pagination__jump {
+      margin-left: 10px;
+      
+      .el-input__inner {
+        height: 28px;
+        line-height: 28px;
+      }
+    }
+    
+    .el-pagination__editor.el-input {
+      width: 50px;
+      margin: 0 5px;
+      
+      .el-input__inner {
+        height: 28px;
+        line-height: 28px;
+      }
+    }
+    
+    .el-pagination__total {
+      margin-right: 10px;
+    }
+    
+    .el-pagination__sizes {
+      margin-right: 10px;
+      
+      .el-input__inner {
+        height: 28px;
+        line-height: 28px;
+      }
+    }
+    
+    .el-select .el-input {
+      width: 100px;
+    }
+    
+    .el-pagination__sizes .el-input .el-input__inner {
+      padding-right: 25px;
+      border-radius: 4px;
+      font-size: $font-size-small;
+    }
+  }
+
+/*题目列表*/
+.question-wrapper-faber {
+  margin-bottom: 20px;
+  background-color: $color-white;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
