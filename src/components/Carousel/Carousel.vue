@@ -1,68 +1,47 @@
 <template>
   <div class="app-carousel">
-    <el-carousel
-      :height="height"
-      :autoplay="true"
-      :interval="interval"
-    >
-      <el-carousel-item
-        v-for="(item, index) in imgsData"
-        :key="index"
-      >
-        <img
-          :src="item.pictureUrl"
-          alt="img"
-          @click="tapItem(item)"
-        >
+    <el-carousel :height="height" :autoplay="true" :interval="interval">
+      <el-carousel-item v-for="(item, index) in imgsData" :key="index">
+        <img :src="item.pictureUrl" alt="img" @click="tapItem(item)" />
       </el-carousel-item>
     </el-carousel>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-
-export default {
-  name: 'Carousel',
-  props: {
-    height: {
-      type: String,
-      default: '232px',
-    },
-    interval: {
-      type: Number,
-      default: 5000,
-    },
-    imgsData: {
-      type: Array,
-      default: () => {
-        return []
+  export default {
+    props: {
+      height: {
+        type: String,
+        default: '232px',
+      },
+      interval: {
+        type: Number,
+        default: 5000,
+      },
+      imgsData: {
+        type: Array,
+        default: () => {
+          return []
+        },
       },
     },
-  },
-  setup(props, { emit }) {
-    const tapItem = (item) => {
-      if (item.detailUrl) {
-        window.open(item.detailUrl, '_blank')
-      }
-      emit('clickTabItem', item)
-    }
-    
-    return {
-      tapItem
-    }
+    methods: {
+      tapItem(item) {
+        if (item.detailUrl) {
+          this.openWindowLink(item.detailUrl)
+        }
+        this.$emit('clickTabItem', item)
+      },
+    },
   }
-}
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-@import "@/assets/css/variables.scss";
-@import "@/assets/css/variables.scss";
   .app-carousel {
     width: 100%;
     height: 100%;
-    :deep(.el-carousel)) {
+    /deep/.el-carousel {
       border-radius: 6px;
       &.el-carousel--horizontal {
         overflow-y: hidden;
