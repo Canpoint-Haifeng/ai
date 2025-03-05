@@ -8,8 +8,7 @@
       :append-to-body="true"
       :lock-scroll="false"
       :close-on-click-modal="false"
-      :visible="visible"
-      @update:visible="visible = $event"
+      :visible.sync="visible"
       @close="hide"
     >
       <div class="subject-sync-segment">
@@ -95,14 +94,9 @@
 <script>
 import { isLogin, setCookieSubjectVolume } from '@/common/js/util'
 import { API } from '@/api/config'
-import { defineComponent, ref, reactive } from 'vue'
-import { useStore } from 'vuex'
-
-export default defineComponent({
-  setup() {
-    const store = useStore()
-    const subjectSyncFormRef = ref(null)
-    const state = reactive({
+export default {
+  data() {
+    return {
       visible: false,
       subjectList: [],
       teachData: [],
@@ -135,10 +129,10 @@ export default defineComponent({
       this.formData.volumeCurrentCode = ''
       this.getBookCategoryId()
     },
-    const onConfirm = () => {
-      subjectSyncFormRef.value.validate(valid => {
+    onConfirm() {
+      this.$refs.subjectSyncFormRef.validate(valid => {
         if (valid) {
-          setSubjectStageTeachVolume()
+          this.setSubjectStageTeachVolume()
         } else {
           return false
         }
@@ -314,8 +308,8 @@ export default defineComponent({
         gradeCurrentCode: '',
         volumeCurrentCode: '',
       }
-      if (subjectSyncFormRef.value) {
-        subjectSyncFormRef.value.resetFields()
+      if (this.$refs.subjectSyncFormRef) {
+        this.$refs.subjectSyncFormRef.resetFields()
       }
 
       this.visible = true
@@ -337,15 +331,15 @@ export default defineComponent({
     padding: 30px 120px 10px 120px;
   }
 }
-.subject-item-select {
-  :deep(.el-input)) {
+.subject-item-select /deep/ {
+  .el-input {
     width: 300px;
   }
-  :deep(.el-input__inner)) {
+  .el-input__inner {
     padding: 0 30px 0 5px;
     border-radius: 4px;
   }
-  :deep(.el-input__icon)) {
+  .el-input__icon {
     line-height: 32px;
   }
 }
