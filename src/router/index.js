@@ -7,8 +7,19 @@ const routes = [
   },
   {
     path: '/home',
-    name: 'Home',
-    component: () => import('../views/Home.vue')
+    component: () => import('../views/Layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: () => import('../views/Home.vue')
+      }
+    ]
+  },
+  {
+    path: '/paperIndex',
+    name: 'PaperIndex',
+    component: () => import('../views/paper-index/paper-index.vue')
   }
 ]
 

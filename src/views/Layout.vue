@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <div class="layout-content">
-      <router-view />
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -13,9 +13,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-@import "@/assets/css/variables.scss";
-@import "@/assets/css/variables.scss";
 .layout {
   width: 100%;
   height: 100%;
