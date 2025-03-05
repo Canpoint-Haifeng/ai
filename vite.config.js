@@ -1,14 +1,19 @@
+// ESM syntax for Vite configuration to avoid CJS deprecation warning
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import legacy from '@vitejs/plugin-legacy'
+import { fileURLToPath } from 'url'
 
 export default defineConfig({
   plugins: [
     vue({
       template: {
         compilerOptions: {
-          isCustomElement: (tag) => tag.includes('-')
+          isCustomElement: (tag) => tag.includes('-'),
+          whitespace: 'preserve',
+          comments: true,
+          delimiters: ['{{', '}}']
         }
       },
       // Configure Vue 3 compatibility mode
@@ -30,13 +35,14 @@ export default defineConfig({
       }
     }),
     legacy({
-      targets: ['defaults', 'not IE 11']
+      targets: ['defaults', 'not IE 11'],
+      modernPolyfills: true
     })
   ],
   base: '/lesson/',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'src'),
       'vue': '@vue/compat'
     }
   },
