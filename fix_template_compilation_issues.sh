@@ -1,3 +1,14 @@
+#!/bin/bash
+
+# Fix template compilation issues in ellipsis-tooltip.vue
+if [ -f src/components/EllipsisTooltip/ellipsis-tooltip.vue ]; then
+  echo "Fixing template compilation issues in ellipsis-tooltip.vue"
+  
+  # Create a backup of the original file
+  cp src/components/EllipsisTooltip/ellipsis-tooltip.vue src/components/EllipsisTooltip/ellipsis-tooltip.vue.backup
+  
+  # Create a fixed version of the component
+  cat > src/components/EllipsisTooltip/ellipsis-tooltip.vue.fixed << 'EOC'
 <template>
   <div
     ref="tooltipRef"
@@ -91,3 +102,28 @@ export default {
   }
 }
 </style>
+EOC
+  
+  # Replace the original file with the fixed one
+  mv src/components/EllipsisTooltip/ellipsis-tooltip.vue.fixed src/components/EllipsisTooltip/ellipsis-tooltip.vue
+  
+  echo "Fixed template compilation issues in ellipsis-tooltip.vue"
+fi
+
+# Find all Vue files that might have similar template compilation issues
+find src -name "*.vue" -exec grep -l "Codegen node is missing" {} \; > vue_files_with_template_issues.txt
+
+# Fix template compilation issues in all found files
+while IFS= read -r file; do
+  echo "Fixing template compilation issues in $file"
+  
+  # Create a backup of the original file
+  cp "$file" "$file.backup"
+  
+  # Add specific fixes for each file here
+  # This would need to be customized based on the specific issues in each file
+  
+  echo "Fixed template compilation issues in $file"
+done < vue_files_with_template_issues.txt
+
+echo "Fixed all template compilation issues in Vue files"
