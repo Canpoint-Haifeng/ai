@@ -50,12 +50,11 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-  @use "@/assets/css/variables" as *;
   .btn.btn-shadow-pay {
     width: 100px;
     background: #487FFF;
@@ -78,3 +77,4 @@ export default defineComponent({
     text-align: center;
   }
 </style>
+

@@ -62,12 +62,11 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
+@use '@/assets/css/_variables' as vars;
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-@use '@/assets/css/_variables' as vars;
 
 .appstb-wrapper {
   min-height: 100vh;
@@ -109,3 +108,4 @@ export default defineComponent({
   }
 }
 </style>
+

@@ -31,12 +31,11 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
+@use "@/assets/css/variables" as *;
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-@use "@/assets/css/variables" as *;
 .top-bar {
   width: 100%;
   min-width: 1200px;
@@ -63,3 +62,4 @@ export default defineComponent({
   }
 }
 </style>
+
