@@ -31,7 +31,7 @@ import VipSch from '@/assets/images/school.png'
 import CpVipLoginActivity from '@/components/Backtop/CpVipLoginActivity'
 import VideoSegment from '../../components/VideoPlay/video-segment.vue'
 import ClaimPointsBox from './compontents/ClaimPointsBox.vue'
-import parallelPaperBox from './compontents/parallel-paper-box'
+import parallelPaperBox from './compontents/parallel-paper-box.vue'
 import MyCompositionPaper from './compontents/MyCompositionPaper'
 import MultiGoodQuestion from './compontents/MultiGoodQuestion'
 import HomeUserApp from './compontents/HomeUserApp'
@@ -479,7 +479,7 @@ export default {
         padding-bottom: 20px;
       }
 
-      :deep(.el-carousel)) {
+      :deep(.el-carousel) {
         border-radius: 0;
         overflow: hidden;
       }
