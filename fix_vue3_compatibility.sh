@@ -1,62 +1,72 @@
 #!/bin/bash
 
-# Script to fix Vue 3 compatibility issues in a Vue 2 project
+# Fix Vue 3 compatibility issues in the project
+echo "Fixing Vue 3 compatibility issues in the project..."
 
-echo "Starting Vue 3 compatibility fixes..."
+# 1. Fix import statements
+echo "1. Fixing import statements..."
+find src -name "*.vue" -o -name "*.js" | xargs sed -i 's/import \([^ ]*\) from '\''@\/\([^.]*\)'\''$/import \1 from '\''@\/\2.js'\''/'
+find src -name "*.vue" -o -name "*.js" | xargs sed -i 's/import \([^ ]*\) from '\''@\/\([^.]*\)'\''$/import \1 from '\''@\/\2.vue'\''/'
+find src -name "*.vue" -o -name "*.js" | xargs sed -i 's/import \([^ ]*\) from '\''\.\.\(\/[^.]*\)'\''$/import \1 from '\''\.\.\2.vue'\''/'
+find src -name "*.vue" -o -name "*.js" | xargs sed -i 's/import \([^ ]*\) from '\''\.\(\/[^.]*\)'\''$/import \1 from '\''\.\2.vue'\''/'
 
-# Function to replace deep selectors
-fix_deep_selectors() {
-  echo "Fixing deep selectors..."
-  find src -type f -name "*.vue" -exec sed -i 's|/deep/|:deep(|g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's|>>>/|:deep(|g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's|::v-deep|:deep(|g' {} \;
+# 2. Fix SASS deep selectors
+echo "2. Fixing SASS deep selectors..."
+find src -name "*.vue" | xargs sed -i 's/>>>/::v-deep/g'
+find src -name "*.vue" | xargs sed -i 's/::v-deep/::v-deep(/g'
+find src -name "*.vue" | xargs sed -i 's/::v-deep(\([^)]*\))/::v-deep(\1)/g'
+find src -name "*.vue" | xargs sed -i 's/::v-deep(/:deep(/g'
+
+# 3. Fix SASS variable imports
+echo "3. Fixing SASS variable imports..."
+find src -name "*.vue" | xargs sed -i '/<style.*>/a\
+@import "@/assets/css/variables.scss";'
+
+# 4. Fix v-model issues
+echo "4. Fixing v-model issues..."
+find src -name "*.vue" | xargs sed -i 's/v-model="visible"/:visible="visible" @update:visible="$emit('\''update:visible'\'', \$event)"/g'
+
+# 5. Fix SASS @use rule order
+echo "5. Fixing SASS @use rule order..."
+find src -name "*.vue" | grep -l "@use" | while read -r file; do
+  # Extract the style section
+  sed -n '/<style/,/<\/style>/p' "$file" > style_section.tmp
   
-  # Add closing parenthesis to :deep( selectors
-  find src -type f -name "*.vue" -exec sed -i 's/:deep(\([^)]*\)/:deep(\1)/g' {} \;
-}
+  # Check if the style section contains @use rules
+  if grep -q "@use" style_section.tmp; then
+    # Extract the @use rules
+    grep "@use" style_section.tmp > use_rules.tmp
+    
+    # Remove the @use rules from the style section
+    grep -v "@use" style_section.tmp > style_without_use.tmp
+    
+    # Create a new style section with @use rules at the beginning
+    echo "<style lang=\"scss\" scoped>" > new_style_section.tmp
+    cat use_rules.tmp >> new_style_section.tmp
+    cat style_without_use.tmp | grep -v "<style" | grep -v "</style>" >> new_style_section.tmp
+    echo "</style>" >> new_style_section.tmp
+    
+    # Replace the old style section with the new one
+    sed '/<style/,/<\/style>/d' "$file" > without_style.tmp
+    
+    # Find the line number where the style section should be inserted
+    line_num=$(grep -n "</script>" without_style.tmp | tail -1 | cut -d: -f1)
+    
+    # Insert the new style section after the script section
+    head -n $line_num without_style.tmp > new_file.tmp
+    cat new_style_section.tmp >> new_file.tmp
+    tail -n +$((line_num + 1)) without_style.tmp >> new_file.tmp
+    
+    # Replace the original file with the new one
+    mv new_file.tmp "$file"
+  fi
+  
+  # Clean up temporary files
+  rm -f style_section.tmp use_rules.tmp style_without_use.tmp without_style.tmp new_style_section.tmp
+done
 
-# Function to update v-model syntax
-fix_v_model() {
-  echo "Fixing v-model syntax..."
-  find src -type f -name "*.vue" -exec sed -i 's/v-model:visible="visible"/\:visible="visible" @update:visible="visible = \$event"/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/v-model:visible/\:visible/g' {} \;
-}
+# 6. Fix route paths
+echo "6. Fixing route paths..."
+find src -name "*.js" | xargs sed -i 's/path: '\''[^\/]/path: '\''\//'
 
-# Function to remove .native event modifiers
-fix_native_modifiers() {
-  echo "Removing .native event modifiers..."
-  find src -type f -name "*.vue" -exec sed -i 's/@click.native/@click/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/@change.native/@change/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/@input.native/@input/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/@keyup.native/@keyup/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/@keydown.native/@keydown/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/@focus.native/@focus/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/@blur.native/@blur/g' {} \;
-}
-
-# Function to update slot syntax
-fix_slot_syntax() {
-  echo "Updating slot syntax..."
-  find src -type f -name "*.vue" -exec sed -i 's/<template slot="/<template #/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/<template v-slot:/<template #/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/slot="title"/#title/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/slot="header"/#header/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/slot="footer"/#footer/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/slot="default"/#default/g' {} \;
-}
-
-# Function to fix scoped slots
-fix_scoped_slots() {
-  echo "Fixing scoped slots..."
-  find src -type f -name "*.vue" -exec sed -i 's/slot-scope=/v-slot:/g' {} \;
-  find src -type f -name "*.vue" -exec sed -i 's/scope=/v-slot:/g' {} \;
-}
-
-# Run all fixes
-fix_deep_selectors
-fix_v_model
-fix_native_modifiers
-fix_slot_syntax
-fix_scoped_slots
-
-echo "Vue 3 compatibility fixes completed!"
+echo "Successfully fixed Vue 3 compatibility issues in the project."
