@@ -1,3 +1,12 @@
+#!/bin/bash
+
+echo "Adding missing setCookie and getCookie functions to util.js..."
+
+# Create a backup of the original file
+cp src/common/js/util.js src/common/js/util.js.backup
+
+# Add the missing functions to util.js
+cat > src/common/js/util.js.new << 'EOT'
 // Storage utilities
 export function setStore(key, value) {
   localStorage.setItem(key, JSON.stringify(value))
@@ -149,3 +158,9 @@ export function decrypt(data) {
   // Simple decryption placeholder
   return atob(data);
 }
+EOT
+
+# Replace the original file with the new one
+mv src/common/js/util.js.new src/common/js/util.js
+
+echo "Successfully added missing setCookie and getCookie functions to util.js."
