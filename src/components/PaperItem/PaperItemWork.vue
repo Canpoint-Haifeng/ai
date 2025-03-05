@@ -194,6 +194,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .paper-item {
     min-height: 108px;
     padding: 24px 20px 14px 20px;

@@ -2,10 +2,10 @@
   <div>
     <el-drawer
       :visible="visible"
-      @update:visible="visible = $event"
       title="知识库"
       direction="rtl"
       size="800px"
+      @update:visible="visible = $event"
     >
       <div class="drawer_content">
         <div class="knowledge_point">
@@ -198,7 +198,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-drawer) {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+:deep(.el-drawer)) {
   .el-drawer__body .drawer_content {
     padding: 0 20px 20px;
     .knowledge_point {

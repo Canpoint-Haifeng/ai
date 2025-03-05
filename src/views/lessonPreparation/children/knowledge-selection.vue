@@ -701,6 +701,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .user-content {
   width: 1200px;
   min-height: 473px;
@@ -925,7 +928,7 @@ export default {
   margin: 15px 18px 5px 18px;
   width: 230px;
 
-  :deep(.el-input__inner) {
+  :deep(.el-input__inner)) {
       border-radius: 4px;
       height: 26px;
       line-height: 26px;

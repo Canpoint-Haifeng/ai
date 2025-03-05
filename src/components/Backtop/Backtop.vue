@@ -7,8 +7,10 @@
       :visibility-height="10"
     >
       <div class="app-top-back-part">
-        <i class="iconfont iconshiliangzhinengduixiang-08"></i></template></template>
-        <div class="text">置顶</div>
+        <i class="iconfont iconshiliangzhinengduixiang-08" />
+        <div class="text">
+          置顶
+        </div>
       </div>
     </el-backtop>
   </div>
@@ -19,6 +21,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .app-top-back-part {
     position: absolute;
     right: 10px;

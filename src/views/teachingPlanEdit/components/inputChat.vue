@@ -21,7 +21,7 @@
     >
       <template #prefix>
         <div class="prefix-icon">
-          <!-- <i class="el-icon-magic-stick"></i></template></template> AI -->
+          <!-- <i class="el-icon-magic-stick"></i></template> AI -->
           <img
             src="../../../assets/images/ai/bling_fill.png"
             alt="AI备课"
@@ -43,7 +43,7 @@
           >
 
 
-          <!-- <i class="el-icon-position right-icon"></i></template></template> -->
+          <!-- <i class="el-icon-position right-icon"></i></template> -->
         </div>
       </template>
     </el-input>
@@ -206,7 +206,7 @@ export default {
 }
 
 /* 自定义输入框 */
-.custom-input :deep(.el-input__inner) {
+.custom-input :deep(.el-input__inner)) {
   height: 50px;
   border-radius: 14px;
   padding-left: 50px;

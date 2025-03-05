@@ -1,15 +1,26 @@
 <template>
   <div class="user-feed-back-body">
     <div class="user-feed-back-info">
-      <div class="t1">欢迎提出宝贵的意见和建议</div>
-      <div class="t2">每周首次提交意见反馈将获得1张下载券+5颗胖大海</div>
+      <div class="t1">
+        欢迎提出宝贵的意见和建议
+      </div>
+      <div class="t2">
+        每周首次提交意见反馈将获得1张下载券+5颗胖大海
+      </div>
     </div>
 
     <div class="user-feed-back-title">
-       请选择您遇到的问题
-      <div class="title_right" @click="skipPage">
+      请选择您遇到的问题
+      <div
+        class="title_right"
+        @click="skipPage"
+      >
         <span>看大家常遇到的问题</span>
-        <i class="el-icon-d-arrow-right icont_right2" ></i></template></template>
+        <i class="el-icon-d-arrow-right icont_right2" />
+      </div>
+    </div>
+  </div>
+</template>
       </div>
     </div>
 

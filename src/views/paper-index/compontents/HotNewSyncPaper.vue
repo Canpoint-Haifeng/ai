@@ -12,7 +12,7 @@
           <div class="item" v-for="(v, index) in schoolData" :key="index">
             <div>
               <h6 class="school_name" :title="v.name">{{ v.name }}</h6>
-              <span class="more" @click="morePaper(true, v)">更多组卷<i class="el-icon-arrow-right"></i></template></template></span>
+              <span class="more" @click="morePaper(true, v)">更多组卷<i class="el-icon-arrow-right"></i></template></span>
             </div>
             <img :src="v.icon" alt="">
           </div>
@@ -227,7 +227,7 @@
             <!-- <span class="paper-time">{{
               item.timeModified | datetime('YYYY-MM-DD')
             }}</span> -->
-            <!-- <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></template></span> -->
+            <!-- <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></span> -->
           </div>
         </div>
         <div class="line-box" />
@@ -237,7 +237,7 @@
               src="./img//hot.svg"
               alt=""
             >
-            <!-- <span class="more" @click="onMorePaper">更多<i class="el-icon-arrow-right"></i></template></template></span> -->
+            <!-- <span class="more" @click="onMorePaper">更多<i class="el-icon-arrow-right"></i></template></span> -->
           </div>
           <div
             v-for="(item, index) in hotPaperList"
@@ -306,12 +306,19 @@
                 {{ item.name || item.fileName || item.paperName }}
               </span>
               <span class="paper-time">浏览量
-                <i style="color:#ff6900">{{ item.previewNum || 0 }}</i></template></template></span>
+                <i style="color:#ff6900">{{ item.previewNum || 0 }}</i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template></span>
             </div>
 
             <!-- <span v-else class="paper-name" :class="'paper-sort-' + index" :title="item.name">
               {{ item.name  }}
-              <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></template></span>
+              <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></span>
             </span> -->
           </div>
         </div>
@@ -774,7 +781,7 @@ export default {
     min-height: 300px;
     margin: 0 16px;
 
-    :deep(.el-carousel) {
+    :deep(.el-carousel)) {
       .el-carousel__item {
         border-radius: 12px;
 
@@ -888,7 +895,7 @@ export default {
     margin-left: 16px;
     padding: 14px 20px 20px;
     .tabs {
-      :deep(.el-tabs) {
+      :deep(.el-tabs)) {
         margin-bottom: 8px;
         .el-tabs__header {
           margin: 0;

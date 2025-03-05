@@ -281,6 +281,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 // .question-wrapper {
 //   // margin-bottom: 20px;
@@ -332,7 +335,7 @@ export default {
   // }
   > .question-content {
     padding: 40px 9px 35px 20px;
-    :deep(.ques-origin) {
+    :deep(.ques-origin)) {
       padding-right: 55px;
     }
   }
@@ -489,7 +492,7 @@ export default {
 .operate-cp-number-input {
   width: 55px;
 }
-.operate-cp-number-input :deep() {
+.operate-cp-number-input :deep()) {
   .el-input__inner {
     line-height: 20px;
     height: 20px;

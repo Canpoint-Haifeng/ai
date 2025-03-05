@@ -1,86 +1,55 @@
 <template>
-  <div class="top-nav-position" :class="{ 'show-fixed': showFixed }">
-    <div class="top-nav-body" :class="{ 'show-fixed': showFixed }">
+  <div
+    class="top-nav-position"
+    :class="{ 'show-fixed': showFixed }"
+  >
+    <div
+      class="top-nav-body"
+      :class="{ 'show-fixed': showFixed }"
+    >
       <div class="top-nav">
         <div class="content-container">
-          <el-menu class="top-nav-content" mode="horizontal" default-active="/" :router="false" @select="handleSelect">
-            <el-submenu v-if="!currDisabledNav" index="-1" popper-class="custom-dropdown-menu-nav subject-dropdown-menu"
-              :popper-append-to-body="true" :show-timeout="10" class="subject-nav-item">
-              <template #title>
-                <span class="text">
-                  <span class="iconfont icon-location_fill"></span>
-                  <em class="dropdown-text">{{ currSubject.periodName
-                  }}{{ currSubject.subjectName }}</em>
-                </span>
-                <span class="icon-triangle" :class="{ 'up-triangle': isSubjectDropdownShow }"></span>
-              </template>
-              <el-menu-item v-for="(item, index) in subjectList" :key="index" class="dropdown-menu-item"
-                :class="{ 'active-subject': item.id === currSubject.id }" @click="changeSubject(item)">
-                <span class="text">{{ item.periodName }}{{ item.subjectName }}</span>
-              </el-menu-item>
-            </el-submenu>
-            <el-menu-item v-else class="subject-nav-item">
-              <template #title>
-                <span class="iconfont icon-location_fill"></span>
-                <span class="text">
-                  {{ currSubject.periodName }}{{ currSubject.subjectName }}
-                </span>
-              </template>
+          <el-menu
+            class="top-nav-content"
+            mode="horizontal"
+            default-active="/"
+            :router="false"
+            @select="handleSelect"
+          >
+            <!-- Subject selection -->
+            <el-menu-item class="subject-nav-item">
+              <span class="text">
+                <span class="iconfont icon-location_fill" />
+                <span>{{ currSubject.periodName }}{{ currSubject.subjectName }}</span>
+              </span>
             </el-menu-item>
 
-            <!-- 智能备课 -->
-            <el-submenu v-if="!isDisabledNav('smartpaper')" index="smartpaper"
-              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu" :popper-append-to-body="true"
-              :show-timeout="10" class="top-nav-item custom-dropdown-chapter"
-              @click="entryFirstMenu('/smartpaper/chapter')">
-              <template #title>
-                <span class="text">智能备课</span>
-              </template>
-              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/smartpaper/chapter"
-                @click="handleSelect('/smartpaper/chapter')">
-                <span class="text">章节备课</span>
-              </el-menu-item>
-              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/smartpaper/knowledge"
-                @click="handleSelect('/smartpaper/knowledge')">
-                <span class="text">知识点备课</span>
-              </el-menu-item>
-              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/smartpaper/question"
-                @click="handleSelect('/smartpaper/question')">
-                <span class="text">题目备课</span>
-              </el-menu-item>
-              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/smartpaper/paper"
-                @click="handleSelect('/smartpaper/paper')">
-                <span class="text">试卷备课</span>
-              </el-menu-item>
-            </el-submenu>
+            <!-- Smart lesson preparation -->
+            <el-menu-item
+              class="top-nav-item"
+              index="/smartpaper/chapter"
+              @click="handleSelect('/smartpaper/chapter')"
+            >
+              <span class="text">智能备课</span>
+            </el-menu-item>
 
-            <!-- 手动备课 -->
-            <el-submenu v-if="!isDisabledNav('manualPrepare')" index="manualPrepare"
-              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu" :popper-append-to-body="true"
-              :show-timeout="10" class="top-nav-item custom-dropdown-chapter"
-              @click="entryFirstMenu('/manualPrepare')">
-              <template #title>
-                <span class="text">手动备课</span>
-              </template>
-              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/manualPrepare"
-                @click="handleSelect('/manualPrepare')">
-                <span class="text">手动备课</span>
-              </el-menu-item>
-            </el-submenu>
+            <!-- Manual lesson preparation -->
+            <el-menu-item
+              class="top-nav-item"
+              index="/manualPrepare"
+              @click="handleSelect('/manualPrepare')"
+            >
+              <span class="text">手动备课</span>
+            </el-menu-item>
 
-            <!-- 我的备课 -->
-            <el-submenu v-if="!isDisabledNav('preparation')" index="preparation"
-              popper-class="custom-dropdown-menu-nav nav-dropdown-resource-menu" :popper-append-to-body="true"
-              :show-timeout="10" class="top-nav-item custom-dropdown-chapter"
-              @click="entryFirstMenu('/preparation/myTeaching')">
-              <template #title>
-                <span class="text">我的备课</span>
-              </template>
-              <el-menu-item class="dropdown-menu-item dropdown-menu-item2" index="/preparation/myTeaching"
-                @click="handleSelect('/preparation/myTeaching')">
-                <span class="text">我的备课</span>
-              </el-menu-item>
-            </el-submenu>
+            <!-- My lesson preparations -->
+            <el-menu-item
+              class="top-nav-item"
+              index="/preparation/myTeaching"
+              @click="handleSelect('/preparation/myTeaching')"
+            >
+              <span class="text">我的备课</span>
+            </el-menu-item>
           </el-menu>
         </div>
       </div>
@@ -88,52 +57,50 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+import { ref } from 'vue'
 
-export default defineComponent({
-  name: 'Nav',
-  data() {
-    return {
-      showFixed: false,
-      isSubjectDropdownShow: false,
-      currSubject: {
-        periodName: '高中',
-        subjectName: '数学'
-      },
-      currDisabledNav: false,
-      subjectList: [
-        {
-          id: 1,
-          periodName: '高中',
-          subjectName: '数学'
-        },
-        {
-          id: 2,
-          periodName: '高中',
-          subjectName: '语文'
-        }
-      ]
-    }
-  },
-  methods: {
-    handleSelect(key) {
-      console.log('Selected menu item:', key)
-    },
-    changeSubject(subject) {
-      this.currSubject = subject
-    },
-    entryFirstMenu(path) {
-      console.log('Entering first menu:', path)
-    },
-    isDisabledNav(navType) {
-      return false
-    }
-  }
+const showFixed = ref(false)
+const isSubjectDropdownShow = ref(false)
+const currSubject = ref({
+  periodName: '高中',
+  subjectName: '数学'
 })
+const currDisabledNav = ref(false)
+const subjectList = ref([
+  {
+    id: 1,
+    periodName: '高中',
+    subjectName: '数学'
+  },
+  {
+    id: 2,
+    periodName: '高中',
+    subjectName: '语文'
+  }
+])
+
+const handleSelect = (key) => {
+  console.log('Selected menu item:', key)
+}
+
+const changeSubject = (subject) => {
+  currSubject.value = subject
+}
+
+const entryFirstMenu = (path) => {
+  console.log('Entering first menu:', path)
+}
+
+const isDisabledNav = (navType) => {
+  return false
+}
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .top-nav-position {
   height: 50px;
   position: relative;
@@ -151,7 +118,7 @@ export default defineComponent({
 
 .top-nav {
   height: 50px;
-  background: $color-white;
+  background: #fff;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
   z-index: 1002;
 
@@ -164,7 +131,7 @@ export default defineComponent({
   .top-nav-content {
     height: 50px;
     border-bottom: none;
-    background-color: $color-white;
+    background-color: #fff;
 
     .top-nav-item {
       height: 50px;
@@ -172,24 +139,24 @@ export default defineComponent({
       float: left;
       position: relative;
       margin: 0 32px 0 0;
-      font-size: $font-size-medium;
+      font-size: 14px;
 
       &:hover {
         .text {
-          color: $color-theme;
+          color: #487FFF;
         }
       }
 
       .text {
-        color: $color-text;
-        font-size: $font-size-medium;
+        color: #333;
+        font-size: 14px;
       }
 
       &.is-active {
-        border-bottom: 2px solid $color-theme;
+        border-bottom: 2px solid #487FFF;
 
         .text {
-          color: $color-theme;
+          color: #487FFF;
         }
       }
     }
@@ -198,11 +165,11 @@ export default defineComponent({
       margin-right: 32px;
 
       .text {
-        color: $color-text;
-        font-size: $font-size-medium;
+        color: #333;
+        font-size: 14px;
 
         .iconfont {
-          font-size: $font-size-medium;
+          font-size: 14px;
           margin-right: 4px;
         }
 
@@ -214,7 +181,11 @@ export default defineComponent({
       .icon-triangle {
         position: absolute;
         top: 22px;
-        @include triangle(down, 6px, $color-text);
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #333;
         transition: 0.2s ease-in;
         margin-left: 14px;
 
@@ -225,23 +196,31 @@ export default defineComponent({
 
       &:hover {
         .text {
-          color: $color-theme;
+          color: #487FFF;
         }
 
         .icon-triangle {
-          @include triangle(down, 6px, $color-theme);
+          width: 0;
+          height: 0;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-top: 6px solid #487FFF;
         }
       }
 
       &.is-active {
-        border-bottom: 2px solid $color-theme;
+        border-bottom: 2px solid #487FFF;
 
         .text {
-          color: $color-theme;
+          color: #487FFF;
         }
 
         .icon-triangle {
-          @include triangle(down, 6px, $color-theme);
+          width: 0;
+          height: 0;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-top: 6px solid #487FFF;
         }
       }
     }
@@ -260,23 +239,23 @@ export default defineComponent({
     line-height: 42px;
     padding: 0 20px;
     min-width: 120px;
-    color: $color-text;
-    font-size: $font-size-medium;
+    color: #333;
+    font-size: 14px;
 
     &:hover {
-      background: $color-background;
-      color: $color-theme;
+      background: #f5f7fa;
+      color: #487FFF;
     }
 
     &.active-subject {
-      color: $color-theme;
+      color: #487FFF;
     }
   }
 
   .dropdown-menu-item2 {
     &:hover {
-      background: $color-background;
-      color: $color-theme;
+      background: #f5f7fa;
+      color: #487FFF;
     }
   }
 }

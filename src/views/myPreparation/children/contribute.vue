@@ -263,6 +263,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .content-container {
     width: 100%;
@@ -335,7 +338,7 @@ export default {
         }
     }
 
-    :deep(.el-dialog__footer) {
+    :deep(.el-dialog__footer)) {
         text-align: center !important;
     }
 }

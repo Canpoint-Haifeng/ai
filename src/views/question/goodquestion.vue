@@ -11,10 +11,10 @@
           <div class="content">
             <top-pagintion
               :current-page="questionsData.page"
-              @update:current-page="questionsData.page = $event"
               suffix="题"
               :total="questionsData.count"
               :page-size="questionsData.pageSize"
+              @update:current-page="questionsData.page = $event"
               @change-page="handleCurrentChange"
             />
           </div>

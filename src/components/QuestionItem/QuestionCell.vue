@@ -13,7 +13,10 @@ eg:
   属性是否显示
  -->
 <template>
-  <div class="ques-origin" v-renderjax>
+  <div
+    v-renderjax
+    class="ques-origin"
+  >
     <!-- 听力题干展示区 -->
     <!-- <div class="ques-topic" v-if="level === 1 && rule.h">
       <div>{{ questionNum || '' }}.</div>
@@ -25,19 +28,25 @@ eg:
     <div v-if="level === 1 || quesStructPm != '23'">
       <div v-if="rule.s && checkStem">
         <div class="ques-topic clearfix">
-          <span class="ques-type" v-html="getStem(ques)"></span>
+          <span
+            class="ques-type"
+            v-html="getStem(ques)"
+          />
         </div>
       </div>
       <div
-        class="ques-option"
         v-if="rule.o && checkStem && getOptions(ques)"
         v-autos
+        class="ques-option"
       >
-        <span v-for="(suboption, index) in getOptions(ques)" :key="index">
+        <span
+          v-for="(suboption, index) in getOptions(ques)"
+          :key="index"
+        >
           <span
             class="ques-content"
             v-html="combinedOption(suboption, index)"
-          ></span>
+          />
         </span>
         <!-- <span v-if="fillchoice" class="ques-content">
           <longfill>&nbsp;</longfill>
@@ -47,20 +56,29 @@ eg:
     <div v-else>
       <div class="nostem-ques-topic">
         <div class="nostem-no">
-          <span class="ques-type" v-html="getStem()"></span>
+          <span
+            class="ques-type"
+            v-html="getStem()"
+          />
         </div>
         <div
-          class="nostem-ques-option"
           v-if="rule.o && getOptions(ques)"
           v-autos
+          class="nostem-ques-option"
         >
-          <span v-for="(suboption, index) in getOptions(ques)" :key="index">
+          <span
+            v-for="(suboption, index) in getOptions(ques)"
+            :key="index"
+          >
             <span
               class="ques-content"
               v-html="combinedOption(suboption, index)"
-            ></span>
+            />
           </span>
-          <span v-if="fillchoice" class="ques-content">
+          <span
+            v-if="fillchoice"
+            class="ques-content"
+          >
             <longfill>&nbsp;</longfill>
           </span>
         </div>
@@ -86,13 +104,13 @@ eg:
       <ti-question-cell
         v-for="(child, index) in ques.children"
         :key="index"
-        :childIndex="index"
-        :showExplain="showExplain"
-        :showAttr="showAttr"
+        :child-index="index"
+        :show-explain="showExplain"
+        :show-attr="showAttr"
         :level="level + 1"
-        :quesStructPm="quesStructPm"
+        :ques-struct-pm="quesStructPm"
         :ques="child"
-      ></ti-question-cell>
+      />
     </div>
     <!-- 答案解析展示区 -->
     <!-- <div v-if="ques.explain && showExplain">
@@ -112,7 +130,7 @@ eg:
   import CTS from '@/common/js/constant'
   // import answerAnalysis from './AnswerAnalysis'
   export default {
-    name: 'ti-question-cell',
+    name: 'TiQuestionCell',
     props: {
       ques: {
         type: Object,
@@ -155,12 +173,6 @@ eg:
         default: 832,
       },
     },
-
-    watch: {
-      ques() {
-        this.renderRule()
-      },
-    },
     data() {
       return {
         ourQuesType: '1',
@@ -197,6 +209,12 @@ eg:
       /* loginStatus() {
       return isLogin
     } */
+    },
+
+    watch: {
+      ques() {
+        this.renderRule()
+      },
     },
     created() {
       // console.log(this.showQuestionNum)
@@ -418,6 +436,9 @@ eg:
 </style>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .ques-origin {
     overflow: hidden;
     .ques-option {

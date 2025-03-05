@@ -127,7 +127,17 @@
                           background: colors[Math.ceil(v.importance)].color,
                         }"
                       >{{ colors[Math.ceil(v.importance)].name }}</span>
-                    </i></template></template>
+                    </i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+</template>
                     <span>{{ v.name }}</span>
                   </div>
                   <!-- <i
@@ -135,7 +145,7 @@
                     class="el-icon-circle-plus-outline"
                     style="color:#487FFF"
                     @click="addExampleQue(item, v)"
-                  ></i></template></template> -->
+                  ></i></template> -->
                 </div>
                 <div class="flex flex-col example-config-wrap">
                   <div
@@ -294,14 +304,14 @@
                           background: colors[Math.ceil(v.importance)].color,
                         }"
                       >{{ colors[Math.ceil(v.importance)].name }}</span>
-                    </i></template></template>
+                    </i></template>
                     <span>{{ v.name }}</span>
                   </div>
                   <!-- <i
                     class="el-icon-circle-plus-outline"
                     style="color:#487FFF"
                     @click="addExampleQue(item, v)"
-                  ></i></template></template> -->
+                  ></i></template> -->
                 </div>
                 <div class="flex flex-col example-config-wrap">
                   <div
@@ -1929,6 +1939,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .none-right-border {
   border-right: none !important;
 }
@@ -2359,10 +2372,10 @@ export default {
         border: none;
         .card-wrap {
           .card-content {
-            :deep(.el-icon-arrow-up:before) {
+            :deep(.el-icon-arrow-up:before)) {
               color: #333333;
             }
-            :deep(.el-select) {
+            :deep(.el-select)) {
               height: 32px;
               margin: 5px 0;
               width: 82px;
@@ -2583,7 +2596,7 @@ export default {
                 width: 260px;
                 padding: 0 12px;
 
-                :deep(.el-select) {
+                :deep(.el-select)) {
                   padding: 5px 0;
                   width: 82px;
                   font-family: MicrosoftYaHei, MicrosoftYaHei;
@@ -2629,7 +2642,7 @@ export default {
               border-bottom: 1px solid #e2e2e2;
               border-right: 1px solid #e2e2e2;
 
-              :deep(.el-input-number) {
+              :deep(.el-input-number)) {
                 width: 100px;
                 margin: 0;
                 height: 28px;
@@ -2872,7 +2885,7 @@ export default {
   }
 }
 
-:deep(.el-input-number) {
+:deep(.el-input-number)) {
   width: 120px;
   line-height: 30px;
   margin-right: 12px;
@@ -2897,7 +2910,7 @@ export default {
   }
 }
 
-:deep(.questionWrap) {
+:deep(.questionWrap)) {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   justify-content: space-around;
@@ -2920,7 +2933,7 @@ export default {
   }
 }
 
-:deep(.regionWrap) {
+:deep(.regionWrap)) {
   .el-input__inner {
     border-radius: 4px;
   }
@@ -2946,7 +2959,7 @@ export default {
   color: #ff0000;
 }
 
-:deep(.nameTag) {
+:deep(.nameTag)) {
   &.gray {
     background: rgba(153, 153, 153, 0.05);
     border-radius: 4px;
@@ -3010,11 +3023,11 @@ export default {
   }
 }
 
-:deep(.el-dialog__body) {
+:deep(.el-dialog__body)) {
   padding: 30px 20px;
 }
 
-:deep(.el-dialog__footer) {
+:deep(.el-dialog__footer)) {
   text-align: center;
 }
 

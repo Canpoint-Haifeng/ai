@@ -43,6 +43,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .similar-content {
   min-height: 200px;
   max-height: 600px;

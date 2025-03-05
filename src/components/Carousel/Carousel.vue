@@ -56,10 +56,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .app-carousel {
     width: 100%;
     height: 100%;
-    :deep(.el-carousel) {
+    :deep(.el-carousel)) {
       border-radius: 6px;
       &.el-carousel--horizontal {
         overflow-y: hidden;

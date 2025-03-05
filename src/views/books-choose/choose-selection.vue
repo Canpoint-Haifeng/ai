@@ -39,7 +39,7 @@
         <div class="user-content-left-route">
           <!-- <div class="header">
             <span>{{ bookName }}</span>
-            <i #reference" class="iconfont iconqiehuan" @click="goBookIndex"></i></template></template>
+            <i #reference" class="iconfont iconqiehuan" @click="goBookIndex"></i></template>
           </div> -->
           <div
             v-loading="treeLoading"
@@ -333,6 +333,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .content-top {
   background-color: $color-white;
   display: flex;
@@ -439,16 +442,16 @@ export default {
     width: 914px;
     background-color: $color-white;
 
-    :deep(.el-tabs .el-tabs__header) {
+    :deep(.el-tabs .el-tabs__header)) {
       padding: 0 20px;
       margin: 0;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
       background-color: $color-theme;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
       color: $color-theme;
     }
   }

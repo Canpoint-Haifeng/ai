@@ -665,6 +665,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .pay-content {
   padding: 20px 10px;
   width: 240px;
@@ -928,25 +931,25 @@ export default {
     line-height: 20px;
   }
 }
-.pay-wrapper :deep(.el-dialog__body) {
+.pay-wrapper :deep(.el-dialog__body)) {
   padding: 0 20px;
 }
-.pay-wrapper :deep(.el-dialog__footer) {
+.pay-wrapper :deep(.el-dialog__footer)) {
   padding: 20px;
 }
-.pay-wrapper :deep(.el-form-item) {
+.pay-wrapper :deep(.el-form-item)) {
   margin-bottom: 10px;
 }
-.pay-wrapper :deep(.el-radio__label) {
+.pay-wrapper :deep(.el-radio__label)) {
   padding-left: 6px;
 }
-.pay-wrapper :deep(.el-radio) {
+.pay-wrapper :deep(.el-radio)) {
   margin-right: 12px;
   &:last-child {
     margin-right: 0;
   }
 }
-.pay-wrapper :deep(.line42) {
+.pay-wrapper :deep(.line42)) {
   .el-radio {
     line-height: 42px;
   }

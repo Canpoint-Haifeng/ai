@@ -338,14 +338,14 @@ export default defineComponent({
   }
 }
 .subject-item-select {
-  :deep(.el-input) {
+  :deep(.el-input)) {
     width: 300px;
   }
-  :deep(.el-input__inner) {
+  :deep(.el-input__inner)) {
     padding: 0 30px 0 5px;
     border-radius: 4px;
   }
-  :deep(.el-input__icon) {
+  :deep(.el-input__icon)) {
     line-height: 32px;
   }
 }

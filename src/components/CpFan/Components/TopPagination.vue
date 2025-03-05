@@ -2,10 +2,10 @@
   <div class="top-pagination">
     <el-pagination
       :current-page="currentPage"
-      @update:current-page="currentPage = $event"
       :page-size="pageSize"
       :total="total"
       layout="prev, pager, next"
+      @update:current-page="currentPage = $event"
       @current-change="handleCurrentChange"
     />
   </div>
@@ -44,6 +44,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .top-pagination {
   display: flex;
   justify-content: center;

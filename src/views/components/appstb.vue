@@ -12,7 +12,11 @@
       </div>
     </div>
     <div class="content">
-      <router-view v-#{ Component }">
+      <router-view
+        v-#{
+        Component
+        }"
+      >
         <keep-alive>
           <component :is="Component" />
         </keep-alive>
@@ -60,6 +64,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 @use '@/assets/css/_variables' as vars;
 
 .appstb-wrapper {

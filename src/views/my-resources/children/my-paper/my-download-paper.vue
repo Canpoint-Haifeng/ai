@@ -9,9 +9,9 @@
 
       <top-pagintion
         :current-page="pageData.currPage"
-        @update:current-page="pageData.currPage = $event"
         :total="pageData.totalCount"
         :page-size="pageData.pageSize"
+        @update:current-page="pageData.currPage = $event"
         @change-page="handleCurrentChange"
       />
 
@@ -39,7 +39,7 @@
           @page-curr-change="handleCurrentChange"
         />
         <!-- <div class="pagination-container" v-if="pageData.list.length">
-          <el-pagination @current-change="handleCurrentChange" background :current-page.sync="pageData.currPage"
+          <el-pagination @current-change="handleCurrentChange" background :current-page="pageData.currPage" @update:current-page="pageData.currPage = $event"
             :page-size="pageData.pageSize" layout="prev, pager, next, jumper" :total="pageData.totalCount">
           </el-pagination>
         </div> -->
@@ -261,6 +261,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .user-content-right {
   width: 934px;
   background-color: $color-white;
@@ -310,17 +313,17 @@ export default {
   padding: 30px 20px 20px;
 }
 
-:deep(.el-pagination.is-background .el-pager li) {
+:deep(.el-pagination.is-background .el-pager li)) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-next) {
+:deep(.el-pagination.is-background .btn-next)) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-prev) {
+:deep(.el-pagination.is-background .btn-prev)) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }

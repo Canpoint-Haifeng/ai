@@ -4,7 +4,10 @@
       <div class="top-menu">
         <ul class="top-menu-list fr">
           <li class="list-item">
-            <span class="text" @click="showLogin">登录</span>
+            <span
+              class="text"
+              @click="showLogin"
+            >登录</span>
           </li>
         </ul>
       </div>
@@ -30,6 +33,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 @use "@/assets/css/variables" as *;
 .top-bar {
   width: 100%;

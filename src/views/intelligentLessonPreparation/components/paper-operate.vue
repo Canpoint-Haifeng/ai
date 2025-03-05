@@ -22,7 +22,7 @@
         <i class="iconfont icon-baocun" /> 保存试卷
       </el-button>
       <!-- <el-button class="btn btn-border" @click="showAnswerSheet"
-        ><i class="iconfont icondatika"></i></template></template> 下载答题卡</el-button
+        ><i class="iconfont icondatika"></i></template> 下载答题卡</el-button
       > -->
       <el-button
         class="btn btn-border"
@@ -65,11 +65,11 @@
     <el-dialog
       v-if="scoreDialog.visible"
       :visible="scoreDialog.visible"
-      @update:visible="scoreDialog.visible = $event"
       :title="scoreDialog.title"
       :modal-append-to-body="false"
       :lock-scroll="false"
       :width="scoreDialog.width"
+      @update:visible="scoreDialog.visible = $event"
     >
       <div class="score-dialog-content">
         <div class="score-scroll">
@@ -236,11 +236,11 @@
     <el-dialog
       v-if="saveDialog.visible"
       :visible="saveDialog.visible"
-      @update:visible="saveDialog.visible = $event"
       :title="saveDialog.title"
       :modal-append-to-body="false"
       :lock-scroll="false"
       :width="saveDialog.width"
+      @update:visible="saveDialog.visible = $event"
     >
       <div class="save-dialog-content">
         <el-form
@@ -839,6 +839,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .paper-operate {
   // height: 225px;
   background: $color-white;
@@ -975,7 +978,7 @@ export default {
 .operate-cp-number-input {
   width: 100px;
 }
-.operate-cp-number-input :deep() {
+.operate-cp-number-input :deep()) {
   .el-input__inner {
     line-height: 24px;
     padding: 0 10px;
@@ -988,7 +991,7 @@ export default {
 }
 
 .form-input-paper-maker {
-  :deep() {
+  :deep()) {
     .el-input__inner {
       border-radius: 4px;
     }

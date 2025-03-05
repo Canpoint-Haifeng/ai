@@ -1,7 +1,6 @@
 <template>
   <el-dialog
     :visible="visible"
-    @update:visible="visible = $event"
     title="提示"
     width="600px"
     class="auth-dialog"
@@ -9,6 +8,7 @@
     :append-to-body="true"
     :lock-scroll="false"
     :closed="hide"
+    @update:visible="visible = $event"
   >
     <div class="auth-container">
       {{ msg || '抱歉，该功能仅限VIP用户/专业和高级学校用户使用'
@@ -53,7 +53,10 @@
 </script>
 
 <style lang="scss" scoped>
-  :deep(.auth-dialog) {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+  :deep(.auth-dialog)) {
     .el-dialog {
       width: 600px;
       // height: 520px;

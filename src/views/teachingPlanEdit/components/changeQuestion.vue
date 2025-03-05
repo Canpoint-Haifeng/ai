@@ -2,10 +2,10 @@
   <div>
     <el-drawer
       :visible="visible"
-      @update:visible="visible = $event"
       title="换题"
       direction="rtl"
       size="800px"
+      @update:visible="visible = $event"
     >
       <div class="drawer_content">
         <div class="switch_tab">
@@ -34,9 +34,9 @@
         <div class="sort_total">
           <div class="sort_list">
             <!-- <span :class="formData.sortType === 2 ? 'active' : ''" @click="changeSortType(2)">最新<i
-                            class="iconfont icon-transfer_2_line"></i></template></template></span>
+                            class="iconfont icon-transfer_2_line"></i></template></span>
                         <span :class="formData.sortType === 3 ? 'active' : ''" @click="changeSortType(3)">最热<i
-                            class="iconfont icon-transfer_2_line"></i></template></template></span> -->
+                            class="iconfont icon-transfer_2_line"></i></template></span> -->
           </div>
           <div class="total">
             共 <span>{{ pagination.total }}</span> 题
@@ -170,7 +170,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-drawer) {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+:deep(.el-drawer)) {
     .el-drawer__body .drawer_content{
         padding: 0 20px;
         .switch_tab {

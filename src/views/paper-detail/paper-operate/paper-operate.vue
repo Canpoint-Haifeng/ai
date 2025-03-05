@@ -17,7 +17,7 @@
       </el-button>
     </div>
     <div class="item">
-      <!-- <el-button class="btn btn-border" @click="queryOrderLogin(paperData)"><i class="iconfont iconxiazai"></i></template></template>下载试卷</el-button> -->
+      <!-- <el-button class="btn btn-border" @click="queryOrderLogin(paperData)"><i class="iconfont iconxiazai"></i></template>下载试卷</el-button> -->
       <el-button
         class="btn btn-border"
         @click="onShowAnalysisDialogLogin(paperData)"
@@ -54,7 +54,7 @@
     </div>
     <!-- <div class="item item-download" @click="queryOrderLogin(paperData)">
       <el-button class="btn btn-border">
-        <i class="iconfont iconplus-download"></i></template></template> 下载试卷
+        <i class="iconfont iconplus-download"></i></template> 下载试卷
       </el-button>
     </div>
     <div class="item item-download" @click="grouppaperLogin(paperData)">
@@ -73,7 +73,7 @@
           :subjectCode="currSubject.subjectCode"
           @showAppLogin="showAppLogin"
         >
-          <template v-slot:reference>
+          <template #reference>
             <div class="paper-share-block">
               <span class="iconfont iconhaotifenxiang"></span>分享
             </div>
@@ -424,6 +424,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .paper-operate {
   // height: 280px;
@@ -494,14 +497,14 @@ export default {
     }
   }
 
-  .item-checkbox :deep(.el-checkbox__label) {
+  .item-checkbox :deep(.el-checkbox__label)) {
       color: $color-text;
       font-size: $font-size-small;
     }
   }
 
   .analysis {
-    :deep(.el-button) {
+    :deep(.el-button)) {
       width: 100%;
       display: flex;
       justify-content: center;

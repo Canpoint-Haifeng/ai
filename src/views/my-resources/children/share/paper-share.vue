@@ -311,6 +311,9 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
   .user-content-right {
     width: 934px;
@@ -404,7 +407,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
         }
       }
     }
-    :deep(.paper-search) {
+    :deep(.paper-search)) {
       display: inline-block;
       margin: 0 30px 0 110px;
       width: 174px;
@@ -416,7 +419,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
         right: 12px;
       }
     }
-    :deep(.paper-show-answer) {
+    :deep(.paper-show-answer)) {
       display: inline-block;
       margin-right: 30px;
       .el-checkbox__inner {

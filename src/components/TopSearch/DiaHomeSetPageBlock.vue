@@ -1,48 +1,80 @@
 <template>
   <el-dialog
-    :title="messageDialog.title"
     v-model="messageDialog.visible"
+    :title="messageDialog.title"
     :modal-append-to-body="false"
     :lock-scroll="false"
     :show-close="true"
     :width="messageDialog.width"
     @close="onClose"
   >
-    <div v-loading="loading" class="select-home-block-segment">
-      <div class="select-home-title">我的订阅</div>
+    <div
+      v-loading="loading"
+      class="select-home-block-segment"
+    >
+      <div class="select-home-title">
+        我的订阅
+      </div>
       <div
-        class="select-home-block-item"
         v-for="item in boxList"
         :key="'selected' + item.id"
+        class="select-home-block-item"
       >
         <div class="block-item">
-          <img class="block-item-img" :src="item.iconImg" alt="" />
+          <img
+            class="block-item-img"
+            :src="item.iconImg"
+            alt=""
+          >
         </div>
-        <div class="block-name">{{ item.name }}</div>
+        <div class="block-name">
+          {{ item.name }}
+        </div>
       </div>
-      <div class="select-home-title">选题路径</div>
+      <div class="select-home-title">
+        选题路径
+      </div>
       <div
-        class="select-home-block-item"
         v-for="item in userAllConfig"
         :key="item.id"
+        class="select-home-block-item"
         @click="onSelectConfig(item)"
       >
         <div class="block-item">
-          <img class="block-item-img" :src="item.iconImg" alt="" />
+          <img
+            class="block-item-img"
+            :src="item.iconImg"
+            alt=""
+          >
         </div>
-        <div class="block-name">{{ item.name }}</div>
+        <div class="block-name">
+          {{ item.name }}
+        </div>
         <div class="block-check">
           <span
-            class="iconfont iconweishoucang"
             v-if="checklist[item.id]"
-          ></span>
-          <span class="iconfont-no-select" v-else></span>
+            class="iconfont iconweishoucang"
+          />
+          <span
+            v-else
+            class="iconfont-no-select"
+          />
         </div>
       </div>
     </div>
     <div class="set-page-block-footer">
-      <div class="cp-btn gray" @click="resetBoxList">恢复默认</div>
-      <div class="cp-btn blue" @click="messageDialog.visible = false">确认</div>
+      <div
+        class="cp-btn gray"
+        @click="resetBoxList"
+      >
+        恢复默认
+      </div>
+      <div
+        class="cp-btn blue"
+        @click="messageDialog.visible = false"
+      >
+        确认
+      </div>
     </div>
   </el-dialog>
 </template>

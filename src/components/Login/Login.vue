@@ -9,13 +9,20 @@
       :lock-scroll="false"
       :close-on-click-modal="false"
       :visible="visible"
-      @update:visible="visible = $event"
       :closed="hide"
+      @update:visible="visible = $event"
     >
       <div class="login-container">
-        <div class="login-left" :style="loginLeftStyle">
+        <div
+          class="login-left"
+          :style="loginLeftStyle"
+        >
           <div class="login-logo">
-            <img src="@/assets/images/logo-slogan.svg" alt="logo" height="30" />
+            <img
+              src="@/assets/images/logo-slogan.svg"
+              alt="logo"
+              height="30"
+            >
           </div>
         </div>
         <div class="login-right">
@@ -25,18 +32,26 @@
                 class="tabs-text"
                 :class="{ active: currentIndex === 0 }"
                 @click="tabHandle(0)"
-                >账号密码登录</span
-              >
+              >账号密码登录</span>
               <span
                 class="tabs-text"
                 :class="{ active: currentIndex === 1 }"
                 @click="tabHandle(1)"
-                >验证码登录</span
-              >
+              >验证码登录</span>
             </div>
-            <div class="tabs-content" v-show="currentIndex === 0">
-              <el-form :model="loginData" :rules="loginRules" ref="loginForm">
-                <el-form-item prop="account" class="form-item">
+            <div
+              v-show="currentIndex === 0"
+              class="tabs-content"
+            >
+              <el-form
+                ref="loginForm"
+                :model="loginData"
+                :rules="loginRules"
+              >
+                <el-form-item
+                  prop="account"
+                  class="form-item"
+                >
                   <el-input
                     v-model="loginData.account"
                     placeholder="请输入手机号/邮箱"
@@ -44,8 +59,18 @@
                     class="form-input"
                   >
                     <template #prefix>
-                      <i class="el-icon-user"></i></template></template>
+                      <i class="el-icon-user" />
                     </template>
+                  </el-input>
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
                   </el-input>
                 </el-form-item>
                 <el-form-item prop="password" class="form-item">
@@ -58,7 +83,7 @@
                     class="form-input"
                   >
                     <template #prefix>
-                      <i class="el-icon-key"></i></template></template>
+                      <i class="el-icon-key"></i></template>
                     </template>
                   </el-input>
                 </el-form-item>
@@ -113,7 +138,7 @@
                     class="form-input"
                   >
                     <template #prefix>
-                      <i class="el-icon-mobile-phone"></i></template></template>
+                      <i class="el-icon-mobile-phone"></i></template>
                     </template>
                   </el-input>
                 </el-form-item>
@@ -133,7 +158,7 @@
                     class="form-input"
                   >
                     <template #prefix>
-                      <i class="el-icon-key"></i></template></template>
+                      <i class="el-icon-key"></i></template>
                     </template>
                   </el-input>
                   <div
@@ -340,14 +365,6 @@ export default {
       loginLeftStyle: {}, // 可以修改背景的 样式设置
     }
   },
-  created() {
-    let index = Math.floor(Math.random() * loginLeftList.length)
-    // console.log(loginLeftList.length,index)
-    this.loginLeftStyle = {
-      background: `url(${loginLeftList[index]}) no-repeat`,
-      backgroundSize: '412px 540px',
-    }
-  },
   computed: {
     isValue() {
       return !!(this.loginData.account && this.loginData.password)
@@ -369,6 +386,14 @@ export default {
         // this.wxLoginInit()
       }
     },
+  },
+  created() {
+    let index = Math.floor(Math.random() * loginLeftList.length)
+    // console.log(loginLeftList.length,index)
+    this.loginLeftStyle = {
+      background: `url(${loginLeftList[index]}) no-repeat`,
+      backgroundSize: '412px 540px',
+    }
   },
   methods: {
     onCheckCodeSuccess(params) {
@@ -609,7 +634,10 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.login-dialog :deep(.el-dialog) {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.login-dialog :deep(.el-dialog)) {
     width: 824px;
     padding: 0px;
     box-sizing: border-box;
@@ -679,7 +707,7 @@ export default {
     .noCaptcha-wrapper {
       margin-bottom: 22px;
     }
-    .form-item :deep(.icon-box) {
+    .form-item :deep(.icon-box)) {
       position: relative;
       margin-bottom: 30px;
         position: absolute;
@@ -825,7 +853,7 @@ export default {
     }
 
     .form-item-agree {
-      :deep(.el-checkbox__label) {
+      :deep(.el-checkbox__label)) {
         font-size: 12px;
         padding-left: 6px;
         .text {
@@ -897,7 +925,7 @@ export default {
     color: #487fff;
     font-size: 12px;
   }
-  :deep(.el-checkbox__label) {
+  :deep(.el-checkbox__label)) {
     font-size: 12px;
     padding-left: 6px;
   }

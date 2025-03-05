@@ -70,10 +70,10 @@
           <el-button type="text" @click="change">换题</el-button>
           <el-button type="text">报错</el-button>
            <template v-if="sort">
-              <el-button type="text"><i class="el-icon-top"></i></template></template></el-button>
-              <el-button type="text"><i class="el-icon-bottom"></i></template></template></el-button>
+              <el-button type="text"><i class="el-icon-top"></i></template></el-button>
+              <el-button type="text"><i class="el-icon-bottom"></i></template></el-button>
           </template>
-          <i class="icon el-icon-delete" @click="del"></i></template></template>
+          <i class="icon el-icon-delete" @click="del"></i></template>
       </div>-->
     <div
       v-if="[2, 3].includes(+type)"
@@ -190,6 +190,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .question {
   border: 1px solid transparent;
   min-height: 100px;
@@ -274,7 +277,7 @@ export default {
       display: flex;
       align-items: center;
     }
-    :deep(.el-button) {
+    :deep(.el-button)) {
       margin-left: 12px;
       display: flex;
       align-items: center;

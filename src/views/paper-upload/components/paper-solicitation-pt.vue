@@ -404,6 +404,9 @@ import { ElMessage } from 'element-plus'
   }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
   .paper-solicitation-pt {
     padding: 20px 20px;
@@ -413,7 +416,7 @@ import { ElMessage } from 'element-plus'
         display: flex;
         justify-content: space-between;
 
-        :deep(.el-form-item) {
+        :deep(.el-form-item)) {
           .el-radio-group {
             .el-radio-button {
               margin-right: 16px;
@@ -542,7 +545,7 @@ import { ElMessage } from 'element-plus'
       }
     }
 
-    :deep(.upload-dia) {
+    :deep(.upload-dia)) {
       .el-dialog__header {
         background: #f3f7fb;
         line-height: 44px;
@@ -665,11 +668,11 @@ import { ElMessage } from 'element-plus'
   }
 
   .demo-form-inline {
-    :deep(.el-form-item__label) {
+    :deep(.el-form-item__label)) {
         color: #999999;
       }
     }
-    :deep(.el-radio-button--mini .el-radio-button__inner) {
+    :deep(.el-radio-button--mini .el-radio-button__inner)) {
         font-size: 14px;
       }
     }

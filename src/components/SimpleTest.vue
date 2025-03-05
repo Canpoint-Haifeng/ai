@@ -2,7 +2,9 @@
   <div class="simple-test">
     <h2>Simple Vue 3 Test</h2>
     <p>Counter: {{ count }}</p>
-    <button @click="increment">Increment</button>
+    <button @click="increment">
+      Increment
+    </button>
   </div>
 </template>
 

@@ -8,15 +8,19 @@
       :append-to-body="true"
       :lock-scroll="false"
       :visible="visible"
-      @update:visible="visible = $event"
       :closed="hide"
+      @update:visible="visible = $event"
     >
       <div
-        class="login-container"
         v-if="!(registerRewards && registerRewards.length)"
+        class="login-container"
       >
         <div class="login-logo">
-          <img src="@/assets/images/logo-slogan.svg" alt="logo" height="30" />
+          <img
+            src="@/assets/images/logo-slogan.svg"
+            alt="logo"
+            height="30"
+          >
           <!-- <span class="interval"></span> -->
           <!-- <img src="@/assets/images/slogan.svg" width="104" /> -->
         </div>
@@ -26,21 +30,40 @@
             <!-- <div class="tips">注册即可获得10颗胖大海和3张下载券</div> -->
           </h2>
 
-          <el-form :model="loginData" :rules="loginRules" ref="loginForm">
-            <el-form-item prop="account" class="form-item">
+          <el-form
+            ref="loginForm"
+            :model="loginData"
+            :rules="loginRules"
+          >
+            <el-form-item
+              prop="account"
+              class="form-item"
+            >
               <el-input
-                class="form-input"
                 v-model="loginData.account"
+                class="form-input"
                 placeholder="请输入手机号"
                 autocomplete="off"
                 @blur="onFocus"
               >
-                <template #prefix><i class="el-icon-mobile-phone"></i></template></template>
+                <template #prefix>
+                  <i class="el-icon-mobile-phone" />
+                </template>
               </el-input>
             </el-form-item>
-            <el-form-item prop="password" class="form-item">
+            <el-form-item
+              prop="password"
+              class="form-item"
+            >
               <span class="icon-box">
-                <i class="el-icon-key"></i></template></template>
+                <i class="el-icon-key" /></span>
+            </el-form-item>
+          </el-form>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
               </span>
               <el-input
                 class="form-input"
@@ -50,7 +73,7 @@
                 type="password"
                 @blur="onFocus"
               >
-                <template #prefix><i class="el-icon-key"></i></template></template>
+                <template #prefix><i class="el-icon-key"></i></template>
               </el-input>
             </el-form-item>
             <div class="noCaptcha-wrapper">
@@ -67,7 +90,7 @@
                 autocomplete="off"
                 @blur="onFocus"
               >
-                <template #prefix><i class="el-icon-key"></i></template></template>
+                <template #prefix><i class="el-icon-key"></i></template>
               </el-input>
               <div class="code-btn" v-if="loginData.vfcodeStatus">
                 <span>{{ loginData.vfcodeText }}</span>
@@ -161,6 +184,9 @@ import { API } from '@/api/config'
 import NoCaptcha from '@/components/NoCaptcha/NoCaptcha'
 let interval = null
 export default {
+  components: {
+    NoCaptcha,
+  },
   data() {
     let validateAccount = (rule, value, callback) => {
       if (value === '') {
@@ -491,9 +517,6 @@ export default {
       }, 1000)
     },
   },
-  components: {
-    NoCaptcha,
-  },
 }
 </script>
 
@@ -504,7 +527,10 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.login-dialog :deep(.el-dialog) {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.login-dialog :deep(.el-dialog)) {
     width: 824px;
     height: 540px;
     padding: 32px 32px 70px 32px;
@@ -546,7 +572,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    .form-item :deep() {
+    .form-item :deep()) {
       position: relative;
       .is-error {
         .form-input {
@@ -631,7 +657,7 @@ export default {
         opacity: 1;
       }
     }
-    .form-item-agree :deep() {
+    .form-item-agree :deep()) {
       margin-top: -5px;
       margin-bottom: 5px;
       .el-radio__input.is-checked + .el-radio__label {

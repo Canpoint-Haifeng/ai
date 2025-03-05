@@ -305,13 +305,13 @@
     <div class="dialog-wrapper">
       <el-dialog
         :visible="addDialog.visible"
-        @update:visible="addDialog.visible = $event"
         title="添加知识点"
         custom-class="knowledge-dia"
         :modal-append-to-body="false"
         :lock-scroll="false"
         :show-close="addDialog.showClose"
         :width="addDialog.width"
+        @update:visible="addDialog.visible = $event"
         @close="closes"
       >
         <div class="dialog-content">
@@ -381,13 +381,13 @@
       </el-dialog>
       <el-dialog
         :visible="reminderDialog.visible"
-        @update:visible="reminderDialog.visible = $event"
         title="温馨提示"
         custom-class="reminder-dia"
         :modal-append-to-body="false"
         :lock-scroll="false"
         :show-close="reminderDialog.showClose"
         :width="reminderDialog.width"
+        @update:visible="reminderDialog.visible = $event"
       >
         <div
           class="dialog-content"
@@ -1305,6 +1305,9 @@
   }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .breakdown-group-paper {
     width: 1200px;
     min-width: 1200px;
@@ -1385,7 +1388,7 @@
           width: 560px;
           padding-bottom: 20px;
 
-          :deep(.el-input) {
+          :deep(.el-input)) {
             .el-input__inner,
             .el-input__icon {
               height: 30px;
@@ -1409,7 +1412,7 @@
               padding-bottom: 10px;
             }
 
-            :deep(.el-select) {
+            :deep(.el-select)) {
               width: 270px;
               margin-right: 20px;
               margin-bottom: 30px;
@@ -1436,7 +1439,7 @@
             padding: 20px 30px;
 
             .edition {
-              :deep(.el-select) {
+              :deep(.el-select)) {
                 width: 270px;
                 margin-bottom: 20px;
 
@@ -1493,7 +1496,7 @@
                 width: 100px;
                 text-align: right;
               }
-              :deep(.el-input-number) {
+              :deep(.el-input-number)) {
                 span[role='button'] {
                   height: 28px;
                 }
@@ -1508,7 +1511,7 @@
           }
         }
 
-        :deep(.page-table) {
+        :deep(.page-table)) {
           .el-table {
             thead {
               th:first-child {

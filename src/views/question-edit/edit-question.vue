@@ -464,6 +464,9 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
   .edit-question-box {
     margin: 20px auto 70px auto;
@@ -596,10 +599,10 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
       }
     }
   }
-  :deep(.cp-select-input) {
+  :deep(.cp-select-input)) {
     width: 100%;
   }
-  :deep(.cp-select-component .pop-search-select) {
+  :deep(.cp-select-component .pop-search-select)) {
     width: 1120px;
   }
 

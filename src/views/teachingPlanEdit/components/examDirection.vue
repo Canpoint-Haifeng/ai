@@ -2,9 +2,9 @@
   <div>
     <el-dialog
       :visible="visible"
-      @update:visible="visible = $event"
       title="新增考向"
       width="480px"
+      @update:visible="visible = $event"
     >
       <div class="exam_content">
         <h6>知识点：{{ info.name || "" }}</h6>
@@ -98,7 +98,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-dialog) {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+:deep(.el-dialog)) {
   .exam_content {
     padding: 30px 30px 0;
     h6 {

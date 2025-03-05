@@ -1,93 +1,125 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="恭喜获得奖励"
-    width="420px"
-    class="cp-receive-reward-dialog"
-    :append-to-body="true"
-    :lock-scroll="false"
-    :close-on-click-modal="false"
-    :show-close="true"
+    :title="title"
+    :width="width"
+    :show-close="showClose"
+    :close-on-click-modal="closeOnClickModal"
+    :close-on-press-escape="closeOnPressEscape"
+    :before-close="handleClose"
   >
     <div class="reward-content">
       <div class="reward-icon">
-        <i class="iconfont iconreward"></i></template></template>
+        <i class="iconfont iconreward" />
       </div>
-      <div class="reward-title">{{ rewardInfo.title }}</div>
-      <div class="reward-desc">{{ rewardInfo.description }}</div>
+      <div class="reward-title">
+        <h3>{{ rewardTitle }}</h3>
+      </div>
+      <div class="reward-desc">
+        <p>{{ rewardDesc }}</p>
+      </div>
+      <div class="reward-btn">
+        <el-button
+          type="primary"
+          @click="handleConfirm"
+        >
+          {{ confirmButtonText }}
+        </el-button>
+      </div>
     </div>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button type="primary" @click="onConfirm">确定</el-button>
-      </div>
-    </template>
   </el-dialog>
 </template>
 
 <script>
-import { defineComponent, ref, reactive } from 'vue'
-
-export default defineComponent({
-  name: 'CpReceiveReward',
+export default {
   props: {
-    modelValue: {
+    visible: {
       type: Boolean,
       default: false
     },
-    rewardData: {
-      type: Object,
-      default: () => ({})
+    title: {
+      type: String,
+      default: '领取奖励'
+    },
+    width: {
+      type: String,
+      default: '400px'
+    },
+    showClose: {
+      type: Boolean,
+      default: true
+    },
+    closeOnClickModal: {
+      type: Boolean,
+      default: false
+    },
+    closeOnPressEscape: {
+      type: Boolean,
+      default: false
+    },
+    rewardTitle: {
+      type: String,
+      default: '恭喜您获得奖励'
+    },
+    rewardDesc: {
+      type: String,
+      default: '您已成功领取奖励，请在个人中心查看'
+    },
+    confirmButtonText: {
+      type: String,
+      default: '确定'
     }
   },
-  emits: ['update:modelValue', 'confirm'],
-  setup(props, { emit }) {
-    const visible = ref(props.modelValue)
-    
-    const rewardInfo = reactive({
-      title: props.rewardData.title || '恭喜获得奖励',
-      description: props.rewardData.description || '您已获得奖励，请查收'
-    })
-    
-    const onConfirm = () => {
-      emit('confirm')
-      emit('update:modelValue', false)
-    }
-    
-    return {
-      visible,
-      rewardInfo,
-      onConfirm
+  methods: {
+    handleClose() {
+      this.$emit('update:visible', false)
+    },
+    handleConfirm() {
+      this.$emit('confirm')
+      this.handleClose()
     }
   }
-})
+}
 </script>
 
 <style lang="scss" scoped>
-.cp-receive-reward-dialog {
-  .reward-content {
-    padding: 20px;
-    text-align: center;
-    
-    .reward-icon {
-      font-size: 48px;
-      color: #f5a623;
-      margin-bottom: 16px;
-    }
-    
-    .reward-title {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.reward-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  
+  .reward-icon {
+    font-size: 48px;
+    color: #f56c6c;
+    margin-bottom: 20px;
+  }
+  
+  .reward-title {
+    margin-bottom: 10px;
+    h3 {
       font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-    
-    .reward-desc {
-      font-size: 14px;
-      color: #666;
+      color: #333;
     }
   }
   
-  .dialog-footer {
+  .reward-desc {
+    margin-bottom: 20px;
     text-align: center;
+    p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+  }
+  
+  .reward-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 }
 </style>

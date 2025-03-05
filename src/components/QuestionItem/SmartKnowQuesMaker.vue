@@ -294,6 +294,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 // .question-wrapper {
 //   // margin-bottom: 20px;
@@ -464,7 +467,7 @@ export default defineComponent({
 .operate-cp-number-input {
   width: 55px;
 }
-.operate-cp-number-input :deep(.el-input__inner) {
+.operate-cp-number-input :deep(.el-input__inner)) {
     line-height: 20px;
     height: 20px;
     font-size: 12px;

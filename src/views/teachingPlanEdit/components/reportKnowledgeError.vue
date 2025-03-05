@@ -1,14 +1,14 @@
 <template>
   <div class="report-wrapper">
     <el-dialog
-      :visible="reportDialog.visible"
-      @update:visible="reportDialog.visible = $event"
       v-dialogDrag
+      :visible="reportDialog.visible"
       :title="reportDialog.title"
       :modal-append-to-body="false"
       :close-on-click-modal="false"
       :width="reportDialog.width"
       :destroy-on-close="true"
+      @update:visible="reportDialog.visible = $event"
       @close="resetForm('form')"
     >
       <div class="report-content">
@@ -285,7 +285,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.report-content :deep() {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.report-content :deep()) {
   padding: 40px 15px 0 10px;
 
   .el-form-item {

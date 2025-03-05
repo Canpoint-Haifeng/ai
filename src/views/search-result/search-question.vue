@@ -436,6 +436,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .paper-top-pagintion {
   padding: 0px 20px;
@@ -461,7 +464,7 @@ export default {
 .category-container {
   padding: 20px 20px 8px 20px;
   background: $color-white;
-  :deep(.category-content) {
+  :deep(.category-content)) {
     .category-list {
       width: 1200px;
     }

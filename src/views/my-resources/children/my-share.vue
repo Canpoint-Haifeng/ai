@@ -206,6 +206,9 @@
   }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .user-content {
     width: 1200px;
     min-height: 473px;
@@ -219,13 +222,13 @@
       width: 914px;
       min-height: 550px;
       background-color: $color-white;
-      :deep(.el-tabs .el-tabs__header) {
+      :deep(.el-tabs .el-tabs__header)) {
         padding: 0 20px;
       }
-      :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+      :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
         background-color: $color-theme;
       }
-      :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+      :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
         color: $color-theme;
       }
     }

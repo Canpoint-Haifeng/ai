@@ -1,7 +1,6 @@
 <template>
   <el-dialog
     :visible="dialogData.visible"
-    @update:visible="dialogData.visible = $event"
     custom-class="dia-three-gift-success"
     :title="dialogData.title"
     :modal-append-to-body="false"
@@ -9,6 +8,7 @@
     :close-on-click-modal="false"
     :show-close="false"
     :width="dialogWidth"
+    @update:visible="dialogData.visible = $event"
   >
     <div
       v-if="activityData"
@@ -114,7 +114,7 @@
     }
   }
 
-  :deep(.el-dialog.dia-three-gift-success) {
+  :deep(.el-dialog.dia-three-gift-success)) {
     background: transparent;
     box-shadow: none;
     border-radius: 10px;

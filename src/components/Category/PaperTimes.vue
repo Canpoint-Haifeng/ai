@@ -46,6 +46,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .category-content {
     padding: 5px 0;
     @include flex();
@@ -91,7 +94,7 @@
       }
     }
   }
-  .paper-times-picker :deep(.el-input__icon, .el-input__inner, .el-date-editor, .el-range-input) {
+  .paper-times-picker :deep(.el-input__icon, .el-input__inner, .el-date-editor, .el-range-input)) {
     .el-input__icon.el-range__close-icon {
       margin-left: -25px;
       line-height: 24px;

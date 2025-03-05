@@ -312,6 +312,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .user-content-right {
   width: 934px;
@@ -350,17 +353,17 @@ export default {
   margin-top: 20px;
 }
 
-:deep(.el-pagination.is-background .el-pager li) {
+:deep(.el-pagination.is-background .el-pager li)) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-next) {
+:deep(.el-pagination.is-background .btn-next)) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-prev) {
+:deep(.el-pagination.is-background .btn-prev)) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }

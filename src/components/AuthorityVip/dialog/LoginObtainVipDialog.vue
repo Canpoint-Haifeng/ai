@@ -1,7 +1,6 @@
 <template>
   <el-dialog
     :visible="visible"
-    @update:visible="visible = $event"
     title="每日VIP"
     width="676px"
     class="login-vip-dialog"
@@ -9,34 +8,41 @@
     :append-to-body="true"
     :lock-scroll="false"
     :closed="hide"
+    @update:visible="visible = $event"
   >
     <div class="login-vip-container">
       <div class="login-vip-left">
         <div class="login-vip-title">
-          <img src="@/assets/images/activity/viplogin1.png" alt="">
+          <img
+            src="@/assets/images/activity/viplogin1.png"
+            alt=""
+          >
         </div>
         <div class="login-vip-list">
           <div class="login-vip-list-item">
-            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span class="iconfont iconshiliangzhinengduixiang-" />
             <span>每日VIP权限下组卷免费下载次数<span class="c">10次/天</span>，试卷免费下载次数<span class="c">10次/天</span>，每月免费下载总题量<span class="c">1000道</span>；</span>
           </div>
           <div class="login-vip-list-item">
-            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span class="iconfont iconshiliangzhinengduixiang-" />
             <span>每日VIP权限期内无限次使用细目表组卷功能；</span>
           </div>
           <div class="login-vip-list-item">
-            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span class="iconfont iconshiliangzhinengduixiang-" />
             <span>单张试卷最大试题量70题；</span>
           </div>
           <div class="login-vip-list-item">
-            <span class="iconfont iconshiliangzhinengduixiang-"></span>
+            <span class="iconfont iconshiliangzhinengduixiang-" />
             <span>超出每日VIP权限范围的试题收费具体请查看"用户权限"。</span>
           </div>
         </div>
       </div>
       <div class="login-vip-right">
         <div class="login-vip-right-title">
-          <img src="@/assets/images/activity/viplogin2.png" alt="">
+          <img
+            src="@/assets/images/activity/viplogin2.png"
+            alt=""
+          >
         </div>
         <div class="login-vip-right-content">
           <div class="login-vip-right-content-title">
@@ -129,6 +135,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 @use "@/assets/css/variables" as *;
 .login-vip-container {
   padding: 20px;

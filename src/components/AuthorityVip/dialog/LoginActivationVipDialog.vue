@@ -2,7 +2,6 @@ import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
 <template>
   <el-dialog
     :visible="visible"
-    @update:visible="visible = $event"
     title="VIP激活"
     width="676px"
     class="login-vip-dialog"
@@ -10,6 +9,7 @@ import { computed, defineComponent, onMounted, reactive, ref, watch } from 'vue'
     :append-to-body="true"
     :lock-scroll="false"
     :closed="hide"
+    @update:visible="visible = $event"
   >
     <div class="login-activation-vip">
       <div class="vip-tabs-pane-block">
@@ -71,6 +71,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   @use "@/assets/css/variables" as *;
   .login-activation-vip {
     padding: 20px 0px 20px 0px;

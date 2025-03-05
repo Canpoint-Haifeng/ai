@@ -2,35 +2,67 @@
   <div class="topbar-wrapper">
     <div class="topbar">
       <div class="topbar-left">
-        <div class="logo" @click="goHome">
-          <img src="@/assets/images/logo.png" alt="logo" />
+        <div
+          class="logo"
+          @click="goHome"
+        >
+          <img
+            src="@/assets/images/logo.png"
+            alt="logo"
+          >
         </div>
-        <div class="title">备课助手</div>
+        <div class="title">
+          备课助手
+        </div>
       </div>
       <div class="topbar-right">
-        <div class="user-info" v-if="isLogin">
+        <div
+          v-if="isLogin"
+          class="user-info"
+        >
           <div class="user-avatar">
-            <img :src="userInfo.avatar || defaultAvatar" alt="avatar" />
+            <img
+              :src="userInfo.avatar || defaultAvatar"
+              alt="avatar"
+            >
           </div>
-          <div class="user-name">{{ userInfo.nickname || userInfo.username }}</div>
+          <div class="user-name">
+            {{ userInfo.nickname || userInfo.username }}
+          </div>
           <div class="user-dropdown">
-            <el-dropdown trigger="click" @command="handleCommand">
+            <el-dropdown
+              trigger="click"
+              @command="handleCommand"
+            >
               <span class="el-dropdown-link">
-                <i class="el-icon-arrow-down"></i>
+                <i class="el-icon-arrow-down" />
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="userCenter">个人中心</el-dropdown-item>
-                  <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                  <el-dropdown-item command="userCenter">
+                    个人中心
+                  </el-dropdown-item>
+                  <el-dropdown-item command="logout">
+                    退出登录
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
           </div>
         </div>
-        <div class="login-register" v-else>
-          <span class="login" @click="login">登录</span>
+        <div
+          v-else
+          class="login-register"
+        >
+          <span
+            class="login"
+            @click="login"
+          >登录</span>
           <span class="divider">|</span>
-          <span class="register" @click="register">注册</span>
+          <span
+            class="register"
+            @click="register"
+          >注册</span>
         </div>
       </div>
     </div>
@@ -86,6 +118,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .topbar-wrapper {
   height: 60px;
   background-color: #fff;

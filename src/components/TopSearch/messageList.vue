@@ -1,241 +1,240 @@
 <template>
-  <transition name="el-zoom-in-top">
-    <div
-      class="messageList"
-      v-show="isShow"
-      :class="{
-        addClass: currSearchOption == '1',
-        paperHeight: currSearchOption == '2',
-      }"
-    >
-      <div v-if="historyList.length">
-        <div class="div_header">
-          <span class="span_title"> 搜索历史 </span>
-          <!--优先级  mousedown > blur > click  需要理解鼠标事件的 顺序-->
-          <span class="span_clear" @mousedown="clear"> 清空 </span>
-        </div>
-        <!-- 搜索历史 -->
-        <div class="div_history">
-          <div
-            class="div_item"
-            v-for="(item, index) in historyList"
-            :key="index"
-          >
-            <!-- 最多可显示15个文字 -->
-            <span
-              class="span_name"
-              :title="item"
-              @mousedown="changeHistoryText(item)"
-              >{{ item }}</span
+  <div
+    v-if="isShowHis || isShowHot"
+    class="history-message-list"
+  >
+    <div class="history-message-list-content">
+      <!-- 历史记录 -->
+      <div
+        v-if="isShowHis"
+        class="div_history"
+      >
+        <span class="span_title">历史记录</span>
+        <span
+          class="span_clear"
+          @click="clearHistory"
+        >清空</span>
+        <div class="div_history_list">
+          <ul>
+            <template
+              v-for="(item, index) in historyList"
+              :key="index"
             >
-          </div>
+              <li @click="changeHisText(item)">
+                <span>{{ item }}</span>
+                <i
+                  class="iconfont iconclose"
+                  @click.stop="delHistory(index)"
+                />
+              </li>
+            </template>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 热门试卷 -->
+      <div
+        v-if="isShowHot"
+        class="div_hot"
+      >
+        <span class="span_title">热门试卷</span>
+        <div class="div_hot_list">
+          <ul>
+            <template
+              v-for="(item, index) in hotList"
+              :key="index"
+            >
+              <li @click="changeHotPaper(item)">
+                <span>{{ item }}</span>
+              </li>
+            </template>
+          </ul>
         </div>
       </div>
 
       <!-- tab切换到试卷的时候才显示 -->
-      <div class="div_recommend" v-if="currSearchOption == '2'">
+      <div
+        v-if="currSearchOption == '2'"
+        class="div_recommend"
+      >
         <span class="span_title">试卷推荐</span>
-        <i class="iconfont iconfire_fill icont-tip"></i></template></template>
-        <ul>
-          <li v-for="(item, index) in value" :key="item.paperId">
-            <div
-              :class="{
-                div_item_tag: index + 1 >= 4,
-                div_tag_bg: index + 1 < 4,
-              }"
-            >
-              <span class="span1" v-if="index >= 3">
-                {{ index + 1 }}
-              </span>
-            </div>
-            <span
-              class="span2"
-              :title="item.paperName"
-              @mousedown="changePaperName(item)"
-            >
-              {{ item.paperName }}
-            </span>
-          </li>
-        </ul>
+        <i class="iconfont iconfire_fill icont-tip" />
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 
 <script>
 export default {
   props: {
-    value: {
-      type: Array,
-      default: () => {
-        return []
-      },
+    searchText: {
+      type: String,
+      default: '',
     },
-    currSearchOption: {
-      type: Number,
-      default: 1,
-    },
-    historyList: {
-      type: Array,
-      default: () => {
-        return []
-      },
-    },
-    isShow: {
+    isShowHis: {
       type: Boolean,
       default: false,
     },
+    isShowHot: {
+      type: Boolean,
+      default: false,
+    },
+    currSearchOption: {
+      type: String,
+      default: 'paper',
+    },
   },
-  mounted() {},
+  data() {
+    return {
+      historyList: [],
+      hotList: [
+        '期中考试',
+        '期末考试',
+        '单元测试',
+        '月考',
+        '中考',
+        '高考',
+        '模拟考试',
+      ],
+    }
+  },
+  mounted() {
+    this.getHistory()
+  },
   methods: {
-    clear(event) {
-      // 点击清除后 ，input 不失焦
-      event.preventDefault()
-      this.$emit('clearList')
+    // 获取历史记录
+    getHistory() {
+      let history = localStorage.getItem('searchHistory')
+      if (history) {
+        this.historyList = JSON.parse(history)
+      }
     },
-    changeHistoryText(item) {
-      console.log('底层事件触发')
-      this.$emit('changeHistoryText', item)
+    // 清空历史记录
+    clearHistory() {
+      localStorage.removeItem('searchHistory')
+      this.historyList = []
     },
-    changePaperName(item) {
-      this.$emit('changePaperName', item)
-      console.log(item, 'item--')
+    // 删除历史记录
+    delHistory(index) {
+      this.historyList.splice(index, 1)
+      localStorage.setItem('searchHistory', JSON.stringify(this.historyList))
+    },
+    // 修改搜索内容
+    changeHisText(text) {
+      this.$emit('changeHisText', text)
+    },
+    // 修改搜索内容
+    changeHotPaper(text) {
+      this.$emit('changeHotPaper', text)
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.messageList {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.history-message-list {
   position: absolute;
-  right: 0px;
-  top: 46px;
-  width: 628px;
-  //   min-height: 208px;
-  background: #ffffff;
-  box-shadow: 0px 0px 30px 1px rgba(27, 50, 89, 0.2);
-  border-radius: 12px;
-  border: 1px solid #c1c9cd;
-  z-index: 9999;
-  padding: 20px 20px;
-  margin-top: 8px;
-  box-sizing: border-box;
-  .div_header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    .span_clear {
-      font-size: 12px;
-      font-family: Microsoft YaHei-Regular, Microsoft YaHei;
-      color: #8590a6;
-      cursor: pointer;
-      user-select: none;
-    }
-  }
-  .div_history {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-    .div_item {
-      //   width: 80px;
-      //   line-height: 28px;
-      line-height: 14px;
-      text-align: center;
-      padding: 7px 12px;
-      background: #f5f5f5;
-      border-radius: 10px 10px 10px 10px;
-      margin-right: 10px;
+  top: 40px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  .history-message-list-content {
+    padding: 10px;
+    .div_history {
       margin-bottom: 10px;
-      &:nth-child(n + 5) {
-        margin-bottom: 0px;
-      }
-      span {
-        color: #333333;
+      .span_title {
         font-size: 14px;
-        display: block;
-        max-width: 222px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        cursor: pointer;
+        color: #333;
+        font-weight: 600;
       }
-    }
-  }
-  .span_title {
-    font-size: 16px;
-    font-family: Microsoft YaHei-Regular, Microsoft YaHei;
-    font-weight: 400;
-    color: #8590a6;
-  }
-  .div_recommend {
-    text-align: left;
-    .icont-tip {
-      padding-left: 6px;
-      color: #ff985d;
-    }
-  }
-  ul {
-    padding-top: 10px;
-    li {
-      display: flex;
-      align-items: center;
-      height: 20px;
-      margin-bottom: 10px;
-      color: #333333;
-      font-size: 14px;
-      cursor: pointer;
-
-      &:last-child {
-        margin-bottom: 0px;
-      }
-      .span2 {
-        padding-left: 10px;
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .div_item_tag {
-        width: 12px;
-        height: 16px;
-        line-height: 16px;
+      .span_clear {
         font-size: 12px;
-        background: #eeeeee;
-        border-radius: 2px 2px 2px 2px;
-        text-align: center;
-        .span1 {
-          color: #333333;
+        color: #999;
+        float: right;
+        cursor: pointer;
+        &:hover {
+          color: #487fff;
         }
       }
-      .div_tag_bg {
-        width: 12px;
-        height: 18px;
-        text-align: center;
-      }
-      &:first-child {
-        .div_tag_bg {
-          background: url('../../assets/images/tag_one.png');
-        }
-      }
-
-      &:nth-child(2) {
-        .div_tag_bg {
-          background: url('../../assets/images/tag_two.png');
-        }
-      }
-      &:nth-child(3) {
-        .div_tag_bg {
-          background: url('../../assets/images/tag_three.png');
+      .div_history_list {
+        margin-top: 10px;
+        ul {
+          li {
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            &:hover {
+              background: #f5f7fa;
+              .iconclose {
+                display: block;
+              }
+            }
+            span {
+              font-size: 12px;
+              color: #333;
+            }
+            .iconclose {
+              font-size: 12px;
+              color: #999;
+              display: none;
+              &:hover {
+                color: #487fff;
+              }
+            }
+          }
         }
       }
     }
+    .div_hot {
+      margin-bottom: 10px;
+      .span_title {
+        font-size: 14px;
+        color: #333;
+        font-weight: 600;
+      }
+      .div_hot_list {
+        margin-top: 10px;
+        ul {
+          li {
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            cursor: pointer;
+            &:hover {
+              background: #f5f7fa;
+            }
+            span {
+              font-size: 12px;
+              color: #333;
+            }
+          }
+        }
+      }
+    }
+    .div_recommend {
+      margin-bottom: 10px;
+      .span_title {
+        font-size: 14px;
+        color: #333;
+        font-weight: 600;
+      }
+      .icont-tip {
+        font-size: 14px;
+        color: #f56c6c;
+        margin-left: 5px;
+      }
+    }
   }
-}
-.addClass {
-  height: 172px;
-}
-.paperHeight {
-  min-height: 208px;
 }
 </style>

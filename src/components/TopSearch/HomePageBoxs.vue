@@ -7,12 +7,18 @@
         class="home-page-box"
         @click="onOpenBlock(item)"
       >
-        <img class="home-img" :src="item.iconImg" alt="" />
-        <div class="home-block-name">{{ item.name }}</div>
+        <img
+          class="home-img"
+          :src="item.iconImg"
+          alt=""
+        >
+        <div class="home-block-name">
+          {{ item.name }}
+        </div>
       </div>
     </div>
     <div v-else>
-      <div class="home-page-box-skeleton"></div>
+      <div class="home-page-box-skeleton" />
     </div>
   </div>
 </template>

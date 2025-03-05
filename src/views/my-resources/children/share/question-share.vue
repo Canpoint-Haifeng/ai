@@ -40,7 +40,7 @@
               v-slot:suffix
               @click="handleCurrentChange(1)"
             >
-            </i></template></template>
+            </i></template>
           </el-input> -->
         </div>
         <div class="paper-show-answer el-cyy-rewrite">
@@ -437,6 +437,9 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
   }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
   .category-container {
     // width: 914px;
@@ -509,7 +512,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
         }
       }
     }
-    :deep(.paper-search) {
+    :deep(.paper-search)) {
       display: inline-block;
       margin: 0 30px 0 110px;
       width: 174px;
@@ -521,7 +524,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
         right: 12px;
       }
     }
-    :deep(.paper-show-answer) {
+    :deep(.paper-show-answer)) {
       display: inline-block;
       margin-right: 30px;
       .el-checkbox__inner {

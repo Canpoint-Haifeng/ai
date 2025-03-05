@@ -680,6 +680,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .paper-part {
   .paper-section {
     &.active {
@@ -761,7 +764,7 @@ export default {
   }
 }
 
-.paper-body :deep(.el-tree-node__content > .el-tree-node__expand-icon) {
+.paper-body :deep(.el-tree-node__content > .el-tree-node__expand-icon)) {
     display: none;
   }
   .el-tree-node__content {

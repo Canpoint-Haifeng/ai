@@ -1,13 +1,13 @@
 <template>
   <el-dialog
     :visible="visible"
-    @update:visible="visible = $event"
     :title="title"
     width="500px"
     class="login-vip-dialog"
     top="11.5%"
     :append-to-body="true"
     :lock-scroll="false"
+    @update:visible="visible = $event"
     @close="hide"
   >
     <div class="parallel-paper-box">

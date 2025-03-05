@@ -1,9 +1,12 @@
 <template>
-  <div class="video" @contextmenu.prevent="onContextMenu">
+  <div
+    class="video"
+    @contextmenu.prevent="onContextMenu"
+  >
     <video-player
+      id="video"
       ref="videoPlayer"
       name="videoPlayer"
-      id="video"
       class="video-player vjs-custom-skin"
       :style="{ width: pwidth, height: pheight }"
       :playsinline="true"
@@ -13,17 +16,26 @@
       @ended="onPlayerEnded($event)"
       @statechanged="playerStateChanged($event)"
     />
-    <div v-if="isshow && defaultOptions.poster" class="mask-video-image">
-      <img class="video-image" :src="defaultOptions.poster" />
+    <div
+      v-if="isshow && defaultOptions.poster"
+      class="mask-video-image"
+    >
+      <img
+        class="video-image"
+        :src="defaultOptions.poster"
+      >
     </div>
-    <div v-if="isshow && defaultOptions.poster" class="mask-video-image"></div>
+    <div
+      v-if="isshow && defaultOptions.poster"
+      class="mask-video-image"
+    />
     <img
+      v-show="isplay"
       class="palyer-icon"
       src="../../assets/images/play.png"
       alt=""
-      v-show="isplay"
       @click="onPlayerPlay"
-    />
+    >
     <!-- 产品要求一直不显示暂停按钮 by 吴兴武 -->
     <!-- <img src="../../assets/images/playStop.png"
       alt=""
@@ -46,15 +58,13 @@
   // Custom theme CSS is not available in Vue 3 version
   export default {
     name: 'Video',
+    components: {
+      videoPlayer,
+    },
     props: {
       videoItem: Object,
       pwidth: String,
       pheight: String,
-    },
-    watch: {
-      videoItem() {
-        this.renderVideoItem()
-      },
     },
     data() {
       return {
@@ -87,6 +97,16 @@
           },
         },
       }
+    },
+    computed: {
+      player() {
+        return this.$refs.videoPlayer.player
+      },
+    },
+    watch: {
+      videoItem() {
+        this.renderVideoItem()
+      },
     },
     mounted() {
       this.renderVideoItem()
@@ -167,17 +187,12 @@
         )[0].style.background = 'rgba(0,0,0,.2)'
       },
     },
-    computed: {
-      player() {
-        return this.$refs.videoPlayer.player
-      },
-    },
-    components: {
-      videoPlayer,
-    },
   }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .video-player {
     position: relative;
     max-width: 1200px;
@@ -217,29 +232,29 @@
       }
     }
   }
-  .video :deep(.vjs-big-play-button) {
+  .video :deep(.vjs-big-play-button)) {
     display: none !important;
   }
-  .video :deep(.video-js.vjs-ended .vjs-big-play-button) {
+  .video :deep(.video-js.vjs-ended .vjs-big-play-button)) {
     display: none !important;
   }
-  .video :deep(.video-js) {
+  .video :deep(.video-js)) {
     background-color: #fff;
     .vjs-tech {
       object-fit: fill;
       height: 506px;
     }
   }
-  .video :deep(.vjs-poster) {
+  .video :deep(.vjs-poster)) {
     background-color: transparent;
   }
 
-  .video :deep(.vjs-text-track-display) {
+  .video :deep(.vjs-text-track-display)) {
     position: absolute;
     bottom: 0em;
     background: rgba(0, 0, 0, 0.2);
   }
-  .video :deep(.video-js .vjs-play-progress:before) {
+  .video :deep(.video-js .vjs-play-progress:before)) {
     z-index: 0;
   }
   .mask-video-image {

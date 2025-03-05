@@ -48,10 +48,10 @@
         >
           <el-pagination
             :current-page="questionsData.page"
-            @update:current-page="questionsData.page = $event"
             :page-size="questionsData.pageSize"
             layout="prev, pager, next, jumper"
             :total="questionsData.count"
+            @update:current-page="questionsData.page = $event"
             @current-change="handleCurrentChange"
           />
         </div>
@@ -348,6 +348,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .category-container {
   width: 914px;

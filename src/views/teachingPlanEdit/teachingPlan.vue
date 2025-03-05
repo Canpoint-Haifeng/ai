@@ -589,7 +589,7 @@
                                     <span class="type ">选做</span>
                                     <div class="hover_view">
                                         <el-button type="text" @click="addQuestion(planTreeData[0][0].children[4].children[1].children)">新增试题</el-button>
-                                        <i class="icon iconfont icon-view" @click="planTreeData[0][0].children[4].children[1].visible = false"></i></template></template>
+                                        <i class="icon iconfont icon-view" @click="planTreeData[0][0].children[4].children[1].visible = false"></i></template>
                                     </div>
                                 </div>
                                 <div>
@@ -1153,7 +1153,7 @@
                               </div>
 
                               <!-- <div class="operation">
-                                                                <i class="el-icon-delete" @click="delItem(y.children, 0)"></i></template></template>
+                                                                <i class="el-icon-delete" @click="delItem(y.children, 0)"></i></template>
                                                                 <el-button type="text" @click="changeKnowledgeStructure">更换</el-button>
                                                             </div> -->
                             </section>
@@ -1181,8 +1181,8 @@
                                   >
                                     更换碎片
                                   </el-button>
-                                  <!-- <el-button type="text"><i class="el-icon-top"></i></template></template></el-button>
-                                                                    <el-button type="text"><i class="el-icon-bottom"></i></template></template></el-button> -->
+                                  <!-- <el-button type="text"><i class="el-icon-top"></i></template></el-button>
+                                                                    <el-button type="text"><i class="el-icon-bottom"></i></template></el-button> -->
                                   <i
                                     class="el-icon-delete"
                                     @click="delItem(y.child, b + 1)"
@@ -1249,7 +1249,7 @@
                                         <!-- <i
                                           class="el-icon-delete"
                                           @click="delItem(a.child, d, 'child')"
-                                        ></i></template></template> -->
+                                        ></i></template> -->
                                       </div>
                                     </div>
                                     <section class="">
@@ -1311,7 +1311,7 @@
                                                                             <h5>课后作业</h5>
                                                                             <div class="hover_view">
                                                                                 <el-button type="text" @click="addQuestion(a.child[d].content)">新增试题</el-button>
-                                                                                <i class="el-icon-delete" @click="delItem(a.child, d+1)"></i></template></template>
+                                                                                <i class="el-icon-delete" @click="delItem(a.child, d+1)"></i></template>
                                                                             </div>
                                                                         </div>
                                                                         <section class="">
@@ -2778,6 +2778,9 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 @mixin bg($bg) {
   background: url('../../assets/images/template/'+$bg) no-repeat;
   background-size: 100% 100%;
@@ -3119,7 +3122,7 @@ export default {
     .back {
       padding-left: 30px;
       margin-right: 16px;
-      :deep(button) {
+      :deep(button)) {
         i {
           font-size: 12px;
         }
@@ -3220,7 +3223,7 @@ export default {
           overflow: auto;
           > div {
             padding: 13px;
-            :deep(.el-tree) {
+            :deep(.el-tree)) {
               .el-tree-node.is-current {
                 > .el-tree-node__content {
                   background: #fff;
@@ -3266,7 +3269,7 @@ export default {
         }
       }
     }
-    :deep(.edit_content) {
+    :deep(.edit_content)) {
       width: 1200px;
       max-width: 63vw;
       background: #fff;
@@ -3703,23 +3706,23 @@ export default {
   }
 }
 .edit_container {
-  :deep(.cke_button__source) {
+  :deep(.cke_button__source)) {
     display: none !important;
   }
-  :deep(.cke_button__cptool) {
+  :deep(.cke_button__cptool)) {
     display: none !important;
   }
-  :deep(.cke_button__preblank) {
+  :deep(.cke_button__preblank)) {
     display: none !important;
   }
-  :deep(.cke_button__prefill) {
+  :deep(.cke_button__prefill)) {
     display: none !important;
   }
   :deep(.cke_toolgroup a.cke_button:last-child:after),
-  :deep(.cke_toolgroup a.cke_button.cke_button_disabled:hover:last-child:after) {
+  :deep(.cke_toolgroup a.cke_button.cke_button_disabled:hover:last-child:after)) {
     border-right: unset !important;
   }
-  :deep(.cke_contents) {
+  :deep(.cke_contents)) {
     min-height: 100px;
   }
 }

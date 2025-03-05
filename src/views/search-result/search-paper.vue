@@ -23,11 +23,11 @@
         >
           <top-pagintion
             :current-page="paperData.currPage"
-            @update:current-page="paperData.currPage = $event"
             direction="left"
             suffix="份试卷"
             :total="paperData.totalCount"
             :page-size="paperData.pageSize"
+            @update:current-page="paperData.currPage = $event"
             @change-page="onPageCurrChange"
           />
         </div>
@@ -301,6 +301,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .paper-top-pagintion {
   padding: 1px 20px;
@@ -329,7 +332,7 @@ export default {
     box-sizing: border-box;
   }
 }
-.category-container :deep() {
+.category-container :deep()) {
   padding: 20px 20px 8px 20px;
   background: $color-white;
   .category-content {

@@ -94,7 +94,7 @@
             <ul class="question-list" >
               <div class="big-exam-question clearfix">
                 <span class="big-ques-name">{{bigQues.questionTypeName}}</span>
-                <span class="big-ques-button" @click="onAddQuestionType(bigQues)"><i class="iconfont iconadd">+</i></template></template>添加题型下试题</span>
+                <span class="big-ques-button" @click="onAddQuestionType(bigQues)"><i class="iconfont iconadd">+</i></template>添加题型下试题</span>
               </div>
               <question-item
                 v-for="(subItem, subIndex) in bigQues.children"
@@ -648,6 +648,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .big-exam-question {
   padding: 20px 0;

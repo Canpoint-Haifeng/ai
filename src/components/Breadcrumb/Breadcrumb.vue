@@ -1,7 +1,7 @@
 <template>
   <div class="breadcrumb-wrapper clearfix">
     <!-- <div class="breadcrumb-left fl">
-      <i class="iconfont iconposition"></i></template></template>
+      <i class="iconfont iconposition"></i></template>
       <span class="text">当前位置：</span>
     </div>
     <el-breadcrumb class="breadcrumb-container fl" separator-class="el-icon-arrow-right">
@@ -29,6 +29,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .breadcrumb-wrapper {
   height: 40px;
   height: 20px;
@@ -38,7 +41,7 @@ export default {
     margin-right: 10px;
     font-size: $font-size-small;
   }
-  .breadcrumb-container :deep(.el-breadcrumb__inner) {
+  .breadcrumb-container :deep(.el-breadcrumb__inner)) {
     line-height: 40px;
     font-size: $font-size-small;
     color: $color-text;

@@ -1,0 +1,35 @@
+<template>
+  <div>
+    <el-dialog v-model="dialogVisible" :title="title">
+      <slot></slot>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="$emit('confirm')">确定</el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'BaseDialog',
+  props: {
+    visible: Boolean,
+    title: {
+      type: String,
+      default: '提示'
+    }
+  },
+  emits: ['update:visible', 'confirm'],
+  computed: {
+    dialogVisible: {
+      get() {
+        return this.visible
+      },
+      set(val) {
+        this.$emit('update:visible', val)
+      }
+    }
+  }
+}
+</script>

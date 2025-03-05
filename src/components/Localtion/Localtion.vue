@@ -250,6 +250,9 @@ export default {
 }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .localtion-wrapper {
     width: 100%;
     @include flex();

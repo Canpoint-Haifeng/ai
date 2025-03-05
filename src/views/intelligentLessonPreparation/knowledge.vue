@@ -5,7 +5,7 @@
       <span class="span_text">
         选择场景:
         <!-- <el-tooltip class="scsne_tip" effect="dark" placement="top">
-          <template v-slot:content>
+          <template #content>
             <span>中高考复习试卷更适合细目表组卷或平行组卷</span>
           </template>
           <span class="dot el-icon-warning"></span>
@@ -57,7 +57,7 @@
                 <div class="custom-tree-node">
                   <span class="tree-node-label">
                     <!-- <el-tooltip class="item" effect="dark" placement="right">
-                    <template v-slot:content>
+                    <template #content>
                       <span v-html="data.name"></span>
                     </template>
                     <span class="nodeName" v-html="data.name"></span>
@@ -355,6 +355,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .flex {
   display: flex;
@@ -379,7 +382,7 @@ export default {
     font-weight: bold;
     color: #333333;
     position: relative;
-    :deep(.scsne_tip) {
+    :deep(.scsne_tip)) {
       cursor: pointer;
       position: absolute;
       top: -10px;
@@ -473,13 +476,13 @@ export default {
   .user-content-right {
     width: 914px;
     height: min-content;
-    :deep(.el-tabs .el-tabs__header) {
+    :deep(.el-tabs .el-tabs__header)) {
       padding: 0 20px;
     }
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
       background-color: $color-theme;
     }
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
       color: $color-theme;
     }
   }

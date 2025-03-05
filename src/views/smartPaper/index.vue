@@ -45,6 +45,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .div_bankRow {
   height: 20px;
   width: 100%;
@@ -53,7 +56,7 @@ export default {
   width: 1200px;
   min-height: 673px;
   margin-bottom: 70px;
-  :deep(.el-button) {
+  :deep(.el-button)) {
     width: 120px;
   }
 }

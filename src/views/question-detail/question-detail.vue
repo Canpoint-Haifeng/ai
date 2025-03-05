@@ -421,6 +421,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .question-detail {
     background: $color-white;
     .question-top {
@@ -439,7 +442,7 @@
   .question-content {
     overflow: hidden;
     padding: 20px 20px 0 20px;
-    :deep(.question-wrapper-faber) {
+    :deep(.question-wrapper-faber)) {
       .collected-btn {
         display: none !important;
       }

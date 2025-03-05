@@ -131,28 +131,35 @@
                       :style="{
                         background: colors[Math.ceil(data.importance)].color,
                       }"
-                    >{{ colors[Math.ceil(data.importance)].name }}</span></i></template></template>
-
-                    <span
-                      class="nodeName"
-                      :style="{
-                        cursor: node.level == 1 ? 'not-allowed' : 'pointer',
-                        color: node.checked ? '#487fff' : '#606266',
-                      }"
-                      :title="data.name"
-                      v-html="data.name"
-                    />
-                  </span>
-                  <b
-                    v-if="data.types === 2"
-                    :class="[
-                      'icon',
-                      'el-icon-circle-check',
-                      { ischeck: node.checked },
-                    ]"
-                  />
+                    >{{ colors[Math.ceil(data.importance)].name }}</span></i></span>
                 </div>
               </template>
+
+              <span
+                class="nodeName"
+                :style="{
+                  cursor: node.level == 1 ? 'not-allowed' : 'pointer',
+                  color: node.checked ? '#487fff' : '#606266',
+                }"
+                :title="data.name"
+                v-html="data.name"
+              />
+              </span>
+              <b
+                v-if="data.types === 2"
+                :class="[
+                  'icon',
+                  'el-icon-circle-check',
+                  { ischeck: node.checked },
+                ]"
+              />
+            </el-tree>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
             </el-tree>
 
             <!-- <el-tree
@@ -171,7 +178,7 @@
               <div class="custom-tree-node" v-slot:{ data }">
                 <span class="tree-node-label">
                     <span class="knowledge" v-if="data.types == 1" :style="{color: colors[Math.ceil(data.importance)].color}">知</span>
-                    <i v-if="data.importance && data.types === 2" class="el-icon-star-on coefficient" :style="{color: colors[Math.ceil(data.importance)].color}"></i></template></template>
+                    <i v-if="data.importance && data.types === 2" class="el-icon-star-on coefficient" :style="{color: colors[Math.ceil(data.importance)].color}"></i></template>
                     <span class="nodeName" :title="data.name" v-html="data.name"></span>
                 </span>
               </div>
@@ -634,6 +641,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .content-container {
   margin-top: 12px;
 }
@@ -682,7 +692,7 @@ export default {
     position: relative;
     cursor: pointer;
 
-    :deep(.scsne_tip) {
+    :deep(.scsne_tip)) {
       cursor: pointer;
       position: absolute;
       top: -10px;
@@ -827,15 +837,15 @@ export default {
     width: 914px;
     height: min-content;
 
-    :deep(.el-tabs .el-tabs__header) {
+    :deep(.el-tabs .el-tabs__header)) {
       padding: 0 20px;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
       background-color: $color-theme;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
       color: $color-theme;
     }
   }

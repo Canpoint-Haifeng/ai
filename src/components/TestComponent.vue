@@ -1,27 +1,37 @@
 <template>
   <div class="test-component">
-    <h1>Vue 3 Migration Test</h1>
-    <p>This is a minimal test component to verify Vue 3 compatibility.</p>
+    <h1>Vue 3 Compatibility Test</h1>
+    <p>This component is used to test Vue 3 compatibility</p>
     
     <div class="test-section">
-      <h2>Testing BaseDialog Component</h2>
-      <el-button @click="showDialog = true">Open Dialog</el-button>
-      <base-dialog 
-        :visible="showDialog"
-        @update:visible="showDialog = $event"
+      <h2>Dialog Test</h2>
+      <el-button @click="dialogVisible = true">
+        Open Dialog
+      </el-button>
+      <BaseDialog 
+        v-model="dialogVisible"
         title="Test Dialog"
         @confirm="handleConfirm"
-        @cancel="handleCancel"
       >
-        <p>This is a test dialog using Vue 3 compatible syntax.</p>
-      </base-dialog>
+        <p>This is a test dialog using the updated BaseDialog component</p>
+      </BaseDialog>
+    </div>
+    
+    <div class="test-section">
+      <h2>Triangle Mixin Test</h2>
+      <div class="triangle-container">
+        <div class="triangle-up" />
+        <div class="triangle-down" />
+        <div class="triangle-left" />
+        <div class="triangle-right" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue'
-import BaseDialog from '../components/BaseDialog/BaseDialog.vue'
+import BaseDialog from './BaseDialog/BaseDialog.vue'
 
 export default defineComponent({
   name: 'TestComponent',
@@ -29,20 +39,20 @@ export default defineComponent({
     BaseDialog
   },
   setup() {
-    const showDialog = ref(false)
+    const dialogVisible = ref(false)
     
     const handleConfirm = () => {
       console.log('Dialog confirmed')
-      showDialog.value = false
+      dialogVisible.value = false
     }
     
     const handleCancel = () => {
       console.log('Dialog cancelled')
-      showDialog.value = false
+      dialogVisible.value = false
     }
     
     return {
-      showDialog,
+      dialogVisible,
       handleConfirm,
       handleCancel
     }
@@ -51,20 +61,46 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .test-component {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
   
   h1 {
-    color: #487fff;
+    color: $color-theme;
+    margin-bottom: 20px;
   }
   
   .test-section {
-    margin-top: 30px;
+    margin-bottom: 30px;
     padding: 20px;
-    border: 1px solid #ebeef5;
-    border-radius: 4px;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-medium;
+  }
+  
+  .triangle-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    
+    .triangle-up {
+      @include triangle(up, 20px, $color-theme);
+    }
+    
+    .triangle-down {
+      @include triangle(down, 20px, $color-theme);
+    }
+    
+    .triangle-left {
+      @include triangle(left, 20px, $color-theme);
+    }
+    
+    .triangle-right {
+      @include triangle(right, 20px, $color-theme);
+    }
   }
 }
 </style>

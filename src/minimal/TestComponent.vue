@@ -1,8 +1,16 @@
 <template>
   <div class="test-component">
     <p>This is a minimal test component to verify Vue 3 compatibility.</p>
-    <el-button type="primary" @click="testClick">Test Button</el-button>
-    <test-dialog :visible="dialogVisible" @update:visible="dialogVisible = $event" />
+    <el-button
+      type="primary"
+      @click="testClick"
+    >
+      Test Button
+    </el-button>
+    <test-dialog
+      :visible="dialogVisible"
+      @update:visible="dialogVisible = $event"
+    />
   </div>
 </template>
 
@@ -32,6 +40,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .test-component {
   padding: 20px;
   

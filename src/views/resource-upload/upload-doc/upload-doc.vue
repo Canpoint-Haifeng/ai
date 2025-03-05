@@ -541,6 +541,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .sub-title {
     border-left: 2px solid $color-text-d;
     padding-left: 12px;
@@ -563,7 +566,7 @@
       .item-label {
         margin-right: 10px;
       }
-      :deep(.item-input) {
+      :deep(.item-input)) {
         width: 324px;
         height: 34px;
         margin-right: 10px;
@@ -588,7 +591,7 @@
         color: $color-text-ll;
         font-size: $font-size-medium-x;
       }
-      :deep(.item-select) {
+      :deep(.item-select)) {
         display: inline-block;
         width: 180px;
         height: 32px;
@@ -686,7 +689,7 @@
           color: #f56c6c;
         }
       }
-      :deep(.localtion-select) {
+      :deep(.localtion-select)) {
         padding-right: 0;
         .el-input__icon {
           line-height: 32px;
@@ -697,7 +700,7 @@
       margin-bottom: 18px;
     }
     :deep(.form-select),
-    :deep(.form-input) {
+    :deep(.form-input)) {
       width: 298px;
       height: 34px;
       .el-input__icon {
@@ -713,7 +716,7 @@
         }
       }
     }
-    :deep(.form-textarea) {
+    :deep(.form-textarea)) {
       .el-textarea__inner {
         border: 1px solid $color-border;
         color: $color-text-d;

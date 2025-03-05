@@ -177,6 +177,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .auth-container {
     padding-top: 20px;
     min-height: 450px;

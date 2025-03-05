@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Temporarily commenting out problematic components -->
-    <app-login ref="appLogin"></app-login>
+    <app-login ref="appLogin" />
   </div>
 </template>
 
@@ -30,6 +30,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .three-broad-side {
     position: fixed;
     right: 0px;

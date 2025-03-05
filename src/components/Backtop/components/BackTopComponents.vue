@@ -1,7 +1,13 @@
 <template>
-  <div class="back-top-components" v-show="visible" @click="backToTop">
-    <span class="iconfont iconshiliangzhinengduixiang-08"></span>
-    <div class="text">顶部</div>
+  <div
+    v-show="visible"
+    class="back-top-components"
+    @click="backToTop"
+  >
+    <span class="iconfont iconshiliangzhinengduixiang-08" />
+    <div class="text">
+      顶部
+    </div>
   </div>
 </template>
 
@@ -25,7 +31,7 @@
       this.initWindowsEvent()
       this.renderScrollFixed()
     },
-    destroyed() {
+    unmounted() {
       this.destroyedWindowsEvent()
     },
     methods: {

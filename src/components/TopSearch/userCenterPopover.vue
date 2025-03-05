@@ -4,78 +4,94 @@
       <section>
         <div class="img">
           <img
-            class="border50"
             v-if="userInfo.profilePhoto"
+            class="border50"
             :src="userInfo.profilePhoto"
             alt=""
-          />
+          >
           <img
-            class="border50"
             v-else
+            class="border50"
             src="../../assets/images/avatar.png"
             alt=""
-          />
+          >
         </div>
         <div class="name_id">
           <div class="name">
             <span>{{ userInfo.username }}</span>
           </div>
-          <div class="vip" v-if="userInfo.isVip">
+          <div
+            v-if="userInfo.isVip"
+            class="vip"
+          >
             <img
               v-if="vipInfo.vipLevel === 0"
               src="../../assets/images/users/vip1.webp"
               alt=""
-            />
+            >
             <span
-              @click="skip('/vip')"
               v-if="vipInfo.vipLevel === 0"
               class="to-vip-text"
-              >开通会员</span
-            >
+              @click="skip('/vip')"
+            >开通会员</span>
             <img
               v-if="vipInfo.vipLevel === 1"
               src="../../assets/images/users/vip2.webp"
               alt=""
-            />
+            >
             <img
               v-if="vipInfo.vipLevel === 2"
               src="../../assets/images/users/vip3.webp"
               alt=""
-            />
+            >
             <img
               v-if="vipInfo.vipLevel === 3"
               src="../../assets/images/users/vip4.webp"
               alt=""
-            />
-            <span class="endtime" v-if="vipInfo.vipEndTime > 0"
-              >有效期至 endTime
+            >
+            <span
+              v-if="vipInfo.vipEndTime > 0"
+              class="endtime"
+            >有效期至 endTime
             </span>
           </div>
-          <div v-else class="no-vip vip">
-            <img src="../../assets/images/users/vip1.webp" alt="" />
+          <div
+            v-else
+            class="no-vip vip"
+          >
+            <img
+              src="../../assets/images/users/vip1.webp"
+              alt=""
+            >
             <span class="to-vip-text">开通会员</span>
           </div>
         </div>
       </section>
       <div class="popper-nav-box">
         <div
-          class="popper-nav-item-box"
           v-for="(item, index) in naveList"
           :key="index"
+          class="popper-nav-item-box"
           @click="skip(item.path)"
         >
-          <img class="popper-nav-img" :src="item.icon" />
+          <img
+            class="popper-nav-img"
+            :src="item.icon"
+          >
           <div class="popper-nav-item-text">
             {{ item.title }}
           </div>
         </div>
       </div>
     </div>
-    <el-button class="popover-content-my-button" @click="logout()"
-      >退出登录</el-button
+    <el-button
+      class="popover-content-my-button"
+      @click="logout()"
     >
+      退出登录
+    </el-button>
   </div>
-  <!-- <div #reference">
+  <!-- <template #reference><div">
     <div>
       <span class="el-dropdown-link top">
         <img
@@ -105,7 +121,7 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-  name: 'userCenterPopover',
+  name: 'UserCenterPopover',
   props: {
     userInfo: {
       type: Object,
@@ -114,7 +130,6 @@ export default {
       },
     },
   },
-  computed: {},
   data() {
     return {
       vipInfo: {},
@@ -137,6 +152,7 @@ export default {
       ],
     }
   },
+  computed: {},
   mounted() {
     console.log('userInfo', this.userInfo)
   },
@@ -151,6 +167,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .popover-content-my {
   background: rgb(246, 249, 255);
   width: 320px;

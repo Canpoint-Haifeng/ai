@@ -286,6 +286,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .edit-question-content{
     display: flex;
     background-color: #fff;
@@ -354,7 +357,7 @@ export default {
     }
   }
 
-  .popup-separate-question :deep(.el-input__inner) {
+  .popup-separate-question :deep(.el-input__inner)) {
     border-radius: 4px;
   }
 </style>

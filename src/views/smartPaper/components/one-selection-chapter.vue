@@ -2,7 +2,11 @@
   <div class="ai-container">
     <div class="ai-header">
       <div class="show-info-title">
-        <span />已选章节<i>（{{ interCheckNodeCodeKnowledgeArr.length }}）</i></template></template>
+        <span />已选章节<i>（{{ interCheckNodeCodeKnowledgeArr.length }}）</i>
+      </div>
+    </div>
+  </div>
+</template>
       </div>
       <div class="show-clear">
         <span @click="deleteAllNode"><i class="iconfont iconnonebg-delete" />清空</span>
@@ -25,7 +29,7 @@
     </ul>
     <div class="ai-header">
       <div class="show-info-title">
-        <span />设置难度及年份 <i>（选填）</i></template></template>
+        <span />设置难度及年份 <i>（选填）</i></template>
       </div>
     </div>
     <div class="ai-select-box">
@@ -58,7 +62,7 @@
     </div>
     <div class="ai-header">
       <div class="show-info-title">
-        <span />设置题型和数量 <i>（必填）</i></template></template>
+        <span />设置题型和数量 <i>（必填）</i></template>
       </div>
     </div>
     <div class="ai-setting-box">
@@ -613,6 +617,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .ai-container {
   width: 914px;
   box-sizing: border-box;
@@ -681,7 +688,7 @@ export default {
   }
   .ai-select-box {
     padding: 24px 24px 50px 24px;
-    :deep(.select-item) {
+    :deep(.select-item)) {
       margin-right: 136px;
       label {
         line-height: 32px;
@@ -708,7 +715,7 @@ export default {
   }
   .ai-setting-box {
     padding: 24px 8px 28px 30px;
-    :deep(.setting-item) {
+    :deep(.setting-item)) {
       display: inline-block;
       width: 268px;
       margin-right: 22px;

@@ -169,3 +169,6 @@
 </script>
 
 <style lang="scss" scoped></style>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";

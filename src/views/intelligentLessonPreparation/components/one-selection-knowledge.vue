@@ -65,7 +65,7 @@
                   v-if="c.modelLevel || c.importance"
                   class="el-icon-star-on coefficient"
                   :class="formatClass(c.importance)"
-                ></i></template></template> -->
+                ></i></template> -->
                 <i
                   v-if="c.types === 2"
                   class="el-icon-star-on coefficient"
@@ -75,7 +75,15 @@
                 <i
                   v-if="c.num"
                   class="num"
-                >{{ c.num }}</i></template></template>
+                >{{ c.num }}</i>
+              </el-tag>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
               </el-tag>
             </div>
           </li>
@@ -1094,6 +1102,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .disabled {
   pointer-events: none;
 }
@@ -1255,7 +1266,7 @@ export default {
               &:nth-child(3) {
                 width: 260px;
                 padding: 0 12px;
-                :deep(.el-select) {
+                :deep(.el-select)) {
                   width: 80px;
                   .el-input__icon {
                     line-height: 28px;
@@ -1273,7 +1284,7 @@ export default {
               }
               border-bottom: 1px solid #e2e2e2;
               border-right: 1px solid #e2e2e2;
-              :deep(.el-input-number) {
+              :deep(.el-input-number)) {
                 width: 100px;
                 margin: 0;
                 height: 28px;
@@ -1471,7 +1482,7 @@ export default {
     }
   }
 }
-:deep(.el-input-number) {
+:deep(.el-input-number)) {
   width: 120px;
   line-height: 30px;
   margin-right: 12px;
@@ -1493,7 +1504,7 @@ export default {
     background: $color-white;
   }
 }
-:deep(.questionWrap) {
+:deep(.questionWrap)) {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   justify-content: space-around;
@@ -1512,7 +1523,7 @@ export default {
     font-size: 14px;
   }
 }
-:deep(.regionWrap) {
+:deep(.regionWrap)) {
   .el-input__inner {
     border-radius: 4px;
   }
@@ -1533,7 +1544,7 @@ export default {
 .red {
   color: #ff0000;
 }
-:deep(.nameTag) {
+:deep(.nameTag)) {
   &.gray {
     background: rgba(153, 153, 153, 0.05);
     border-radius: 4px;
@@ -1587,10 +1598,10 @@ export default {
     cursor: pointer;
   }
 }
-:deep(.el-dialog__body) {
+:deep(.el-dialog__body)) {
   padding: 30px 20px;
 }
-:deep(.el-dialog__footer) {
+:deep(.el-dialog__footer)) {
   text-align: center;
 }
 .checkboxItem {

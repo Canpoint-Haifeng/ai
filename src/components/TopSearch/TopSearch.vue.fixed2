@@ -1,0 +1,508 @@
+<template>
+  <div>
+    <div class="head-contenter">
+      <div class="center">
+        <div class="name">全品文教-基础教育的内容供应商和服务者</div>
+        <div class="help">
+          <!--<el-dropdown>
+            <span class="el-dropdown-link">
+              <img
+                :src="userInfo.profilePhoto || require('./img/user_4_fill.svg')"
+                alt="avatar"
+                width="24"
+                height="24"
+                class="logo-img"
+              />
+              {{ userInfo.nickname || '--' }}
+            </span> 
+            <template #dropdown>
+              <el-dropdown-item @click="logout"
+                >退出登录</el-dropdown-item
+              >
+            </template>
+          </el-dropdown>-->
+
+          <div class="help">
+            <div class="help-center" @click="helpCenter">
+              <span class="el-dropdown-link top">
+                <img
+                  style="width: 24px;"
+                  src="./img/help_fill.svg"
+                  alt="帮助中心"
+                  class="logo-img"
+                />
+                帮助中心
+              </span>
+            </div>
+          </div>
+          <div class="user">
+            <el-popover
+              placement="bottom"
+              width="200"
+              trigger="hover"
+              popper-class="user-center-popover"
+            >
+              <user-center-popover
+                :userInfo="userInfo"
+                @logout="logout"
+              ></user-center-popover>
+              <template #reference>
+                <div class="user-center" v-if="loginStatus">
+                  <span class="el-dropdown-link top">
+                    <img
+                      style="width: 24px;"
+                      :src="
+                        userInfo.profilePhoto || require('./img/user_4_fill.svg')
+                      "
+                      :alt="userInfo.nickname"
+                      class="logo-img"
+                    />
+                    我的
+                  </span>
+                  <i class="el-icon-arrow-down"></i>
+                </div>
+              </template>
+            </el-popover>
+            <!-- @click="helpCenter" -->
+          </div>
+          <div class="login" v-if="!loginStatus">
+            <span class="login-btn" @click="showLogin">登录</span>
+            <span class="register-btn" @click="showRegister">注册</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="search-contenter">
+      <div class="center">
+        <div class="logo">
+          <img src="./img/logo.png" alt="全品文教" />
+        </div>
+        <div class="search">
+          <div class="container">
+            <div class="home-search-input">
+              <div class="tab-btn">
+                <template v-for="item in searchOptions" :key="item.label">
+                  <div
+                    class="btns"
+                    @mousedown="event => handleCommand(event, item)"
+                    :class="{ 'active-btn': currSearchOption === item.label }"
+                  >
+                    {{ item.name }}
+                  </div>
+                </template>
+              </div>
+              <el-input
+                popper-class="search-autocomplete-suggestions custom-dropdown-menu"
+                v-model="searchText"
+                placeholder="请输入搜索内容"
+                @keyup.enter="search"
+                clearable
+                class="search-input"
+              >
+              </el-input>
+              <!-- <HistoryMessageList
+                :searchText="searchText"
+                :isShowHis="isShowHis"
+                :isShowHot="isShowHot"
+                :currSearchOption="currSearchOption"
+                @changeHisText="changeHisText"
+                @changeHotPaper="changeHotPaper"
+              /> -->
+            </div>
+
+            <div class="search-btn" @click="search">
+              <i class="iconfont iconsearch"></i>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="top-user-segment fl">
+          <div class="login">
+            <i class="iconfont icon-touxiang_avatar"></i>
+            <el-dropdown v-if="loginStatus">
+              <span class="el-dropdown-link">{{ userInfo.nickname || '--'}}</span>
+              <template #dropdown>
+                <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+              </template>
+            </el-dropdown>
+            <el-button type="text" @click="showLogin" v-else>登录</el-button>
+          </div> -->
+        <!-- </div> -->
+        <!-- <div class="top-invite-segment fl">
+          <NewGift></NewGift>
+        </div> -->
+         <!-- <div class="top-upload fl" @click="entryUpload">
+            <span class="icon-box">
+              <i class="iconfont iconupload"></i>
+            </span>
+            <span class="text">上传试卷</span>
+          </div> -->
+      </div>
+    </div>
+    <app-login ref="appLogin"></app-login>
+  </div>
+</template>
+
+<script>
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import HistoryMessageList from './HistoryMessageList.vue'
+import userCenterPopover from './userCenterPopover.vue'
+import {
+  isLogin,
+  getToken,
+  removeToken,
+  removeSessionStore,
+} from '@/common/js/util'
+
+export default {
+  components: {
+    HistoryMessageList,
+    userCenterPopover,
+  },
+  data() {
+    return {
+      loginStatus: false,
+      searchText: '',
+      isShowHis: false,
+      isShowHot: false,
+      currSearchOption: 'paper',
+      searchOptions: [
+        {
+          name: '试卷',
+          label: 'paper',
+        },
+        {
+          name: '试题',
+          label: 'question',
+        },
+        {
+          name: '教材',
+          label: 'book',
+        },
+      ],
+    }
+  },
+  computed: {
+    ...mapState(['userInfo']),
+  },
+  mounted() {
+    this.loginStatus = isLogin()
+  },
+  methods: {
+    // 显示登录弹框
+    showLogin() {
+      this.$refs.appLogin.showLogin()
+    },
+    // 显示注册弹框
+    showRegister() {
+      this.$refs.appLogin.showRegister()
+    },
+    // 退出登录
+    logout() {
+      let parms = {
+        token: getToken(),
+      }
+      this.wayPost(API.LOGOUT, parms).then((res) => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          removeToken()
+          removeSessionStore('serviceInfo')
+          this.loginStatus = false
+          window.location.reload() // 刷新页面
+        }
+      })
+    },
+    // 帮助中心
+    helpCenter() {
+      window.open(
+        'http://help.canpoint.cn/#/help-doc/detail?lid=26807f49cc77ab14&fid=0aaed09d31b46cba',
+      )
+    },
+    // 搜索
+    search() {
+      if (!this.searchText) {
+        this.$message.warning('请输入搜索内容')
+        return
+      }
+      this.isShowHis = false
+      this.isShowHot = false
+      if (this.currSearchOption === 'paper') {
+        this.$router.push({
+          path: '/search-result/search-paper',
+          query: {
+            searchText: this.searchText,
+          },
+        })
+      } else if (this.currSearchOption === 'question') {
+        this.$router.push({
+          path: '/search-result/search-question',
+          query: {
+            searchText: this.searchText,
+          },
+        })
+      } else if (this.currSearchOption === 'book') {
+        this.$router.push({
+          path: '/search-result/search-book',
+          query: {
+            searchText: this.searchText,
+          },
+        })
+      }
+    },
+    // 切换搜索类型
+    handleCommand(event, item) {
+      this.currSearchOption = item.label
+      this.isShowHis = false
+      this.isShowHot = false
+    },
+    // 修改搜索内容
+    changeHisText(text) {
+      this.searchText = text
+      this.isShowHis = false
+      this.search()
+    },
+    // 修改搜索内容
+    changeHotPaper(text) {
+      this.searchText = text
+      this.isShowHot = false
+      this.search()
+    },
+    // 进入上传页面
+    entryUpload() {
+      this.$router.push({
+        path: '/paper-upload',
+      })
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+.head-contenter {
+  width: 100%;
+  height: 40px;
+  background: $color-theme;
+  .center {
+    width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .name {
+      font-size: 14px;
+      color: $color-white;
+    }
+    .help {
+      display: flex;
+      align-items: center;
+      .help-center {
+        margin-right: 20px;
+        cursor: pointer;
+        .top {
+          display: flex;
+          align-items: center;
+          color: $color-white;
+          .logo-img {
+            margin-right: 5px;
+          }
+        }
+      }
+      .user {
+        margin-right: 20px;
+        .user-center {
+          cursor: pointer;
+          .top {
+            display: flex;
+            align-items: center;
+            color: $color-white;
+            .logo-img {
+              margin-right: 5px;
+            }
+          }
+        }
+      }
+      .login {
+        color: $color-white;
+        .login-btn {
+          cursor: pointer;
+          margin-right: 10px;
+          &:hover {
+            color: $color-white-d;
+          }
+        }
+        .register-btn {
+          cursor: pointer;
+          &:hover {
+            color: $color-white-d;
+          }
+        }
+      }
+    }
+  }
+}
+.search-contenter {
+  width: 100%;
+  height: 120px;
+  background: $color-white;
+  .center {
+    width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    .logo {
+      width: 200px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      img {
+        width: 180px;
+      }
+    }
+    .search {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .container {
+        width: 500px;
+        height: 40px;
+        border: 1px solid $color-theme;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        position: relative;
+      }
+      .home-search-input {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        .tab-btn {
+          display: flex;
+          align-items: center;
+          .btns {
+            padding: 0 10px;
+            cursor: pointer;
+            color: $color-text;
+            &.active-btn {
+              color: $color-theme;
+            }
+          }
+        }
+
+        .search-input {
+          width: 320px;
+          :deep(.el-input__inner) {
+            height: 20px;
+            line-height: 20px;
+            border: none;
+            padding: 0;
+            font-size: 14px;
+          }
+        }
+      }
+      .search-btn {
+        width: 40px;
+        height: 40px;
+        background: $color-theme;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        i {
+          color: $color-white;
+          font-size: 20px;
+        }
+      }
+    }
+    .top-user-segment {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+      .login {
+        display: flex;
+        align-items: center;
+        i {
+          font-size: 20px;
+          color: $color-text;
+          margin-right: 10px;
+        }
+        &.login {
+          :deep(.el-dropdown) {
+            .el-dropdown-link {
+              display: block;
+              max-width: 70px;
+              @include textEllipsis();
+              cursor: pointer;
+              color: $color-text;
+              &:hover {
+                color: $color-theme;
+              }
+            }
+          }
+        }
+      }
+    }
+    .top-invite-segment {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+    .top-upload {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+      cursor: pointer;
+      .icon-box {
+        width: 30px;
+        height: 30px;
+        background: $color-theme;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        i {
+          color: $color-white;
+          font-size: 16px;
+        }
+      }
+      .text {
+        margin-left: 5px;
+        color: $color-text;
+      }
+    }
+  }
+}
+.user-center-popover {
+  padding: 0;
+  border: 1px solid $color-theme;
+  &.el-popper[x-placement^='bottom'] {
+    margin-top: 10px;
+  }
+  :deep(.dropdown-menu-item) {
+    padding: 0;
+    line-height: 42px;
+    color: $color-text;
+    text-align: center;
+    transition: 0.2s;
+    &:hover {
+      background: $color-menu-l-hover;
+      color: $color-theme-d;
+    }
+    &:first-child:hover {
+      border-radius: 4px 4px 0 0;
+    }
+    &:last-child:hover {
+      border-radius: 0 0 4px 4px;
+    }
+  }
+}
+</style>

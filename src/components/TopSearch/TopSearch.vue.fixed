@@ -1,0 +1,783 @@
+<template>
+  <div>
+    <div class="head-contenter">
+      <div class="center">
+        <div class="name">全品文教-基础教育的内容供应商和服务者</div>
+        <div class="help">
+          <!-- <el-dropdown v-if="loginStatus">
+            <span class="el-dropdown-link top">
+              <img
+                src="./img/user_4_fill.svg"
+                :alt="userInfo.nickname"
+                class="logo-img"
+              />
+              {{ userInfo.nickname || '--' }}
+            </span> 
+            <template #dropdown>
+              <el-dropdown-item @click="logout"
+                >退出登录</el-dropdown-item
+              >
+            </template>
+          </el-dropdown>-->
+
+          <div class="help">
+            <a class="link" href="https://tech.canpoint.cn" target="_blank"
+              >开放平台</a
+            >
+            <div class="line"></div>
+            <!-- <span @click="skip('/personal/home')">个人中心</span>
+            <div class="line"></div>
+            <span @click="skip('/vip')">会员服务</span>
+            <div class="line"></div> -->
+            <div class="service_code_wrap">
+              官方客服
+              <div class="service_code">
+                <img src="./img/service_code.png" alt="官方客服" />
+                <span>全品AI教研云-微信客服</span>
+              </div>
+            </div>
+            <div class="line"></div>
+            <span>帮助中心</span>
+            <div class="line"></div>
+            <span @click="go">意见反馈</span>
+            <el-button
+              style="margin-left: 50px;"
+              type="text"
+              @click="showLogin"
+              v-if="!loginStatus"
+              >登录</el-button
+            >
+            <el-popover
+              popper-class="popper-class-my"
+              placement="bottom"
+              trigger="hover"
+            >
+              <user-center-popover
+                :userInfo="userInfo"
+                @logout="logout"
+              ></user-center-popover>
+              <template #reference>
+                <div class="user-center" v-if="loginStatus">
+                  <span class="el-dropdown-link top">
+                    <img
+                      style="width: 24px;"
+                      :src="
+                        userInfo.profilePhoto || require('./img/user_4_fill.svg')
+                      "
+                      :alt="userInfo.nickname"
+                      class="logo-img"
+                    />
+                    我的
+                  </span>
+                  <i class="el-icon-arrow-down"></i>
+                </div>
+              </template>
+            </el-popover>
+            <!-- @click="helpCenter" -->
+          </div>
+
+          <!-- <el-button type="text" @click="showLogin" >注册</el-button> -->
+        </div>
+      </div>
+    </div>
+    <div class="top-search">
+      <div class="content-container">
+        <div class="logo" @click="goIndex">
+          <a :href="url">
+            <img src="./img/logo.png" alt="全品AI教研云" class="logo-img" />
+          </a>
+          <!-- <span>- 基础教育的内容供应商和服务者</span> -->
+        </div>
+        <div class="search-form">
+          <div class="container">
+            <div class="home-search-input">
+              <div class="tab-btn">
+                <template v-for="item in searchOptions" :key="item.label">
+                  <div
+                    class="btns"
+                    @mousedown="event => handleCommand(event, item)"
+                    :class="{ 'active-btn': currSearchOption === item.label }"
+                  >
+                    {{ item.name }}
+                  </div>
+                </template>
+              </div>
+              <el-input
+                popper-class="search-autocomplete-suggestions custom-dropdown-menu"
+                v-model="keywords"
+                maxlength="100"
+                class="search-input"
+                @keyup.enter="search"
+                :placeholder="searchPlaceholder"
+                @focus="handleFocus"
+                @blur="blurEvent"
+              >
+              </el-input>
+              <!-- <HistoryMessageList
+                ref="historyMsgListRef"
+                :currSearchOption="currSearchOption"
+                @changeHisText="changeHisText"
+                @changeHotPaper="changeHotPaper"
+              /> -->
+            </div>
+
+            <div class="search-btn" @click="search">
+              <i class="iconfont icon-search_3_line"></i>
+            </div>
+          </div>
+        </div>
+        <div class="right">
+          <!-- <div class="help">
+            <i class="iconfont icon-question_line"></i>
+            <span>帮助中心</span>
+          </div>
+          <div class="login">
+            <i class="iconfont icon-touxiang_avatar"></i>
+            <el-dropdown v-if="loginStatus">
+              <span class="el-dropdown-link">{{ userInfo.nickname || '--'}}</span>
+              <template #dropdown>
+                <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+              </template>
+            </el-dropdown>
+            <el-button type="text" @click="showLogin" v-else>登录</el-button>
+          </div> -->
+        </div>
+        <!-- <div class="top-invite-segment fl">
+          <NewGift></NewGift>
+        </div> -->
+         <!-- <div class="top-upload fl" @click="entryUpload">
+            <span class="icon-box">
+              <i class="iconfont iconupload"></i>
+            </span>
+            <span class="text">上传试卷</span>
+          </div> -->
+      </div>
+      <!-- 登录弹窗 -->
+      <app-login ref="appLogin"></app-login>
+    </div>
+  </div>
+</template>
+
+<script>
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { mapState } from 'vuex'
+import HistoryMessageList from './HistoryMessageList.vue'
+import userCenterPopover from './userCenterPopover.vue'
+import {
+  isLogin,
+  getToken,
+  removeToken,
+  removeSessionStore,
+} from '@/common/js/util'
+export default {
+  components: {
+    HistoryMessageList,
+    userCenterPopover,
+  },
+  computed: {
+    ...mapState(['currSubject', 'fullpath', 'userInfo']),
+    isHome() {
+      if (this.fullpath == 'paperIndex') {
+        return true
+      } else {
+        return false
+      }
+    },
+  },
+  props: {
+    messageList: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+  },
+  data() {
+    return {
+      loginStatus: false,
+      keywords: '',
+      currSearchOption: 1,
+      searchPlaceholder: '可输入教案名称搜索',
+      searchOptions: [
+        // {
+        //   label: 1,
+        //   name: '试题',
+        //   className: 'btn-ques',
+        //   placeholder: '请输入试题内容搜索',
+        // },
+        {
+          label: 1,
+          name: '教案',
+          className: 'btn-paper',
+          placeholder: '可输入教案名称搜索',
+        },
+      ],
+      showSearchOptions: false,
+      url: '/',
+    }
+  },
+  created() {
+    this.init()
+    this.Bus.$on('showAppLogin', this.showLogin)
+    this.url = this.$router.resolve('/index').href
+  },
+  mounted() {
+    this.updateKeyWords()
+    // console.log(this.currSubject, 'currSubject-mounted')
+  },
+  helpCenter() {
+    this.$router.push('/help')
+  },
+  beforeRouteUpdate(to, from) {
+    // this.updateKeyWords()
+    this.loginStatus = isLogin()
+  },
+  methods: {
+    go() {
+      this.$router.push({
+        path: '/personal/feedback',
+      })
+    },
+    init() {
+      this.loginStatus = isLogin()
+      this.loginStatus && this.getUserInfo()
+    },
+    getUserInfo() {
+      let parms = {
+        token: getToken(),
+      }
+      let set = {
+        authCode: 2,
+      }
+      this.apiPost(API.GET_SSO_VERIFY, parms, set).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          // this.userInfo = res.data
+          this.$store.dispatch('updateUserInfo', res.data)
+          if (res.data.rewards && res.data.rewards.length) {
+            this.showCpReceiveReward(res.data.rewards)
+          }
+        } else if (res.code === CTS.constant.AUTH_TOKEN_CALLBACK_CODE) {
+          this.loginStatus = false
+          setTimeout(() => {
+            this.$store.dispatch('updateUserInfo', {
+              t: new Date().getTime(),
+            })
+          }, 2000)
+        }
+      })
+    },
+    logout() {
+      let parms = {
+        url: API.LOGOUT.urlPath,
+        apiId: 100099,
+        isWhitelist: 0,
+        httpMethod: 1,
+        strParams: {
+          token: getToken(),
+        },
+      }
+      this.newPost({ urlPath: API.LOGOUT.baseURL }, parms).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          removeToken()
+          removeSessionStore('serviceInfo')
+          localStorage.clear()
+          this.loginStatus = false
+          this.$store.commit('CLEAR_CACHE_DICT')
+          window.location.reload()
+        }
+      })
+    },
+    showLogin() {
+      this.$refs.appLogin.showLogin()
+    },
+    changeHisText(item) {
+      this.keywords = item
+      this.search()
+    },
+    changeHotPaper(paperItem) {
+      let viewCount = paperItem.viewCount || paperItem.totalCountView || 0
+      let queryStr =
+        '?paperIdEnc=' +
+        paperItem.paperIdEnc +
+        '&source=' +
+        paperItem.source +
+        '&viewCount=' +
+        viewCount +
+        '&pn=' +
+        (paperItem.provinceName || '')
+
+      queryStr += '&subject=' + this.currSubject.subjectCode
+      this.$router.push('/paper/detail' + queryStr)
+      // window.open(this.$router.resolve('/paper/detail').href+queryStr)
+    },
+    handleFocus() {
+      // this.$refs.historyMsgListRef.show()
+    },
+    blurEvent() {
+      // this.$refs.historyMsgListRef.closed()
+    },
+    updateKeyWords() {
+      if (this.$route.name === 'searchPaper' && this.$route.query.keywords) {
+        this.keywords = this.$route.query.keywords
+        this.currSearchOption = 2
+      } else if (
+        this.$route.name === 'searchQuestion' &&
+        this.$route.query.keywords
+      ) {
+        this.keywords = this.$route.query.keywords
+        this.currSearchOption = 1
+      } else {
+        this.keywords = ''
+      }
+    },
+    goIndex() {
+      this.$router.push({
+        name: 'paperIndex',
+      })
+    },
+    // 获取试卷列表数据
+    searchPaperList(queryString, callback) {
+      let parms = {
+        period: this.currSubject.periodCode,
+        subjectCode: this.currSubject.subjectCode,
+        paperName: this.keywords, // 试卷关键字
+        pageSize: 20,
+      }
+      // this.apiGet(API.MANAGE_PAPER_LIST, parms).then((res) => {
+      //   let paperList = []
+      //   if (res.code === CTS.constant.SUCCESS_CODE) {
+      //     paperList = res.data.list
+      //     if (!paperList.length) {
+      //       paperList = [{ value: '暂无数据' }]
+      //     } else {
+      //       paperList.forEach((item) => {
+      //         item.value = item.paperName
+      //       })
+      //     }
+      //   } else {
+      //     paperList = [{ value: '暂无数据' }]
+      //   }
+      //   callback(paperList)
+      // })
+    },
+    // 点击搜索
+    search() {
+      if (!this.loginStatus) return
+      if (!this.keywords.trim()) {
+        console.log(this.keywords.trim())
+        return
+      }
+
+      // this.$refs.historyMsgListRef.saveCookieData(this.keywords.trim())
+
+      if (this.isHome) {
+        let path =
+          this.currSearchOption === 1 ? '/search/question' : '/search/paper'
+        this.$router.push(path + '?keywords=' + this.keywords)
+        // this.openSystemPathLink(path + '?keywords=' + this.keywords)
+      } else {
+        let name =
+          this.currSearchOption === 1 ? 'searchQuestion' : 'searchPaper'
+        if (
+          this.$route.name == name &&
+          this.$route.query.keywords == this.keywords
+        ) {
+          return
+        }
+        this.$router.push({
+          name,
+          query: {
+            keywords: this.keywords,
+          },
+        })
+      }
+    },
+
+    // 搜索条件切换
+    handleCommand(event, command) {
+      event.preventDefault()
+      this.currSearchOption = command.label
+      this.searchPlaceholder = command.placeholder
+      if (
+        this.$route.name === 'searchPaper' &&
+        this.$route.query.keywords &&
+        command.label === 2
+      ) {
+        this.keywords = this.$route.query.keywords
+      } else if (
+        this.$route.name === 'searchQuestion' &&
+        this.$route.query.keywords &&
+        command.label === 1
+      ) {
+        this.keywords = this.$route.query.keywords
+      } else {
+        this.keywords = ''
+      }
+    },
+    // 监控搜索条件变化
+    visibleChange(visible) {
+      this.showSearchOptions = visible
+    },
+    // 进入资源上传
+    entryUpload() {
+      if (!isLogin()) {
+        this.$refs.appLogin.showLogin()
+      } else {
+        let parms = {
+          token: getToken(),
+        }
+        this.wayGet(API.TOKEN_VERIFY, parms).then(res => {
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            // this.$router.push({
+            //   name: 'resourceUpload'
+            // })
+            this.$router.push({
+              name: 'PaperUpload',
+            })
+          } else {
+            this.$refs.appLogin.showLogin()
+            this.$message.error('验证已经失效，请重新登录!')
+          }
+        })
+      }
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+.user-center {
+  margin-left: 50px;
+}
+.popper-class-my {
+  background: rgb(246, 249, 255);
+  padding: 0;
+  height: 222px;
+  margin-top: 0px;
+  .new-avatar-img {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+  }
+}
+.search-autocomplete-suggestions {
+  border: 1px solid $color-theme;
+  box-shadow: 0px 4px 6px 0px rgba(42, 77, 138, 0.1);
+  &.el-popper[x-placement^='bottom'] {
+    margin-top: 22px;
+  }
+  li {
+    line-height: 42px;
+    color: $color-text;
+    transition: 0.2s;
+    &:hover {
+      background: $color-menu-l-hover;
+      color: $color-theme-d;
+    }
+    &:first-child:hover {
+      border-radius: 4px 4px 0 0;
+    }
+    &:last-child:hover {
+      border-radius: 0 0 4px 4px;
+    }
+  }
+}
+</style>
+<style lang="scss" scoped>
+.top-search {
+  width: 100%;
+  min-width: 1200px;
+  height: 100px;
+  box-sizing: border-box;
+  background: $color-white;
+  padding: 10px 0;
+  // overflow: hidden;
+  .content-container {
+    display: flex;
+    align-items: flex-start;
+  }
+  .logo {
+    //width: 198px;
+    // height: 52px;
+    margin-right: 28px;
+    display: flex;
+    align-items: flex-end;
+    .logo-img {
+      width: 198px;
+      //height: 60px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    span {
+      font-size: 12px;
+    }
+  }
+  .search-form {
+    margin-left: 180px;
+    width: 520px;
+    height: 50px;
+    background: rgba(72, 127, 255, 0.1);
+    border-radius: 25px;
+    margin-top: 10px;
+    padding: 5px;
+    .container {
+      height: 100%;
+      position: relative;
+      background: #ffffff;
+      border-radius: 25px;
+      border: 1px solid rgba(72, 127, 255, 0.2);
+      display: flex;
+      align-items: center;
+    }
+    .home-search-input {
+      @include flex();
+      flex: 1;
+      // border: 1px solid #c1c9cd;
+      border-right-width: 0;
+      height: 100%;
+      border-radius: 12px 0 0 12px;
+      .tab-btn {
+        display: flex;
+        margin: 0 10px 0 10px;
+        border-radius: 12px;
+        overflow: hidden;
+        .btns {
+          width: 50px;
+          height: 24px;
+          line-height: 22px;
+          text-align: center;
+          cursor: pointer;
+          background: #f0f0f0;
+          font-size: 12px;
+        }
+        .active-btn {
+          background: #4b8ff5;
+          color: #fff;
+          border: 1px solid #4b8ff5;
+        }
+      }
+
+      .search-input {
+        width: 320px;
+        :deep(.el-input__inner) {
+          height: 20px;
+          line-height: 20px;
+          border: none;
+          // border-left: 1px solid #cfcfcf;
+          border-radius: 0;
+          color: $color-text-d;
+          padding: 0;
+          padding-left: 12px;
+          font-size: $font-size-medium;
+          &:focus {
+            // border-left: 1px solid $color-theme;
+          }
+        }
+      }
+    }
+
+    .search-btn {
+      width: 54px;
+      height: 20px;
+      // line-height: 46px;
+      // background: #4b8ff5;
+      cursor: pointer;
+      // border-radius: 0px 12px 12px 0px;
+      text-align: center;
+      transition: 0.2s;
+      display: grid;
+      border-left: 2px solid #e2e2e2;
+      &:hover {
+        // background: $color-theme-d;
+      }
+      .icon-search_3_line {
+        color: #487fff;
+        font-size: 22px;
+        place-self: center;
+      }
+    }
+  }
+  .right {
+    display: flex;
+    align-items: center;
+    margin-top: 24px;
+    margin-left: 90px;
+    > div {
+      color: #487fff;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      &:not(:last-child) {
+        margin-right: 40px;
+      }
+      i {
+        font-size: 22px;
+        margin-right: 10px;
+      }
+      &.login {
+        :deep(.el-dropdown) {
+          .el-dropdown-link {
+            display: block;
+            max-width: 70px;
+            @include textEllipsis();
+          }
+        }
+      }
+    }
+  }
+  .top-invite-segment {
+    width: 90px;
+    height: 40px;
+    position: relative;
+  }
+  .top-upload {
+    margin-top: 6px;
+    width: 150px;
+    height: 40px;
+    line-height: 38px;
+    border: 1px solid transparent;
+    text-align: center;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-sizing: border-box;
+    border: 1px solid $color-theme;
+    .icon-box {
+      display: inline-block;
+      vertical-align: middle;
+      height: 40px;
+      margin-right: 12px;
+      .iconupload {
+        font-size: 24px;
+        color: $color-theme;
+      }
+    }
+    .text {
+      color: $color-theme;
+    }
+    &:hover {
+      border: 1px solid #3e73cd;
+      .text,
+      .iconupload {
+        color: #3e73cd;
+      }
+    }
+  }
+}
+.search-dropdown-menu {
+  border: 1px solid $color-theme;
+  width: 90px;
+  height: 85px;
+  padding: 0;
+  background: $color-white;
+  overflow: visible;
+  box-shadow: 0px 4px 6px 0px rgba(42, 77, 138, 0.1);
+  &.el-popper[x-placement^='bottom'] {
+    margin-top: 10px;
+  }
+  :deep(.dropdown-menu-item) {
+    padding: 0;
+    line-height: 42px;
+    color: $color-text;
+    text-align: center;
+    transition: 0.2s;
+    &:hover {
+      background: $color-menu-l-hover;
+      color: $color-theme-d;
+    }
+    &:first-child:hover {
+      border-radius: 4px 4px 0 0;
+    }
+    &:last-child:hover {
+      border-radius: 0 0 4px 4px;
+    }
+  }
+}
+.head-contenter {
+  background: #f6f6f6;
+  height: 40px;
+  line-height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .center {
+    width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    font-family: Microsoft YaHei, Microsoft YaHei;
+    font-weight: 400;
+    font-size: 14px;
+    color: #333333;
+    text-align: left;
+    font-style: normal;
+    text-transform: none;
+    img {
+      position: relative;
+      top: -2px;
+    }
+    .icon-zhanghuxinxi1 {
+      background: #666666;
+      border-radius: 50%;
+      color: #fff;
+    }
+    .help {
+      font-size: 12px;
+      margin-left: 64px;
+      display: flex;
+      align-items: center;
+      .link {
+        //margin-right: 15px;
+      }
+      .line {
+        display: inline-block;
+        width: 1px;
+        height: 16px;
+        border-right: 1px solid #d8d8d8;
+        margin: 0 20px;
+      }
+      span {
+        cursor: pointer;
+        &:hover {
+          color: #487fff;
+        }
+      }
+      .service_code_wrap {
+        z-index: 99;
+        display: flex;
+        position: relative;
+        &:hover {
+          .service_code {
+            display: flex;
+          }
+        }
+        .service_code {
+          display: none;
+          padding: 25px 20px 0 20px;
+          flex-direction: column;
+          width: 150px;
+          height: 175px;
+          background: url('./img/service_bg.png') center/cover no-repeat;
+          position: absolute;
+          top: 24px;
+          left: -50px;
+          span {
+            height: 18px;
+            line-height: 18px;
+          }
+          img {
+            display: inline-block;
+            margin-bottom: 4px;
+            width: 110px;
+            height: 110px;
+          }
+        }
+      }
+    }
+    .help-div {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+}
+</style>

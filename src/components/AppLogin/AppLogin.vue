@@ -1,11 +1,15 @@
 <template>
-  <span> </span>
+  <span />
 </template>
 
 <script>
   import Login from '../Login/CbLogin'
   import Register from '../Register/Register'
   export default {
+    components: {
+      Login,
+      Register,
+    },
     methods: {
       // 显示登录弹框
       showLogin() {
@@ -53,11 +57,10 @@
         }, 500)
       },
     },
-    components: {
-      Login,
-      Register,
-    },
   }
 </script>
 
 <style lang="scss" scoped></style>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";

@@ -121,19 +121,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.noCaptcha-container :deep(.nc_scale) {
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.noCaptcha-container :deep(.nc_scale)) {
   height: 38px;
   background: $color-background-l;
   border: 1px solid $color-border;
   border-radius: 4px;
 }
 
-.noCaptcha-container :deep(.nc_bg) {
+.noCaptcha-container :deep(.nc_bg)) {
   border-radius: 4px 0 0 4px;
 }
 
 .noCaptcha-container :deep(.btn_slide),
-.noCaptcha-container :deep(.btn_ok) {
+.noCaptcha-container :deep(.btn_ok)) {
   height: 36px;
   line-height: 36px;
   border-radius: 4px;
@@ -142,17 +145,17 @@ export default {
   border: none;
 }
 
-.noCaptcha-container :deep(.btn_slide) {
+.noCaptcha-container :deep(.btn_slide)) {
   border-right: 1px solid $color-border;
 }
 
-.noCaptcha-container :deep(.btn_ok) {
+.noCaptcha-container :deep(.btn_ok)) {
   border-left: 1px solid $color-border;
   border-right: 1px solid $color-border;
   font-size: $font-size-large;
 }
 
-.noCaptcha-container :deep(.scale_text .nc-lang-cnt) {
+.noCaptcha-container :deep(.scale_text .nc-lang-cnt)) {
   height: 38px;
   line-height: 38px;
   // background: #E4E4E4 !important;
@@ -164,15 +167,15 @@ export default {
   text-indent: 45px;
 }
 
-.noCaptcha-container :deep(.scale_text .nc-lang-cnt b) {
+.noCaptcha-container :deep(.scale_text .nc-lang-cnt b)) {
   color: $color-white;
 }
 
-.noCaptcha-container :deep(.scale_text.slidetounlock span[data-nc-lang='_startTEXT']) {
+.noCaptcha-container :deep(.scale_text.slidetounlock span[data-nc-lang='_startTEXT'])) {
   // background: -webkit-gradient(linear,left top,right top,color-stop(0,$color-text-ll),color-stop(.4,$color-text-ll),color-stop(.5,$color-text-ll),color-stop(.6,$color-text-ll),color-stop(1,$color-text-ll));
 }
 
-.noCaptcha-container :deep(.scale_text2) {
+.noCaptcha-container :deep(.scale_text2)) {
   color: $color-white;
 }
 </style>

@@ -1,13 +1,13 @@
 <template>
   <el-dialog
     :visible="visible"
-    @update:visible="visible = $event"
     title="提示"
     width="600px"
     class="auth-dialog"
     top="11.5%"
     :append-to-body="true"
     :closed="hide"
+    @update:visible="visible = $event"
   >
     <div class="auth-container">
       <div v-if="code === 'warningdialog'">
@@ -119,6 +119,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .updata-vip {
     color: $color-theme;
     cursor: pointer;
@@ -127,7 +130,7 @@
       color: $color-button-d-hover;
     }
   }
-  .auth-dialog :deep(.el-dialog) {
+  .auth-dialog :deep(.el-dialog)) {
     .el-dialog {
       width: 600px;
       // height: 520px;

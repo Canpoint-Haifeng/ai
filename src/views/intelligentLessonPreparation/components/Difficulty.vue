@@ -4,7 +4,10 @@
       <div class="title_border">
         选择难度
       </div>
-      <span>当前试卷难度（整卷的难度）：<i>{{ getCoefficient }}</i></template></template></span>
+      <span>当前试卷难度（整卷的难度）：<i>{{ getCoefficient }}</i></span>
+    </div>
+  </div>
+</template></span>
     </div>
     <!-- <div class="title">
       选择难度及年份
@@ -47,7 +50,7 @@
             <span>低</span>
           </div>
           <div class="bar">
-            <i :style="{height: (1-getCoefficient)*100+'%'}"></i></template></template>
+            <i :style="{height: (1-getCoefficient)*100+'%'}"></i></template>
           </div>
         </div> -->
         <div class="flex difficultyLevel">
@@ -323,6 +326,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .flex {
   display: flex;
 }
@@ -378,7 +384,7 @@ export default {
 .sliderAlone {
   width: 380px;
 }
-:deep(.alone) {
+:deep(.alone)) {
   width: 380px;
   .el-slider__bar {
     background: transparent !important;
@@ -451,14 +457,14 @@ export default {
   }
 }
 
-:deep(.el-slider__marks-stop) {
+:deep(.el-slider__marks-stop)) {
   border-radius: 0;
 }
-:deep(.el-slider__runway) {
+:deep(.el-slider__runway)) {
   height: 8px;
   border-radius: 0;
 }
-:deep(.el-slider__bar) {
+:deep(.el-slider__bar)) {
   height: 8px;
   border-radius: 0;
 }
@@ -549,10 +555,10 @@ export default {
 .mb-30 {
   margin-bottom: 30px;
 }
-:deep(.el-slider__marks-stop) {
+:deep(.el-slider__marks-stop)) {
 	height: 8px;
 }
-:deep(.el-slider__marks-text) {
+:deep(.el-slider__marks-text)) {
 	margin-top: 24px;
 	color: #666;
 	pointer-events: none;

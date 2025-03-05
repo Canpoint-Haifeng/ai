@@ -674,7 +674,7 @@ export default {
     vertical-align: bottom;
   }
   .tabs {
-    :deep(.el-tabs) {
+    :deep(.el-tabs)) {
       .el-tabs__nav {
         height: 50px;
       }

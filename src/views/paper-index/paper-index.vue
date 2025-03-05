@@ -368,6 +368,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .index-wrapper {
   width: 1200px;
   margin: 0 auto;
@@ -476,7 +479,7 @@ export default {
         padding-bottom: 20px;
       }
 
-      :deep(.el-carousel) {
+      :deep(.el-carousel)) {
         border-radius: 0;
         overflow: hidden;
       }

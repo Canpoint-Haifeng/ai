@@ -1,48 +1,34 @@
 <template>
-  <el-dialog
-    :visible="visible"
-    @update:visible="$emit('update:visible', $event)"
-    :title="title"
-    :width="width"
-    :close-on-click-modal="closeOnClickModal"
-    :close-on-press-escape="closeOnPressEscape"
-    :show-close="showClose"
-    :before-close="beforeClose"
-    :append-to-body="appendToBody"
-    :lock-scroll="lockScroll"
-    :custom-class="customClass"
-    :center="center"
-    :destroy-on-close="destroyOnClose"
-    :top="top"
-    :modal="modal"
-    :modal-append-to-body="modalAppendToBody"
-    @close="handleClose"
-  >
-    <slot></slot>
-    <template #footer>
-      <div class="dialog-footer" v-if="showFooter">
-        <el-button @click="handleCancel" v-if="showCancelBtn">
-          {{ cancelBtnText }}
-        </el-button>
-        <el-button type="primary" @click="handleConfirm" v-if="showConfirmBtn">
-          {{ confirmBtnText }}
-        </el-button>
-        <slot name="footer"></slot>
+  <div>
+    <el-dialog
+      :visible="visible"
+      :title="title"
+      :width="width"
+      @update:visible="$emit('update:visible', $event)"
+    >
+      <div>
+        <slot />
       </div>
-    </template>
-  </el-dialog>
+      <template #footer>
+        <el-button @click="handleCancel">
+          {{ cancelText }}
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleConfirm"
+        >
+          {{ confirmText }}
+        </el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'BaseDialog',
+export default {
+  name: 'NewBaseDialog',
   props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
+    visible: Boolean,
     title: {
       type: String,
       default: '提示'
@@ -51,100 +37,32 @@ export default defineComponent({
       type: String,
       default: '500px'
     },
-    showConfirmBtn: {
-      type: Boolean,
-      default: true
-    },
-    showCancelBtn: {
-      type: Boolean,
-      default: true
-    },
-    confirmBtnText: {
-      type: String,
-      default: '确定'
-    },
-    cancelBtnText: {
+    cancelText: {
       type: String,
       default: '取消'
     },
-    closeOnClickModal: {
-      type: Boolean,
-      default: true
-    },
-    closeOnPressEscape: {
-      type: Boolean,
-      default: true
-    },
-    showClose: {
-      type: Boolean,
-      default: true
-    },
-    beforeClose: {
-      type: Function,
-      default: null
-    },
-    appendToBody: {
-      type: Boolean,
-      default: false
-    },
-    lockScroll: {
-      type: Boolean,
-      default: true
-    },
-    customClass: {
+    confirmText: {
       type: String,
-      default: ''
-    },
-    center: {
-      type: Boolean,
-      default: false
-    },
-    destroyOnClose: {
-      type: Boolean,
-      default: false
-    },
-    top: {
-      type: String,
-      default: '15vh'
-    },
-    modal: {
-      type: Boolean,
-      default: true
-    },
-    modalAppendToBody: {
-      type: Boolean,
-      default: true
-    },
-    showFooter: {
-      type: Boolean,
-      default: true
+      default: '确定'
     }
   },
-  emits: ['update:visible', 'cancel', 'confirm', 'close'],
-  setup(props, { emit }) {
-    const handleCancel = () => {
-      emit('update:visible', false)
-      emit('cancel')
-    }
-    
-    const handleConfirm = () => {
-      emit('confirm')
-    }
-    
-    const handleClose = () => {
-      emit('close')
-    }
-    
-    return {
-      handleCancel,
-      handleConfirm,
-      handleClose
+  emits: ['update:visible', 'cancel', 'confirm'],
+  methods: {
+    handleCancel() {
+      this.$emit('update:visible', false)
+      this.$emit('cancel')
+    },
+    handleConfirm() {
+      this.$emit('confirm')
     }
   }
-})
+}
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .dialog-footer {
   text-align: center;
 }

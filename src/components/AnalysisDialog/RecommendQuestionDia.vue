@@ -48,10 +48,10 @@
       >
         <el-pagination
           :current-page="pageNum"
-          @update:current-page="pageNum = $event"
           :page-size="pageSize"
           :total="total"
           layout="prev, pager, next"
+          @update:current-page="pageNum = $event"
           @current-change="handleCurrentChange"
         />
       </div>
@@ -98,8 +98,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .recommend-dialog {
-  :deep(.el-dialog__body) {
+  :deep(.el-dialog__body)) {
     padding: 20px;
   }
   

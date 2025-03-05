@@ -12,7 +12,7 @@
           我的自用
           <i class="el-icon-arrow-right icon_right" />
         </span>
-        <!-- <i class="icon iconfont iconshangchuan"></i></template></template> -->
+        <!-- <i class="icon iconfont iconshangchuan"></i></template> -->
       </p>
       <el-form
         ref="ruleForm"
@@ -182,11 +182,11 @@
     </div>
     <el-dialog
       :visible="dialogVisible"
-      @update:visible="dialogVisible = $event"
       class="dialog-wrapper"
       title="提示"
       :modal-append-to-body="false"
       width="500px"
+      @update:visible="dialogVisible = $event"
     >
       <div class="dialog-content">
         <div class="dialog-tips">
@@ -633,6 +633,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .paper-upload-pt {
   background: #fff;
   // padding: 0px 0px;
@@ -663,7 +666,7 @@ export default {
     }
 
     .el-form {
-      :deep(.el-form-item) {
+      :deep(.el-form-item)) {
         margin-right: 90px;
 
         .el-form-item__label {}
@@ -717,7 +720,7 @@ export default {
     margin-top: 40px;
   }
 
-  :deep(.tip-dia) {
+  :deep(.tip-dia)) {
     .el-dialog__header {
       background: #fff;
       padding: 26px 40px;
@@ -752,7 +755,7 @@ export default {
   }
 
   .el-form {
-    :deep(.el-form-item) {
+    :deep(.el-form-item)) {
       margin-right: 90px;
       //   margin-top: 30px;
       margin-bottom: 30px;
@@ -783,11 +786,11 @@ export default {
     }
 
     .form_item {
-      :deep(.el-input) {
+      :deep(.el-input)) {
         width: 270px;
       }
 
-      :deep(.el-input__inner) {
+      :deep(.el-input__inner)) {
         border-radius: 4px;
       }
     }

@@ -294,6 +294,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .multi-category-content {
     @include flex();
     .category-label {
@@ -357,7 +360,7 @@
       }
     }
   }
-  .multi-category-content :deep(.el-checkbox__label) {
+  .multi-category-content :deep(.el-checkbox__label)) {
     line-height: 14px;
     padding-left: 4px;
   }

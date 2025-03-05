@@ -127,6 +127,9 @@
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .vip-get-basket-wrapper {
     position: fixed;
     top: 0;

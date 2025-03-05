@@ -21,7 +21,7 @@
       />
       <more @change="moreChange" />
       <!-- <div class="expand">
-        <span @click="filterExpand=!filterExpand"><i class="iconfont icon-down_line" :class="{rotate: filterExpand}"></i></template></template>{{ filterExpand? '收起':'展开'  }}</span>
+        <span @click="filterExpand=!filterExpand"><i class="iconfont icon-down_line" :class="{rotate: filterExpand}"></i></template>{{ filterExpand? '收起':'展开'  }}</span>
       </div> -->
     </div>
     <div class="gray-line" />
@@ -730,6 +730,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .category-container {
   width: 914px;
   padding: 20px 20px 12px 20px;
@@ -824,7 +827,7 @@ export default {
     }
   }
 
-  .paper-search :deep() {
+  .paper-search :deep()) {
     display: inline-block;
     margin-left: 40px;
     width: 200px;

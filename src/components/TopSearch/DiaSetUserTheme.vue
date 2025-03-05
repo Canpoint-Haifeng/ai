@@ -1,22 +1,53 @@
 <template>
-  <el-dialog :title="messageDialog.title" v-model="messageDialog.visible" :modal-append-to-body="false"
-    :lock-scroll="true" :show-close="true" :width="messageDialog.width" @close="onClose">
+  <el-dialog
+    v-model="messageDialog.visible"
+    :title="messageDialog.title"
+    :modal-append-to-body="false"
+    :lock-scroll="true"
+    :show-close="true"
+    :width="messageDialog.width"
+    @close="onClose"
+  >
     <div class="set-user-theme-body">
       <div class="free-preview-theme">
         <div class="theme-content">
           <div class="theme-content-group-box">
-            <div class="theme-content-group" v-for="item in themeList" :key="item.id">
-              <div class="t" :class="{ isvip: item.themeType === 2 }">
+            <div
+              v-for="item in themeList"
+              :key="item.id"
+              class="theme-content-group"
+            >
+              <div
+                class="t"
+                :class="{ isvip: item.themeType === 2 }"
+              >
                 {{ item.groupName }}
               </div>
-              <div class="vip-theme-list" v-if="item.children">
-                <div class="vip-theme-item" v-for="sub in item.children" :key="sub.groupChildId" :class="{
-                  __default: sub.defaultTheme === 1,
-                  __active: sub.groupChildId == userTheme.groupChildId,
-                }" @click="onSelectItem(sub)" @mouseover="onMouseOver(sub)" @mouseout="onMouseOut(sub)">
-                  <img class="vip-theme-image" :src="sub.themeUrl" />
-                  <div class="select-theme-active" v-if="sub.groupChildId == userTheme.groupChildId">
-                    <span class="iconfont iconxuanze"></span>
+              <div
+                v-if="item.children"
+                class="vip-theme-list"
+              >
+                <div
+                  v-for="sub in item.children"
+                  :key="sub.groupChildId"
+                  class="vip-theme-item"
+                  :class="{
+                    __default: sub.defaultTheme === 1,
+                    __active: sub.groupChildId == userTheme.groupChildId,
+                  }"
+                  @click="onSelectItem(sub)"
+                  @mouseover="onMouseOver(sub)"
+                  @mouseout="onMouseOut(sub)"
+                >
+                  <img
+                    class="vip-theme-image"
+                    :src="sub.themeUrl"
+                  >
+                  <div
+                    v-if="sub.groupChildId == userTheme.groupChildId"
+                    class="select-theme-active"
+                  >
+                    <span class="iconfont iconxuanze" />
                   </div>
                 </div>
               </div>
@@ -25,12 +56,20 @@
         </div>
         <div class="preview-theme">
           <div class="preivew-canvas">
-            <img class="preview-canvas-image" :src="currentThemeUrl" />
-            <div class="preivew-canvas-image"></div>
+            <img
+              class="preview-canvas-image"
+              :src="currentThemeUrl"
+            >
+            <div class="preivew-canvas-image" />
           </div>
-          <div class="t">主题效果预览</div>
+          <div class="t">
+            主题效果预览
+          </div>
           <div class="set-page-block-footer">
-            <div class="cp-btn blue" @click="resetDefaultTheme">
+            <div
+              class="cp-btn blue"
+              @click="resetDefaultTheme"
+            >
               恢复默认主题
             </div>
           </div>

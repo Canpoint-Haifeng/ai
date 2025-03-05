@@ -611,6 +611,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .user-content {
   width: 1200px;
   min-height: 673px;
@@ -660,11 +663,11 @@ export default {
   }
   .user-content-right {
     width: 914px;
-    :deep(.el-tabs .el-tabs__header) {
+    :deep(.el-tabs .el-tabs__header)) {
       padding: 0 20px;
       background-color: $color-white;
     }
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__item) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__item)) {
       font-size: 15px;
       font-weight: bold;
       background-color: F4F8FF;
@@ -672,11 +675,11 @@ export default {
       padding: 0;
       text-align: center;
     }
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
       background-color: $color-theme;
       height: 3px;
     }
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
       color: $color-theme;
       background-color: #f4f8ff;
     }

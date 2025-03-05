@@ -1,12 +1,20 @@
 <template>
   <div>
-    <div class="cp-basket-handler" @click="toggleBasket">
-      <div class="basket-btn" id="basket-btn">
+    <div
+      class="cp-basket-handler"
+      @click="toggleBasket"
+    >
+      <div
+        id="basket-btn"
+        class="basket-btn"
+      >
         <div class="basket-num">
           <span class="text">{{ basketData.totalCount || 0 }}</span>
         </div>
-        <i class="iconfont icon-basket_fill"></i></template></template>
-        <p class="text">试题篮</p>
+        <i class="iconfont icon-basket_fill" />
+        <p class="text">
+          试题篮
+        </p>
       </div>
     </div>
     <div class="cp-new-tool-basket">
@@ -14,79 +22,98 @@
         class="new-tool-basket-body"
         :class="isShowBasket ? 'show-baseket' : ''"
       >
-        <div class="basket-handler" @click="toggleBasket">
-          <div class="basket-btn" id="basket-btn">
-            <i class="iconfont icon-arrows_right_line"></i></template></template>
-            <p class="text">收起</p>
+        <div
+          class="basket-handler"
+          @click="toggleBasket"
+        >
+          <div
+            id="basket-btn"
+            class="basket-btn"
+          >
+            <i class="iconfont icon-arrows_right_line" />
+            <p class="text">
+              收起
+            </p>
           </div>
         </div>
 
         <div class="tool-basket-segment">
           <div class="tool-basket-handler">
             <div class="title-clear">
-              <span class="title-name"
-                >共<span class="title-num">{{
-                  basketData.totalCount || 0
-                }}</span
-                >题</span
-              >
+              <span class="title-name">共<span class="title-num">{{
+                basketData.totalCount || 0
+              }}</span>题</span>
               <span
-                class="clear-ques"
                 v-if="basketData.totalCount"
+                class="clear-ques"
                 @click="showEmptyDialog"
-                >清空试题</span
-              >
+              >清空试题</span>
             </div>
             <div class="preview-paper">
               <span
-                class="perview-paper-btn"
                 v-if="basketData.totalCount"
+                class="perview-paper-btn"
                 @click="previewPaper"
-                ><i class="icon el-icon-view"></i></template></template>试卷预览</span
-              >
+              ><i class="icon el-icon-view" />试卷预览</span>
             </div>
           </div>
           <div class="basket-group-list">
             <div
-              class="basket-group-item"
               v-for="(item, index) in basketData.list"
               :key="index"
+              class="basket-group-item"
             >
-              <span class="item-type" :title="item.typeName">{{
+              <span
+                class="item-type"
+                :title="item.typeName"
+              >{{
                 item.typeName
               }}</span>
               <span class="item-num font-12">
-                <em class="text">{{ item.count }}</em
-                >题
+                <em class="text">{{ item.count }}</em>题
               </span>
-              <span class="item-del" @click="showDeleteDialog(item.type)">
-                <i class="el-icon-delete"></i></template></template>
+              <span
+                class="item-del"
+                @click="showDeleteDialog(item.type)"
+              >
+                <i class="el-icon-delete" />
               </span>
             </div>
           </div>
 
           <div
-            class="basket-question-list"
             v-if="questionsData && questionsData.length"
+            class="basket-question-list"
           >
-            <div v-for="item in questionsData" :key="item.id">
+            <div
+              v-for="item in questionsData"
+              :key="item.id"
+            >
               <div class="basket-paper-type-name">
                 {{ item.name }}
               </div>
-              <div v-for="ques in item.list" :key="ques.questionId">
+              <div
+                v-for="ques in item.list"
+                :key="ques.questionId"
+              >
                 <BasketQuestionItem
-                  :questionItem="ques"
-                  @deleteQuestion="onDeleteQuestion"
-                ></BasketQuestionItem>
+                  :question-item="ques"
+                  @delete-question="onDeleteQuestion"
+                />
               </div>
             </div>
           </div>
 
-          <div class="basket-noresult" v-show="basketData.list.length === 0">
+          <div
+            v-show="basketData.list.length === 0"
+            class="basket-noresult"
+          >
             <div class="icon-box">
-              <i class="noresult-icon"></i></template></template>
+              <i class="noresult-icon" />
             </div>
-            <p class="noresult-text font-16 color-3">试题篮空空的~</p>
+            <p class="noresult-text font-16 color-3">
+              试题篮空空的~
+            </p>
             <p class="noresult-text1 font-12 color-9">
               您还没有添加试题，赶快去添加吧！
             </p>
@@ -94,14 +121,32 @@
         </div>
       </div>
     </div>
-    <base-dialog @comfirm="onDeleteBasket" :addbody="true" ref="deleteDialog">
-      <div #dialogTips" class="dialog-tips">确认删除试题？</div>
+    <base-dialog
+      ref="deleteDialog"
+      :addbody="true"
+      @comfirm="onDeleteBasket"
+    >
+      <div
+        slot="dialogTips"
+        class="dialog-tips"
+      >
+        确认删除试题？
+      </div>
     </base-dialog>
-    <base-dialog :addbody="true" @comfirm="onEmptyBasket" ref="emptyDialog">
-      <div #dialogTips" class="dialog-tips">确认清空全部试题吗？</div>
+    <base-dialog
+      ref="emptyDialog"
+      :addbody="true"
+      @comfirm="onEmptyBasket"
+    >
+      <div
+        slot="dialogTips"
+        class="dialog-tips"
+      >
+        确认清空全部试题吗？
+      </div>
     </base-dialog>
     <!-- 登录弹窗 -->
-    <app-login ref="appLogin"></app-login>
+    <app-login ref="appLogin" />
   </div>
 </template>
 
@@ -142,7 +187,7 @@ export default {
     this.Bus.$on('addBasket', this.onAddBasket)
     this.Bus.$on('refreshBasket', this.onAddBasket)
   },
-  destroyed() {
+  unmounted() {
     this.Bus.$off('addBasket')
     this.Bus.$off('refreshBasket')
     this.destroyedWindowsEvent()

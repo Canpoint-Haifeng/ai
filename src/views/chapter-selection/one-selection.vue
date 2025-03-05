@@ -99,7 +99,7 @@
         <!-- <div class="pagination-container pagination-container-right" v-if="questionsData.list.length" style="text-align: center;">
           <pagination
             @current-change="handleCurrentChange"
-            :current-page.sync="questionsData.page"
+            :current-page="questionsData.page" @update:current-page="questionsData.page = $event"
             :page-size="questionsData.pageSize"
             layout="prev, pager, next, jumper"
             :total="questionsData.count">
@@ -499,6 +499,9 @@
   }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   .category-container {
     width: 914px;
     padding: 20px 20px 8px 20px;
@@ -567,7 +570,7 @@
         }
       }
     }
-    :deep(.paper-search) {
+    :deep(.paper-search)) {
       display: inline-block;
       margin: 0 30px 0 110px;
       width: 174px;
@@ -579,7 +582,7 @@
         right: 12px;
       }
     }
-    :deep(.paper-show-answer) {
+    :deep(.paper-show-answer)) {
       display: inline-block;
       margin-right: 30px;
       .el-checkbox__inner {

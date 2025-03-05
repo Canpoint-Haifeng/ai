@@ -151,6 +151,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   /*.el-scrollbar .el-scrollbar__view .el-select-dropdown__item*/
   .el-scrollbar .el-scrollbar__view .el-select-dropdown__item {
     height: auto;

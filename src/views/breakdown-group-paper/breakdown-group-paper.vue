@@ -2,19 +2,19 @@
   <div class="breakdown-group-paper">
     <!-- <ul class="my-resources-list">
       <li :class="{ active: activeName == 'classBooks' }" @click="activeName = 'classBooks'">
-        <i class="el-icon-office-building"></i></template></template>课时卷
+        <i class="el-icon-office-building"></i></template>课时卷
       </li>
       <li :class="{ active: activeName == 'unitBooks' }" @click="activeName = 'unitBooks'">
-        <i class="el-icon-office-building"></i></template></template>单元卷
+        <i class="el-icon-office-building"></i></template>单元卷
       </li>
       <li :class="{ active: activeName == 'monthBooks' }" @click="activeName = 'monthBooks'">
-        <i class="el-icon-office-building"></i></template></template>月考卷
+        <i class="el-icon-office-building"></i></template>月考卷
       </li>
       <li :class="{ active: activeName == 'interimBooks' }" @click="activeName = 'interimBooks'">
-        <i class="el-icon-office-building"></i></template></template>期中卷
+        <i class="el-icon-office-building"></i></template>期中卷
       </li>
       <li :class="{ active: activeName == 'endBooks' }" @click="activeName = 'endBooks'">
-        <i class="el-icon-office-building"></i></template></template>期末卷
+        <i class="el-icon-office-building"></i></template>期末卷
       </li>
     </ul> -->
     <!-- <breadcrumb :crumbsData="crumbsData"></breadcrumb> -->
@@ -23,14 +23,19 @@
         <span>细目表组卷</span>
         <!-- {{ type }} -->
         <!-- <div class="icon-div" @click="goMyBreakdown">
-          <i class="icon iconfont iconwodezujuan"></i></template></template>
+          <i class="icon iconfont iconwodezujuan"></i></template>
           <span>我的细目表</span>
         </div> -->
       </h1>
       <div class="breakdown-content">
         <h3 class="tit-item">
           <span />
-          <i>*</i></template></template>
+          <i>*</i>
+        </h3>
+      </div>
+    </div>
+  </div>
+</template>
           试卷标题
         </h3>
         <div class="paper-name">
@@ -1319,6 +1324,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .breakdown-group-paper {
   width: 1200px;
@@ -1439,7 +1447,7 @@ export default {
         width: 560px;
         padding-bottom: 20px;
 
-        :deep(.el-input) {
+        :deep(.el-input)) {
           .el-input__inner,
           .el-input__icon {
             height: 30px;
@@ -1463,7 +1471,7 @@ export default {
             padding-bottom: 10px;
           }
 
-          :deep(.el-select) {
+          :deep(.el-select)) {
             width: 270px;
             margin-right: 20px;
             margin-bottom: 30px;
@@ -1490,7 +1498,7 @@ export default {
           padding: 20px 30px;
 
           .edition {
-            :deep(.el-select) {
+            :deep(.el-select)) {
               width: 270px;
               margin-bottom: 20px;
 
@@ -1554,7 +1562,7 @@ export default {
               text-align: right;
             }
 
-            :deep(.el-input-number) {
+            :deep(.el-input-number)) {
               span[role='button'] {
                 height: 28px;
               }
@@ -1570,7 +1578,7 @@ export default {
         }
       }
 
-      :deep(.page-table) {
+      :deep(.page-table)) {
         .el-table {
           thead {
             th:first-child {
@@ -1739,5 +1747,8 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 /* SCSS styles */
 </style>

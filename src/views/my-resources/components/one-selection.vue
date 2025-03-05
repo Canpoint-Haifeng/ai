@@ -424,6 +424,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   
 .category-container {
   width: 914px;
@@ -505,7 +508,7 @@ export default {
     }
   }
 
-  :deep(.paper-search) {
+  :deep(.paper-search)) {
     display: inline-block;
     margin: 0 30px 0 160px;
     width: 174px;
@@ -520,7 +523,7 @@ export default {
     }
   }
 
-  :deep(.paper-show-answer) {
+  :deep(.paper-show-answer)) {
     display: inline-block;
     margin-right: 30px;
 

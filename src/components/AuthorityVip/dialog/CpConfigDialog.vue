@@ -7,13 +7,13 @@
   <div>
     <el-dialog
       :visible="visible"
-      @update:visible="$emit('update:visible', $event)"
       :title="title"
       width="500px"
       class="login-vip-dialog"
       top="11.5%"
       :append-to-body="true"
       :lock-scroll="false"
+      @update:visible="$emit('update:visible', $event)"
       @close="hide"
     >
       <div class="cp-comfirm-box">
@@ -64,6 +64,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 @use "@/assets/css/variables" as *;
   .btn.btn-shadow-pay {
     width: 100px;

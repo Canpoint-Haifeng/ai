@@ -128,10 +128,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .analysis {
     padding: 20px;
     background: #fff;
-    :deep(.el-button) {
+    :deep(.el-button)) {
         width: 100%;
         display: flex;
         justify-content: center;

@@ -3,22 +3,21 @@
     <div class="basket-question-item">
       <question-cell
         :level="1"
-        :quesStructPm="
+        :ques-struct-pm="
           questionItem.questionInfo.quesStruct &&
-          questionItem.questionInfo.quesStruct.code
+            questionItem.questionInfo.quesStruct.code
             ? questionItem.questionInfo.quesStruct.code
             : '-1'
         "
         :ques="questionItem.questionInfo"
-        :showQuestionNum="questionItem.showQuestionNum"
-        :questionNum="questionItem.questionNum"
-      >
-      </question-cell>
+        :show-question-num="questionItem.showQuestionNum"
+        :question-num="questionItem.questionNum"
+      />
     </div>
     <div
       class="basket-delete-quesiton el-icon-error"
       @click="deleteQuestion"
-    ></div>
+    />
   </div>
 </template>
 

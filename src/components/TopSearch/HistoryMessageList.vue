@@ -5,22 +5,22 @@
     <!--类型为试卷，显示历史记录和试卷推荐，清空直接隐藏历史记录的盒子模块 -->
     <MessageList
       v-if="currSearchOption == '1' && quesHistoryList.length > 0"
-      :isShow="isShow"
-      :currSearchOption="currSearchOption"
-      :historyList="quesHistoryList"
-      @clearList="clearList"
-      @changeHistoryText="changeHisText"
-    ></MessageList>
+      :is-show="isShow"
+      :curr-search-option="currSearchOption"
+      :history-list="quesHistoryList"
+      @clear-list="clearList"
+      @change-history-text="changeHisText"
+    />
     <MessageList
       v-if="currSearchOption == '2'"
-      :isShow="isShow"
+      :is-show="isShow"
       :value="showMessage"
-      :currSearchOption="currSearchOption"
-      :historyList="paperHistoryList"
-      @clearList="clearList"
-      @changeHistoryText="changeHisText"
-      @changePaperName="changeHotPaper"
-    ></MessageList>
+      :curr-search-option="currSearchOption"
+      :history-list="paperHistoryList"
+      @clear-list="clearList"
+      @change-history-text="changeHisText"
+      @change-paper-name="changeHotPaper"
+    />
   </div>
 </template>
 
@@ -166,6 +166,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .messageList {
   position: absolute;
   right: 0px;

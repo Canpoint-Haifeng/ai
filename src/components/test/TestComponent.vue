@@ -5,11 +5,13 @@
     
     <div class="test-section">
       <h2>Testing BaseDialog Component</h2>
-      <el-button @click="showDialog = true">Open Dialog</el-button>
+      <el-button @click="showDialog = true">
+        Open Dialog
+      </el-button>
       <base-dialog 
         :visible="showDialog"
-        @update:visible="showDialog = $event"
         title="Test Dialog"
+        @update:visible="showDialog = $event"
         @confirm="handleConfirm"
         @cancel="handleCancel"
       >
@@ -51,6 +53,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .test-component {
   padding: 20px;
   max-width: 800px;

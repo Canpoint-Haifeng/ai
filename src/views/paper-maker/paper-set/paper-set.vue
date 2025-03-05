@@ -149,6 +149,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .paper-set {
   // height: 226px;
   background: $color-white;
@@ -156,7 +159,7 @@ export default {
   .set-title {
     padding: 16px 14px;
   }
-  :deep(.set-items) {
+  :deep(.set-items)) {
     height: 36px;
     background: #f6f6f6;
     padding: 0 14px;
@@ -172,7 +175,7 @@ export default {
       padding-left: 4px;
     }
   }
-  :deep(.set-options) {
+  :deep(.set-options)) {
     padding: 16px 14px;
     .el-checkbox-group {
       @include flex();

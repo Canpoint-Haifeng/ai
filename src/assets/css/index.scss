@@ -1,3 +1,8 @@
+/* Import variables first */
+@import './variables.scss';
+@import './mixins.scss';
+
+/* Import CSS files */
 @import './normalize.css';
 @import './base.scss';
 @import './element-rewrite.scss';

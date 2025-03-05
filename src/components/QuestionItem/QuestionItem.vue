@@ -15,7 +15,11 @@
           class="level"
           :style="{ background: levels[questionItem.questionInfo.level].color }"
         >{{
-          levels[questionItem.questionInfo.level].name }}</i></template></template>
+          levels[questionItem.questionInfo.level].name }}</i>
+      </div>
+    </div>
+  </li>
+</template>
         <span class="item">题型：<em class="">{{
           questionItem.questionInfo.quesType | isEmptyObject('name')
         }}</em></span>
@@ -222,7 +226,7 @@
             <i class="icon el-icon-search" />相似题
           </span>
           <!-- <span v-if="isShowCancelShare" class="operate-btn check-btn" @click.stop="clickCancelShare">
-            <i class="icon iconshiliangzhinengduixiang2-01"></i></template></template>取消分享
+            <i class="icon iconshiliangzhinengduixiang2-01"></i></template>取消分享
           </span> -->
           <span
             v-if="showView === 0"
@@ -240,7 +244,7 @@
             <i class="icon el-icon-edit" />报错
           </span>
           <!-- <span class="operate-btn report-btn" v-if="showDelete" @click.stop="showDeleteDialog">
-            <i class="icon el-icon-delete"></i></template></template>删除
+            <i class="icon el-icon-delete"></i></template>删除
           </span> -->
           <span
             v-if="
@@ -265,7 +269,7 @@
           >&nbsp;</span>
 
           <!-- <span @click="collectQuestion" class="operate-btn collected-btn">
-              <i class="icon " :class="{'iconshoucang':!(questionItem.isCollected===1),'iconquxiaoshoucang':(questionItem.isCollected===1)}"></i></template></template>
+              <i class="icon " :class="{'iconshoucang':!(questionItem.isCollected===1),'iconquxiaoshoucang':(questionItem.isCollected===1)}"></i></template>
               {{(questionItem.isCollected===1)?'取消收藏':'收藏'}}
             </span> -->
           <template v-if="showQuestionColumn">
@@ -281,14 +285,14 @@
               class="operate-btn remove-btn"
               @click="deleteQuestionBox"
             >
-              <i class="icon iconremove">-</i></template></template>试题篮
+              <i class="icon iconremove">-</i></template>试题篮
             </span>
             <span
               v-if="!showChangeQues && !questionItem.isQuestionBox"
               class="operate-btn add-btn"
               @click="addQuestionBox($event)"
             >
-              <i class="icon iconadd">+</i></template></template>试题篮
+              <i class="icon iconadd">+</i></template>试题篮
             </span>
           </template>
         </div>
@@ -599,6 +603,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .question-wrapper-faber {
   .question-container {
     border-radius: 6px;
