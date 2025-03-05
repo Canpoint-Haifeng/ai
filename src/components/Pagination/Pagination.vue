@@ -1,15 +1,15 @@
 <template>
-  <div
-    class="pagination-container"
-    :class="atRight ? 'at-right' : ''"
-  >
+  <div class="pagination-container">
     <el-pagination
-      :current-page="currPage"
-      @update:current-page="currPage = $event"
-      background
-      :page-size="pageData.pageSize"
-      layout="prev, pager, next, jumper"
-      :total="totalCount"
+      :background="background"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :layout="layout"
+      :page-sizes="pageSizes"
+      :total="total"
+      v-bind="$attrs"
+      @update:current-page="currentPage = $event"
+      @update:page-size="pageSize = $event"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
@@ -17,159 +17,113 @@
 </template>
 
 <script>
-import { ref, watch, onMounted } from 'vue'
-
 export default {
   name: 'Pagination',
   props: {
-    pageData: {
-      type: Object,
-      default: () => {
-        return {
-          pageSize: 10,
-          currPage: 1,
-          totalPage: 1
-        }
+    total: {
+      required: true,
+      type: Number
+    },
+    page: {
+      type: Number,
+      default: 1
+    },
+    limit: {
+      type: Number,
+      default: 20
+    },
+    pageSizes: {
+      type: Array,
+      default() {
+        return [10, 20, 30, 50]
       }
     },
-    atRight: {
+    layout: {
+      type: String,
+      default: 'total, sizes, prev, pager, next, jumper'
+    },
+    background: {
+      type: Boolean,
+      default: true
+    },
+    autoScroll: {
+      type: Boolean,
+      default: true
+    },
+    hidden: {
       type: Boolean,
       default: false
     }
   },
-  setup(props, { emit }) {
-    const currPage = ref(1)
-    const totalCount = ref(0)
-    
-    const initData = () => {
-      if (props.pageData) {
-        currPage.value = props.pageData.currPage || props.pageData.page || 1
-        totalCount.value = props.pageData.totalCount || props.pageData.count || 0
-      } else {
-        currPage.value = 1
-        totalCount.value = 0
+  computed: {
+    currentPage: {
+      get() {
+        return this.page
+      },
+      set(val) {
+        this.$emit('update:page', val)
+      }
+    },
+    pageSize: {
+      get() {
+        return this.limit
+      },
+      set(val) {
+        this.$emit('update:limit', val)
       }
     }
-    
-    // pageSize 改变时会触发
-    const handleSizeChange = () => {
-      emit('pageSizeChange')
-    }
-    
-    // currentPage 改变时会触发
-    const handleCurrentChange = (currPage) => {
-      emit('pageCurrChange', currPage)
-    }
-    
-    // Watch for pageData changes
-    watch(() => props.pageData, () => {
-      initData()
-    }, { deep: true })
-    
-    // Initialize data on component creation
-    onMounted(() => {
-      initData()
-    })
-    
-    return {
-      currPage,
-      totalCount,
-      handleSizeChange,
-      handleCurrentChange
+  },
+  methods: {
+    handleSizeChange(val) {
+      this.$emit('pagination', { page: this.currentPage, limit: val })
+    },
+    handleCurrentChange(val) {
+      this.$emit('pagination', { page: val, limit: this.pageSize })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .pagination-container :deep(.el-pagination) {
-    text-align: center;
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/mixins.scss";
+
+.pagination-container {
+  padding: 32px 16px;
+  text-align: center;
+  background: $color-white;
+  
+  :deep(.el-pagination span:not([class*=suffix])) {
     color: $color-text-l;
-    font-weight: 400;
   }
-
-  .pagination-container :deep(.el-pagination .btn-prev),
-  .pagination-container :deep(.el-pagination .btn-next) {
-    /*width: 30px;*/
-    min-width: 30px;
-    height: 30px;
-    line-height: 30px;
-    background: $color-table-bg;
-    border: 1px solid $color-background-l;
-    padding: 0 3px;
-    box-sizing: border-box;
+  
+  :deep(.el-pagination button)) {
+    color: $color-text-l;
   }
-
-  .pagination-container :deep(.el-pagination .btn-prev) {
-    margin-right: 3px;
+  
+  :deep(.el-pagination .btn-prev)) {
+    padding-right: 12px;
   }
-
-  .pagination-container :deep(.el-pagination .btn-next) {
-    margin-left: 3px;
+  
+  :deep(.el-pagination .btn-next)) {
+    padding-left: 12px;
   }
-
-  .pagination-container :deep(.el-pager li) {
-    /*width: 30px;*/
-    min-width: 30px;
-    height: 30px;
-    line-height: 30px;
-    background: $color-table-bg;
-    border: 1px solid $color-background-l;
-    padding: 0 3px;
-    box-sizing: border-box;
-    margin: 0 3px;
+  
+  :deep(.el-pagination .el-pager li)) {
     border-radius: 4px;
+    font-size: 13px;
+    min-width: 28px;
+    color: $color-text-d;
+    background: $color-white;
   }
-
-  .pagination-container :deep(.el-pager li.active) {
+  
+  :deep(.el-pagination .el-pager li:not(.disabled).active) {
     color: $color-white;
-    background: $color-theme;
-    border: 1px solid $color-theme;
+    background-color: $color-theme;
   }
-
-  .pagination-container :deep(.el-pager li.btn-quicknext),
-  .pagination-container :deep(.el-pager li.btn-quickprev) {
-    color: $color-text-l;
+  
+  :deep(.el-pagination .el-pager li:not(.disabled):hover) {
+    color: $color-theme;
   }
-
-  .pagination-container :deep(.el-pagination__jump) {
-    color: $color-text-l;
-    font-size: $font-size-small;
-  }
-
-  .pagination-container :deep(.el-pagination span:not([class*=suffix])) {
-    height: 30px;
-    line-height: 30px;
-  }
-
-  .pagination-container :deep(.el-pagination__editor.el-input .el-input__inner) {
-    border: 1px solid $color-background-l;
-    border-radius: 4px;
-    font-size: $font-size-small;
-  }
-
-  .at-right {
-    text-align: right;
-  }
-
-  :deep(.el-pagination.is-background .el-pager li) {
-    background-color: #F6F6F6;
-    border: 1px solid #ECEFF3;
-  }
-
-  :deep(.el-pagination.is-background .btn-next) {
-    background-color: #F6F6F6;
-    border: 1px solid #ECEFF3;
-  }
-
-  :deep(.el-pagination.is-background .btn-prev) {
-    background-color: #F6F6F6;
-    border: 1px solid #ECEFF3;
-  }
-
-  :deep(.el-pagination.is-background .el-pager li:not(.disabled).active) {
-    color: #fff;
-    background: #487FFF;
-    border: 1px solid #487FFF;
-  }
+}
 </style>

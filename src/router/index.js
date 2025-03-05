@@ -1,16 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TestComponent from '@/components/test/TestComponent.vue'
 
-// Define routes
 const routes = [
   {
     path: '/',
+    redirect: '/home'
+  },
+  {
+    path: '/home',
     name: 'Home',
-    component: TestComponent
+    component: () => import('../views/Home.vue')
   }
 ]
 
-// Create router instance
 const router = createRouter({
   history: createWebHistory('/lesson/'),
   routes

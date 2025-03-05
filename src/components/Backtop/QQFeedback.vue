@@ -4,22 +4,24 @@
     placement="left-start"
     width="482"
     :visible="showPopover"
-    @update:visible="showPopover = $event"
     trigger="hover"
+    @update:visible="showPopover = $event"
   >
     <template #default>
       <div class="popover-box">
         <UserFeedBackBody
-          :showPopover="showPopover"
-          @showLogin="showLogin"
-          @confirmSuccess="confirmSuccess"
-        ></UserFeedBackBody>
+          :show-popover="showPopover"
+          @show-login="showLogin"
+          @confirm-success="confirmSuccess"
+        />
       </div>
     </template>
     <template #reference>
       <div class="app-feed-back">
-        <span class="iconfont iconshiliangzhinengduixiang-05"></span>
-        <div class="text">问题<br />反馈</div>
+        <span class="iconfont iconshiliangzhinengduixiang-05" />
+        <div class="text">
+          问题<br>反馈
+        </div>
       </div>
     </template>
   </el-popover>
@@ -63,6 +65,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 .app-feed-back {
   width: 40px;
   height: 62px;
