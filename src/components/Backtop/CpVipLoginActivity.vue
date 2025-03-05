@@ -1,14 +1,11 @@
 <template>
-  <div
-    v-if="isShow"
-    class="vip-get-basket-wrapper"
-  >
+  <div class="vip-get-basket-wrapper" v-if="isShow">
     <div
-      v-if="!isLogin || currentServiceId === 1"
       class="vip-get-login"
       @click="openDialog"
+      v-if="!isLogin || currentServiceId === 1"
     >
-      <img src="@/assets/images/activity/viplogin5.png">
+      <img src="@/assets/images/activity/viplogin5.png" />
     </div>
   </div>
 </template>
@@ -16,120 +13,101 @@
 <script>
   import CTS from '@/common/js/constant'
   import CpCommonDialog from '@/components/AuthorityVip/CpCommonDialog'
+  import { mapState } from 'vuex'
   import { isLogin } from '@/common/js/util'
-  import { defineComponent, ref, computed, watch, onMounted, getCurrentInstance } from 'vue'
-  import { useStore } from 'vuex'
-  
-  export default defineComponent({
-    name: 'CpVipLoginActivity',
-    emits: ['showLogin'],
-    setup(props, { emit }) {
-      const instance = getCurrentInstance()
-      const store = useStore()
-      
-      // Reactive state
-      const currentServiceId = ref(1)
-      const isShow = ref(false)
-      const activeId = ref('')
-      const isLoginState = ref(isLogin())
-      
-      // Computed properties from store
-      const currSubject = computed(() => store.state.currSubject)
-      const userInfo = computed(() => store.state.userInfo)
-      const serviceInfo = computed(() => store.state.serviceInfo)
-      
-      // Watch for changes
-      watch(serviceInfo, (nv) => {
-        currentServiceId.value = nv.serviceId
-      }, { immediate: true, deep: true })
-      
-      // Methods
-      const vipActiveShowByNoToken = () => {
+  export default {
+    data() {
+      return {
+        currentServiceId: 1,
+        isShow: false,
+        activeId: '',
+        isLogin: isLogin(),
+      }
+    },
+    computed: {
+      ...mapState(['currSubject', 'userInfo', 'serviceInfo']),
+    },
+    watch: {
+      serviceInfo: {
+        handler(nv, ov) {
+          this.currentServiceId = nv.serviceId
+        },
+        immediate: true,
+        deep: true,
+      },
+    },
+    mounted() {
+      //  v-if="!isLogin||currentServiceId===1"
+      if (!isLogin()) {
+        this.vipActiveShowByNoToken()
+      } else {
+        this.vipActiveShow()
+      }
+    },
+    methods: {
+      vipActiveShowByNoToken() {
         let url = {
-          urlPath: import.meta.env.VITE_APP_PAPER_GENERATOR + '/vip/vipActiveShowByNoToken',
+          urlPath:
+            process.env.VUE_APP_PAPER_GENERATOR + '/vip/vipActiveShowByNoToken',
         }
-        instance.proxy.apiGet(url).then(res => {
+        this.apiGet(url).then(res => {
           if (res.code === CTS.constant.SUCCESS_CODE) {
-            isShow.value = res.data.isShow
-            if (isShow.value) {
-              activeId.value = res.data.activeId
+            this.isShow = res.data.isShow
+            if (this.isShow) {
+              this.activeId = res.data.activeId
             }
           }
         })
-      }
-      
-      const vipActiveShow = () => {
+      },
+      vipActiveShow() {
         let url = {
-          urlPath: import.meta.env.VITE_APP_PAPER_GENERATOR + '/vip/vipActiveShow',
+          urlPath: process.env.VUE_APP_PAPER_GENERATOR + '/vip/vipActiveShow',
         }
-        instance.proxy.apiGet(url).then(res => {
+        this.apiGet(url).then(res => {
           if (res.code === CTS.constant.SUCCESS_CODE) {
-            isShow.value = res.data.isShow
-            if (isShow.value) {
-              activeId.value = res.data.activeId
+            this.isShow = res.data.isShow
+            if (this.isShow) {
+              this.activeId = res.data.activeId
             }
           }
         })
-      }
-      
-      const openActivationVip = () => {
+      },
+      openActivationVip() {
         CpCommonDialog.openDialog({
           moduleC: 'LoginActivationVipDialog',
           data: {
-            activeId: activeId.value,
+            activeId: this.activeId,
             activationVipSuccess: () => {
-              openActivationVip()
+              this.openActivationVip()
             },
           },
         })
-      }
-      
-      const activationVipSuccess = () => {}
-      
-      const openDialog = () => {
+      },
+      activationVipSuccess() {},
+      openDialog() {
+        // if (this.isLogin) {
         CpCommonDialog.openDialog({
           moduleC: 'LoginObtainVipDialog',
           data: {
-            activeId: activeId.value,
+            activeId: this.activeId,
             getVipSuccess: () => {
-              if (isLoginState.value) {
-                openActivationVip()
+              if (this.isLogin) {
+                this.openActivationVip()
               } else {
-                emit('showLogin')
+                this.$emit('showLogin')
               }
             },
           },
         })
-      }
-      
-      // Lifecycle hooks
-      onMounted(() => {
-        if (!isLogin()) {
-          vipActiveShowByNoToken()
-        } else {
-          vipActiveShow()
-        }
-      })
-      
-      return {
-        currentServiceId,
-        isShow,
-        activeId,
-        isLogin: isLoginState,
-        openDialog,
-        openActivationVip,
-        activationVipSuccess,
-        vipActiveShow,
-        vipActiveShowByNoToken
-      }
-    }
-  })
+        // } else {
+        //   this.$emit('showLogin')
+        // }
+      },
+    },
+  }
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-@import "@/assets/css/variables.scss";
-@import "@/assets/css/variables.scss";
   .vip-get-basket-wrapper {
     position: fixed;
     top: 0;
