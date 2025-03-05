@@ -69,12 +69,11 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
+  @use "@/assets/css/variables" as *;
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-  @use "@/assets/css/variables" as *;
   .login-activation-vip {
     padding: 20px 0px 20px 0px;
     .vip-introduce {
@@ -130,3 +129,4 @@ export default defineComponent({
     }
   }
 </style>
+
