@@ -89,6 +89,7 @@
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .home-user-app-segment {
     .home-user-app-list {
       padding: 40px 15px 10px 15px;

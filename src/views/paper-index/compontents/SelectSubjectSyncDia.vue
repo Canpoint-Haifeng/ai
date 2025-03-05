@@ -92,8 +92,8 @@
 </template>
 
 <script>
-import { isLogin, setCookieSubjectVolume } from '@/common/js/util'
-import { API } from '@/api/config'
+import { isLogin, setCookieSubjectVolume } from '@/common/js/util.js'
+import { API } from '@/api/config.js'
 export default {
   data() {
     return {
@@ -319,6 +319,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
 .subject-sync-body {
   padding: 30px 20px 0 20px;
   text-align: center;
@@ -331,7 +332,7 @@ export default {
     padding: 30px 120px 10px 120px;
   }
 }
-.subject-item-select /deep/ {
+.subject-item-select :deep({)
   .el-input {
     width: 300px;
   }

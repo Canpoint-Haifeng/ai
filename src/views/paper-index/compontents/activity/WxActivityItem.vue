@@ -37,7 +37,7 @@
 </template>
 
 <script>
-  import CpModal from '@/components/CpFan/Category/CpModal'
+  import CpModal from '@/components/CpFan/Category/CpModal.js'
   export default {
     components: { CpModal },
     props: {
@@ -84,6 +84,7 @@
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .three-gift-success-body {
     position: relative;
 
@@ -114,7 +115,7 @@
     }
   }
 
-  :deep(.el-dialog.dia-three-gift-success)) {
+  :deep(.el-dialog.dia-three-gift-success) {
     background: transparent;
     box-shadow: none;
     border-radius: 10px;

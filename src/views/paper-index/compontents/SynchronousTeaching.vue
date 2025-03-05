@@ -121,10 +121,10 @@ import {
   setCookieSubjectVolume,
   getStageEntranceBySubject,
 } from '@/common/js/util'
-import CTS from '@/common/js/constant'
-import SelectSubjectSyncDia from './SelectSubjectSyncDia'
+import CTS from '@/common/js/constant.js'
+import SelectSubjectSyncDia from './SelectSubjectSyncDia.js'
 import moment from 'moment'
-import { commonData } from '../hooks/index'
+import { commonData } from '../hooks/index.js'
 import Login from '@/components/Login/Login.vue'
 
 export default {
@@ -641,6 +641,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
 .sync-body {
   width: 100%;
   .title {
@@ -674,7 +675,7 @@ export default {
     vertical-align: bottom;
   }
   .tabs {
-    :deep(.el-tabs)) {
+    :deep(.el-tabs) {
       .el-tabs__nav {
         height: 50px;
       }

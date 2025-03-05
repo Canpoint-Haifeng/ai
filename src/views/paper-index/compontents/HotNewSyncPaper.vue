@@ -332,12 +332,12 @@
   </div>
 </template>
 <script>
-import CTS from '@/common/js/constant'
-import { API } from '@/api/config'
-import { isLogin, setCookieSubjectVolume } from '@/common/js/util'
+import CTS from '@/common/js/constant.js'
+import { API } from '@/api/config.js'
+import { isLogin, setCookieSubjectVolume } from '@/common/js/util.js'
 import { mapState, mapActions } from 'vuex'
-import SynchronousTeaching from './SynchronousTeaching'
-import { commonData } from '../hooks/index'
+import SynchronousTeaching from './SynchronousTeaching.js'
+import { commonData } from '../hooks/index.js'
 import Index from '@/components/AudioPlay/index.vue'
 import moment from 'moment'
 export default {
@@ -634,6 +634,7 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
 .line-box {
   background: #edeff3;
   width: 16px;
@@ -781,7 +782,7 @@ export default {
     min-height: 300px;
     margin: 0 16px;
 
-    :deep(.el-carousel)) {
+    :deep(.el-carousel) {
       .el-carousel__item {
         border-radius: 12px;
 
@@ -895,7 +896,7 @@ export default {
     margin-left: 16px;
     padding: 14px 20px 20px;
     .tabs {
-      :deep(.el-tabs)) {
+      :deep(.el-tabs) {
         margin-bottom: 8px;
         .el-tabs__header {
           margin: 0;

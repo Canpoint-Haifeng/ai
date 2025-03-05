@@ -79,6 +79,7 @@
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .parallel-paper-box {
     padding: 20px 50px 30px 50px;
     .paraller-describe {

@@ -30,6 +30,7 @@
   }
 </script>
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .claim-points-box {
     cursor: pointer;
     user-select: none;
