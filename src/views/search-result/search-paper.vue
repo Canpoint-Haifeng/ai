@@ -103,10 +103,10 @@ import PaperItem from '@/components/PaperItem/PaperItem'
 import noresultIcon from '@/components/Noresult/noresult-search.png'
 import NoresultCommon from '@/components/Noresult/Noresult-common'
 import YearsPaper from '@/components/Category/YearsPaper'
-import { TopPagination } from '@/components/CpFan/index.js'
+import { TopPagination } from '@/components/CpFan/index'
 import paperPayMixin from '@/common/mixins/paperPayMixin'
 import CollectMessage from '@/components/CollectMessage/CollectMessage'
-import { executeSearchKeyWord } from '@/common/helper/search-keywords.js'
+import { executeSearchKeyWord } from '@/common/helper/search-keywords'
 import filterItem from '@/views/myPreparation/components/filterItem.vue'
 export default {
   mixins: [paperCategoryMixin, paperAnalysisMixin, paperPayMixin],
@@ -299,7 +299,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -332,7 +331,7 @@ export default {
     box-sizing: border-box;
   }
 }
-.category-container :deep()) {
+.category-container :deep() {
   padding: 20px 20px 8px 20px;
   background: $color-white;
   .category-content {
@@ -365,3 +364,4 @@ export default {
   padding: 0 20px;
 }
 </style>
+

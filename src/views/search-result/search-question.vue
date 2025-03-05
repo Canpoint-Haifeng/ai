@@ -156,7 +156,7 @@
 import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated, toRefs } from 'vue'
 import CTS from '@/common/js/constant'
 import { API } from '@/api/config'
-import { dealQuestion } from '@/common/helper/search-keywords.js'
+import { dealQuestion } from '@/common/helper/search-keywords'
 import { mapState } from 'vuex'
 import questionItemMixin from '@/common/mixins/questionItemMixin'
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb'
@@ -164,7 +164,7 @@ import QuestionType from '@/components/Category/QuestionType'
 import QuestionItem from '@/components/QuestionItem/QuestionItem'
 import noresultIcon from '@/components/Noresult/noresult-search.png'
 import NoresultCommon from '@/components/Noresult/Noresult-common'
-import { TopPagination } from '@/components/CpFan/index.js'
+import { TopPagination } from '@/components/CpFan/index'
 import Years from '@/components/Category/Years'
 import QuestionDiff from '@/components/Category/QuestionDiff'
 import filterItem from '@/views/myPreparation/components/filterItem.vue'
@@ -434,7 +434,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -464,7 +463,7 @@ export default {
 .category-container {
   padding: 20px 20px 8px 20px;
   background: $color-white;
-  :deep(.category-content)) {
+  :deep(.category-content) {
     .category-list {
       width: 1200px;
     }
@@ -497,3 +496,4 @@ export default {
   padding: 0 20px;
 }
 </style>
+
