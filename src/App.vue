@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <template v-slot:default>
-      <router-view></router-view>
-    </template>
+    <router-view></router-view>
   </div>
 </template>
 
