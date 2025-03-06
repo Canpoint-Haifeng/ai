@@ -52,7 +52,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -62,3 +61,4 @@ export default {
   width: 100%;
 }
 </style>
+

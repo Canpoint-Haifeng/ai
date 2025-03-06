@@ -118,7 +118,7 @@ import { mapState } from 'vuex'
 import GeneralTime from '@/components/Category/Time'
 import BaseDialog from '@/components/BaseDialog/BaseDialog'
 import PaperItem from '@/components/PaperItem/PaperItemUserCom'
-import { TopPagination } from '@/components/CpFan/index.js'
+import { TopPagination } from '@/components/CpFan/index'
 import paperShareMixin from '@/common/mixins/paperShareMixin'
 import paperPayMixin from '@/common/mixins/paperPayMixin'
 
@@ -310,7 +310,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -353,17 +352,17 @@ export default {
   margin-top: 20px;
 }
 
-:deep(.el-pagination.is-background .el-pager li)) {
+:deep(.el-pagination.is-background .el-pager li) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-next)) {
+:deep(.el-pagination.is-background .btn-next) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-prev)) {
+:deep(.el-pagination.is-background .btn-prev) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
@@ -374,3 +373,4 @@ export default {
   border: 1px solid #487FFF;
 }
 </style>
+

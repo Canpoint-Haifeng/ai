@@ -1,0 +1,94 @@
+<template>
+  <div
+    class="noresult"
+    :style="{ minHeight: minHeight + 'px' }"
+  >
+    <div
+      v-if="showImg"
+      class="icon-box"
+      :style="{ marginTop: minHeight - 240 + 'px' }"
+    >
+      <i
+        class="noresult-icon"
+        :style="iconUrl"
+      />
+    </div>
+    <p
+      v-if="isShowText"
+      class="noresult-text"
+    >
+      {{ text }}
+    </p>
+    <slot />
+  </div>
+</template>
+
+<script>
+import { ref, computed } from 'vue'
+import noresultIcon from './noresult-search.png'
+
+export default {
+  name: 'NoresultCommon',
+  props: {
+    text: {
+      type: String,
+      default: '该模块下没有内容！'
+    },
+    isShowText: {
+      type: Boolean,
+      default: true
+    },
+    icon: {
+      type: String,
+      default: noresultIcon
+    },
+    showImg: {
+      type: Boolean,
+      default: true
+    },
+    minHeight: {
+      type: Number,
+      default: 350
+    }
+  },
+  setup(props) {
+    const iconUrl = computed(() => ({
+      backgroundImage: `url(${props.icon})`
+    }))
+    
+    return {
+      iconUrl
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+  .noresult {
+    min-width: 130px;
+    margin: 0 auto;
+    text-align: center;
+    color: $color-text-l;
+    .icon-box {
+      display: inline-block;
+      width: 101px;
+      height: 123px;
+      .noresult-icon {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+      }
+    }
+    .noresult-text {
+      color: $color-text-l;
+      font-size: $font-size-small;
+      text-indent: -10px;
+      height: 86px;
+      line-height: 86px;
+    }
+  }
+</style>

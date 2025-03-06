@@ -108,7 +108,7 @@ import Years from '@/components/Category/Years'
 import QuestionType from '@/components/Category/QuestionType'
 import QuestionDiff from '@/components/Category/QuestionDiff'
 import QuestionSource from '@/components/Category/QuestionSource'
-import { SpanPagintion, QuestionOrigin } from '@/components/CpFan/index.js'
+import { SpanPagintion, QuestionOrigin } from '@/components/CpFan/index'
 import BaseDialog from '@/components/BaseDialog/BaseDialog'
 import { throttle } from '@/common/helper/throttle-debounce'
 export default {
@@ -508,7 +508,7 @@ export default {
     }
   }
 
-  :deep(.paper-search)) {
+  :deep(.paper-search) {
     display: inline-block;
     margin: 0 30px 0 160px;
     width: 174px;
@@ -523,7 +523,7 @@ export default {
     }
   }
 
-  :deep(.paper-show-answer)) {
+  :deep(.paper-show-answer) {
     display: inline-block;
     margin-right: 30px;
 

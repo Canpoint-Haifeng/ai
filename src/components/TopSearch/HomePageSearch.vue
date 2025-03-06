@@ -56,7 +56,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/mixins.scss";
@@ -83,3 +82,4 @@ export default {
   }
 }
 </style>
+

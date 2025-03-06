@@ -317,7 +317,10 @@
   }
 </script>
 <style scoped lang="scss">
-  .functions :deep()) {
+<style lang="scss">
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+  .functions :deep() {
     .el-button--primary {
       background-color: $color-theme;
     }
@@ -343,7 +346,7 @@
         padding: 0;
         width: 24px;
         height: 24px;
-        :deep(.iconfont)) {
+        :deep(.iconfont) {
           font-size: 12px;
         }
       }
@@ -359,7 +362,7 @@
         width: 220px;
         position: relative;
         margin-left: 15px;
-        :deep(.el-slider__runway)) {
+        :deep(.el-slider__runway) {
           margin: 12px 0;
           .el-slider__button-wrapper {
             height: 30px;
@@ -395,8 +398,6 @@
       }
     }
   }
-</style>
-<style lang="scss">
   .process {
     padding: 10px 0;
     .slider-volume {

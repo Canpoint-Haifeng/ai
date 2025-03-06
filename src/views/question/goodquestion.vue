@@ -91,7 +91,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
   import ReportDialog from '@/components/ReportDialog/ReportDialog'
   import CollectMessage from '@/components/CollectMessage/CollectMessage'
   import Breadcrumb from '@/components/Breadcrumb/Breadcrumb'
-  import { TopPagination } from '@/components/CpFan/index.js'
+  import { TopPagination } from '@/components/CpFan/index'
   import { mapState } from 'vuex'
   export default {
     components: {
@@ -242,8 +242,8 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .content-question-segment {
     background-color: white;
     margin-bottom: 70px;
@@ -271,3 +271,4 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
     }
   }
 </style>
+

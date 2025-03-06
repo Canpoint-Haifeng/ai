@@ -27,7 +27,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -41,7 +40,7 @@ export default {
     margin-right: 10px;
     font-size: $font-size-small;
   }
-  .breadcrumb-container :deep(.el-breadcrumb__inner)) {
+  .breadcrumb-container :deep(.el-breadcrumb__inner) {
     line-height: 40px;
     font-size: $font-size-small;
     color: $color-text;
@@ -55,3 +54,4 @@ export default {
   }
 }
 </style>
+

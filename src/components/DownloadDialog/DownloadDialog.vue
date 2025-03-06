@@ -446,12 +446,11 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-.download-wrapper :deep(.el-dialog__footer)) {
+.download-wrapper :deep(.el-dialog__footer) {
   padding: 20px;
 }
 
@@ -459,11 +458,11 @@ export default {
   padding: 20px 20px 10px 20px;
 }
 
-.form-item-radio :deep(.el-radio__label)) {
+.form-item-radio :deep(.el-radio__label) {
   padding-left: 6px;
 }
 
-.form-item-radio:nth-child(1) :deep(.el-radio)) {
+.form-item-radio:nth-child(1) :deep(.el-radio) {
   margin-right: 12px;
 
   &:last-child {
@@ -588,7 +587,7 @@ export default {
   }
 }
 
-.free-download-content :deep(.el-form-item)) {
+.free-download-content :deep(.el-form-item) {
   margin-bottom: 10px;
 }
 
@@ -614,3 +613,4 @@ export default {
   }
 }
 </style>
+

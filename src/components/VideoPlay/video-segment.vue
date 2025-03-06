@@ -72,8 +72,8 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .videoPlay {
     height: 506px;
     width: 100%;
@@ -152,3 +152,4 @@
     }
   }
 </style>
+

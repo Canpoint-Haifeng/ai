@@ -615,7 +615,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -688,7 +687,7 @@ export default {
   }
   .ai-select-box {
     padding: 24px 24px 50px 24px;
-    :deep(.select-item)) {
+    :deep(.select-item) {
       margin-right: 136px;
       label {
         line-height: 32px;
@@ -715,7 +714,7 @@ export default {
   }
   .ai-setting-box {
     padding: 24px 8px 28px 30px;
-    :deep(.setting-item)) {
+    :deep(.setting-item) {
       display: inline-block;
       width: 268px;
       margin-right: 22px;
@@ -839,3 +838,4 @@ export default {
   background: $color-theme;
 }
 </style>
+

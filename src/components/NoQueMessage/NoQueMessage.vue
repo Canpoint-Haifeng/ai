@@ -25,8 +25,8 @@ export default {
   }
 }
 </script>
-
 <style lang="scss">
+@import "@/assets/css/variables.scss";
   .message-box {
     min-width: 200px;
     height: 50px;
@@ -43,3 +43,4 @@ export default {
     }
   }
 </style>
+

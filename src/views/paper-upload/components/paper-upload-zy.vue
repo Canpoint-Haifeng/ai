@@ -631,7 +631,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -666,7 +665,7 @@ export default {
     }
 
     .el-form {
-      :deep(.el-form-item)) {
+      :deep(.el-form-item) {
         margin-right: 90px;
 
         .el-form-item__label {}
@@ -720,7 +719,7 @@ export default {
     margin-top: 40px;
   }
 
-  :deep(.tip-dia)) {
+  :deep(.tip-dia) {
     .el-dialog__header {
       background: #fff;
       padding: 26px 40px;
@@ -755,7 +754,7 @@ export default {
   }
 
   .el-form {
-    :deep(.el-form-item)) {
+    :deep(.el-form-item) {
       margin-right: 90px;
       //   margin-top: 30px;
       margin-bottom: 30px;
@@ -786,11 +785,11 @@ export default {
     }
 
     .form_item {
-      :deep(.el-input)) {
+      :deep(.el-input) {
         width: 270px;
       }
 
-      :deep(.el-input__inner)) {
+      :deep(.el-input__inner) {
         border-radius: 4px;
       }
     }
@@ -798,3 +797,4 @@ export default {
 
 }
 </style>
+

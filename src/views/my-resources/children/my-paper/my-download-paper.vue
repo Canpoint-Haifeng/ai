@@ -82,7 +82,7 @@ import GeneralTime from '@/components/Category/Time'
 import DownLoadType from '@/components/Category/DownLoadType'
 import DownloadDialog from '@/components/DownloadDialog/DownloadDialog'
 import PaperItem from '@/components/Resources/DownLoadPaperItem.vue'
-import { TopPagintion } from '@/components/CpFan/index.js'
+import { TopPagintion } from '@/components/CpFan/index'
 import BaseDialog from '@/components/BaseDialog/BaseDialog'
 export default {
   components: {
@@ -259,7 +259,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -313,17 +312,17 @@ export default {
   padding: 30px 20px 20px;
 }
 
-:deep(.el-pagination.is-background .el-pager li)) {
+:deep(.el-pagination.is-background .el-pager li) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-next)) {
+:deep(.el-pagination.is-background .btn-next) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
 
-:deep(.el-pagination.is-background .btn-prev)) {
+:deep(.el-pagination.is-background .btn-prev) {
   background-color: #f6f6f6;
   border: 1px solid #eceff3;
 }
@@ -334,3 +333,4 @@ export default {
   border: 1px solid #487FFF;
 }
 </style>
+

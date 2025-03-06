@@ -49,8 +49,8 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .home-top-page-boxs {
     text-align: center;
     padding-top: 45px;
@@ -79,3 +79,4 @@
     }
   }
 </style>
+

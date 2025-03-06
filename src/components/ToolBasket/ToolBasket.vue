@@ -158,7 +158,7 @@ import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
 import BaseDialog from '@/components/BaseDialog/BaseDialog.vue'
 import BasketQuestionItem from '@/components/QuestionItem/BasketQuestionItem.vue'
 import { isLogin, getDigitalChinese } from '@/common/js/util'
-import { decrypt } from '@/common/js/util.js'
+import { decrypt } from '@/common/js/util'
 export default {
   components: { BasketQuestionItem, BaseDialog },
   mixins: [windowScrollResetMixin],
@@ -397,8 +397,8 @@ export default {
   },
 }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
 .cp-new-tool-basket {
   position: fixed;
   top: 0;
@@ -639,3 +639,4 @@ export default {
   }
 }
 </style>
+

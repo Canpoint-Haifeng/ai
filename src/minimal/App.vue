@@ -16,8 +16,8 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss">
+@import "@/assets/css/variables.scss";
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -27,3 +27,4 @@ export default defineComponent({
   margin-top: 60px;
 }
 </style>
+

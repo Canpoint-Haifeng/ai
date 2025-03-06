@@ -1,0 +1,100 @@
+<template>
+  <div
+    v-show="visible"
+    class="back-top-components"
+    @click="backToTop"
+  >
+    <span class="iconfont iconshiliangzhinengduixiang-08" />
+    <div class="text">
+      顶部
+    </div>
+  </div>
+</template>
+
+<script>
+  import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin.js'
+  const cubic = (value) => Math.pow(value, 3)
+  const easeInOutCubic = (value) => {
+    return value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2
+  }
+
+  export default {
+    mixins: [windowScrollResetMixin],
+    data() {
+      return {
+        el: null,
+        visible: false,
+      }
+    },
+    mounted() {
+      this.el = document.documentElement
+      this.initWindowsEvent()
+      this.renderScrollFixed()
+    },
+    unmounted() {
+      this.destroyedWindowsEvent()
+    },
+    methods: {
+      renderScrollFixed(e) {
+        let comparisonTop = this.getPageScrollTop()
+        if (comparisonTop > 200) {
+          this.visible = true
+        } else {
+          this.visible = false
+        }
+      },
+      backToTop() {
+        this.scrollToTop()
+      },
+      scrollToTop() {
+        const el = this.el
+        const beginTime = Date.now()
+        const beginValue = el.scrollTop
+        const rAF =
+          window.requestAnimationFrame || ((func) => setTimeout(func, 16))
+        const frameFunc = () => {
+          const progress = (Date.now() - beginTime) / 500
+          if (progress < 1) {
+            el.scrollTop = beginValue * (1 - easeInOutCubic(progress))
+            rAF(frameFunc)
+          } else {
+            el.scrollTop = 0
+          }
+        }
+        rAF(frameFunc)
+      },
+    },
+  }
+</script>
+<style scoped lang="scss">
+@import "@/assets/css/variables.scss";
+  .back-top-components {
+    width: 40px;
+    height: 50px;
+    background: #ffffff;
+    box-shadow: 0px 2px 6px 0px rgba(42, 77, 138, 0.27);
+    z-index: 99;
+    border-radius: 4px 0px 0px 4px;
+    text-align: center;
+    padding-top: 3px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    .iconfont {
+      font-size: 28px;
+      color: #666666;
+    }
+    .text {
+      font-size: 10px;
+      color: #666666;
+    }
+    &:hover {
+      background: $color-theme;
+      .text,
+      .iconfont {
+        color: #ffffff;
+      }
+    }
+  }
+</style>
+

@@ -1,0 +1,1299 @@
+<template>
+  <div class="papers">
+    <div class="header">
+      <div class="sync-paper">
+        <!-- <div class="tabs">
+          <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="名校组卷" name="1"></el-tab-pane>
+            <el-tab-pane label="名师组卷" name="2"></el-tab-pane>
+          </el-tabs>
+        </div>
+        <div class="school_list" v-show="activeName == 1">
+          <div class="item" v-for="(v, index) in schoolData" :key="index">
+            <div>
+              <h6 class="school_name" :title="v.name">{{ v.name }}</h6>
+              <span class="more" @click="morePaper(true, v)">更多组卷<i class="el-icon-arrow-right"></i></template></span>
+            </div>
+            <img :src="v.icon" alt="">
+          </div>
+        </div>
+        <div class="teacher_list" v-show="activeName == 2">
+          <div class="item" v-for="v in teachData" :key="v.id" @click="morePaper(false, v)">
+            <img v-if="v.picture" :src="v.picture" alt="">
+            <img v-else src="@/assets/images/IPM.png" alt="">
+            <div class="teacher_content">
+              <div class="flex">
+                <h6 class="teacher_name" :title="v.name">{{ v.name }}</h6>
+                <div class="flex">
+                  <el-tag size="mini">{{ currSubject.periodName }}</el-tag>
+                  <el-tag size="mini">{{ currSubject.subjectName }}</el-tag>
+                </div>
+              </div>
+              <span class="school_name">{{ v.schoolName }}</span>
+            </div>
+          </div>
+        </div> -->
+        <!-- <div class="categories-container">
+          <div v-for="category in categories" :key="category.name" class="category-section">
+            <h3>{{ category.name }}</h3>
+            <div class="subjects">
+              <span
+                v-for="subject in category.subjects"
+                :key="subject"
+                class="subject"
+                :class="{ active: selectedSubject === subject }"
+                @click="selectSubject(subject)"
+              >
+                {{ subject }}
+              </span>
+            </div>
+          </div>
+        </div> -->
+        <div class="subject-menu">
+          <div
+            v-for="item in listData"
+            :key="item.dictId"
+            class="subject-menu-item"
+          >
+            <div class="title">
+              <!-- <span class="line"></span> -->
+              {{ item.name }}
+            </div>
+            <div class="content">
+              <span
+                v-for="subItem in item.children"
+                :key="subItem.dictId"
+                class="text"
+                :class="{
+                  active:
+                    (item.code || item.id) == currSubject.periodCode &&
+                    (subItem.code || subItem.id) == currSubject.subjectCode,
+                  vip: allVipDict[subItem.code],
+                }"
+                @click="selectSubject(item, subItem)"
+              >
+                {{ subItem.name }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="banner">
+        <el-carousel
+          trigger="click"
+          height="320px"
+        >
+          <el-carousel-item
+            v-for="(v, i) in banner"
+            :key="i"
+          >
+            <img
+              :src="v.img"
+              alt=""
+            >
+            <!-- <img :src="v.img" alt="" @click="toPaper(v.path)"> -->
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+      <div class="mix">
+        <div class="today">
+          <div>
+            <p>今日更新试题(道)</p>
+            <span>{{ todayData && todayData.questionNum }}</span>
+          </div>
+          <div>
+            <p>今日更新试卷(套)</p>
+            <span>{{ todayData && todayData.lessonNum }}</span>
+          </div>
+          <i />
+        </div>
+        <el-button
+          type="primary"
+          @click="initOutline()"
+        >
+          手动备课
+        </el-button>
+        <i />
+        <el-button
+          type="primary"
+          plain
+          @click="toPaper('/smartpaper/chapter')"
+        >
+          智能备课
+        </el-button>
+        <div class="apply">
+          <div>
+            <img
+              src="./img/1.png"
+              alt=""
+            >
+            <span>教案征集</span>
+          </div>
+          <div>
+            <img
+              src="./img/2.png"
+              alt=""
+            >
+            <span>VIP申请</span>
+          </div>
+          <!-- <div>
+            <img src="./img/3.png" alt="">
+            <span>团体组卷申请</span>
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="hot-new-sync-paper">
+      <div class="hot-new-paper">
+        <div class="new-paper-content">
+          <div class="head">
+            <img
+              src="./img/new.svg"
+              alt=""
+            >
+          </div>
+          <div
+            v-for="(item, index) in newsPaperList"
+            :key="item.paperId"
+            class="paper-item-info"
+            :class="{
+              'paper-item-info-special': newHoverIndex === index || index <= 0,
+              'hover-class': newHoverIndex === index,
+            }"
+            @click="seeDetail(item)"
+            @mouseover="newHoverIndex = index"
+            @mouseleave="newHoverIndex = -1"
+          >
+            <div
+              v-if="
+                newHoverIndex === index || (index == 0 && newHoverIndex === -1)
+              "
+            >
+              <div class="head-img" />
+              <img
+                src="./img/teaching-plan.svg"
+                alt=""
+              >
+              <div class="content flex justify-center">
+                <div class="name-info">
+                  <div class="paper-name">
+                    {{ item.name }}
+                  </div>
+                  <span class="paper-tag">{{
+                    lessonType[item.lessonType - 1]
+                  }}</span>
+                </div>
+
+                <div class="common-data flex flex-start">
+                  <span
+                    class="time"
+                    style="margin-right: 20px;"
+                  >{{
+                    formatTimestamp(item.updateTime, 1)
+                  }}</span>
+                  <div
+                    v-for="common in commonData"
+                    :key="common.type"
+                    style="margin-right: 20px;"
+                    :title="common.value"
+                  >
+                    <span style="margin-right: 4px;">{{ common.value }}</span>
+                    <span class="num">{{
+                      formatNumber(item[common.type])
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <span v-else class="paper-name" :class="'paper-sort-' + index" :title="item.name">
+              {{ item.name }}
+            </span> -->
+            <div
+              v-else
+              class="content-normal"
+            >
+              <span
+                class="paper-name"
+                :class="'paper-sort-' + index"
+                :title="item.name"
+              >
+                {{ item.name || item.fileName || item.paperName }}
+              </span>
+              <span class="paper-time">{{
+                formatTimestamp(item.updateTime, 1)
+              }}</span>
+            </div>
+            <!-- <span class="paper-time">{{
+              item.timeModified | datetime('YYYY-MM-DD')
+            }}</span> -->
+            <!-- <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></span> -->
+          </div>
+        </div>
+        <div class="line-box" />
+        <div class="hot-paper-content">
+          <div class="head">
+            <img
+              src="./img//hot.svg"
+              alt=""
+            >
+            <!-- <span class="more" @click="onMorePaper">更多<i class="el-icon-arrow-right"></i></template></span> -->
+          </div>
+          <div
+            v-for="(item, index) in hotPaperList"
+            :key="item.paperId"
+            class="chapter-item paper-item-info"
+            :class="
+              hotHoverIndex === index || index <= 0
+                ? 'paper-item-info-special'
+                : ''
+            "
+            @click="seeDetail(item)"
+            @mouseover="hotHoverIndex = index"
+            @mouseleave="hotHoverIndex = -1"
+          >
+            <div
+              v-if="
+                hotHoverIndex === index || (index == 0 && hotHoverIndex === -1)
+              "
+            >
+              <div class="head-img" />
+              <img
+                src="./img/teaching-plan.svg"
+                alt=""
+              >
+              <div class="content flex justify-center">
+                <div class="name-info">
+                  <div class="paper-name">
+                    {{ item.name }}
+                  </div>
+                  <span class="paper-tag">{{
+                    lessonType[item.lessonType - 1]
+                  }}</span>
+                </div>
+
+                <div class="common-data flex flex-start">
+                  <span
+                    class="time"
+                    style="margin-right: 20px;"
+                  >{{
+                    formatTimestamp(item.updateTime, 1)
+                  }}</span>
+                  <div
+                    v-for="common in commonData"
+                    :key="common.type"
+                    style="margin-right: 20px;"
+                    :title="common.value"
+                  >
+                    <span style="margin-right: 4px;">{{ common.value }}</span>
+                    <span class="num">{{
+                      formatNumber(item[common.type])
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-else
+              class="content-normal"
+            >
+              <span
+                class="paper-name"
+                :class="'paper-sort-' + index"
+                :title="item.name"
+              >
+                {{ item.name || item.fileName || item.paperName }}
+              </span>
+              <span class="paper-time">浏览量
+                <i style="color:#ff6900">{{ item.previewNum || 0 }}</i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template></span>
+            </div>
+
+            <!-- <span v-else class="paper-name" :class="'paper-sort-' + index" :title="item.name">
+              {{ item.name  }}
+              <span class="paper-time">{{ item.viewCount || item.totalCountView || 0 }}<i class="el-icon-view"></i></template></span>
+            </span> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="local_sync">
+      <div class="sync">
+        <SynchronousTeaching @show-login="showLogin" />
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import CTS from '@/common/js/constant.js'
+import { API } from '@/api/config.js'
+import { isLogin, setCookieSubjectVolume } from '@/common/js/util.js'
+import { mapState, mapActions } from 'vuex'
+import SynchronousTeaching from './SynchronousTeaching.js'
+import { commonData } from '../hooks/index.js'
+import Index from '@/components/AudioPlay/index.vue'
+import moment from 'moment'
+export default {
+  computed: {
+    ...mapState(['currSubject', 'allVipDict']),
+  },
+  components: {
+    SynchronousTeaching,
+  },
+  data() {
+    return {
+      listData: [],
+      newsPaperList: [],
+      hotPaperList: [],
+      localPaperList: [],
+      activeName: '1',
+      commonData: [
+        {
+          type: 'previewNum',
+          value: '浏览',
+        },
+        {
+          type: 'downNum',
+          value: '下载',
+        },
+      ],
+      hotHoverIndex: -1,
+      newHoverIndex: -1,
+      lessonType: ['同步教案', '阶段复习', '专题备考'],
+      categories: [
+        {
+          name: '小学',
+          subjects: ['语文', '数学', '英语', '科学', '道德与法治'],
+        },
+        {
+          name: '初中',
+          subjects: [
+            '语文',
+            '数学',
+            '英语',
+            '科学',
+            '物理',
+            '化学',
+            '历史',
+            '道德与法治',
+            '地理',
+            '生物',
+            '信息技术',
+          ],
+        },
+        {
+          name: '高中',
+          subjects: [
+            '语文',
+            '数学',
+            '英语',
+            '物理',
+            '化学',
+            '历史',
+            '政治',
+            '地理',
+            '生物',
+          ],
+        },
+      ],
+      selectedSubject: '',
+      banner: [
+        {
+          img: require('./img/bannerl1.png'),
+          path: '/paper/center/syncPapers',
+        },
+        {
+          img: require('./img/bannerl1.png'),
+          path: '/paper/chapterques/selection',
+        },
+        {
+          img: require('./img/bannerl1.png'),
+          path: '/paper/center/syncPapers',
+        },
+        {
+          img: require('./img/bannerl1.png'),
+          path: '/paper/center/syncPapers',
+        },
+        {
+          img: require('./img/bannerl1.png'),
+          path: '/paper/center/syncPapers',
+        },
+      ],
+      todayData: {
+        questionNum: 0,
+        lessonNum: 0,
+      },
+    }
+  },
+  mounted() {
+    this.initHotNewData()
+    this.getSubjectList()
+    this.apiGet({ urlPath: '/lesson-app/index/today' }).then(res => {
+      this.todayData = res.data
+    })
+  },
+  methods: {
+    ...mapActions(['updateCurrentSubject']),
+    handleClick(tab, event) {
+      console.log(tab, event)
+    },
+    onMorePaper() {
+      this.openSystemPathLink('paper/center')
+    },
+    seeDetail(item) {
+      console.log('item', item)
+      this.$router.push({
+        path: '/smartPaper/prePare',
+        query: {
+          id: item.id,
+          type: item.lessonType,
+          source: 1,
+        },
+      })
+      // if(!paperItem.paperId) return
+      // let viewCount = paperItem.viewCount || paperItem.totalCountView || 0
+      // let queryStr =
+      //   '?paperId=' +
+      //   paperItem.paperId +
+      //   '&source=' +
+      //   paperItem.source +
+      //   '&viewCount=' +
+      //   viewCount +
+      //   '&pn=' +
+      //   (paperItem.provinceName || '')
+
+      // queryStr += '&subject=' + this.currSubject.subjectCode
+      // window.open(this.$router.resolve('/paper/detail').href+queryStr)
+    },
+    initHotNewData() {
+      this.searchPaperList('new', 'newsPaperList')
+      this.searchPaperList('hot', 'hotPaperList')
+      // this.searchPaperList('rec', 'localPaperList')
+      // this.getLocalPaperList()
+    },
+    async searchPaperList(type, k) {
+      let params = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        // sortType: sort,
+        pageSize: 5,
+        pageNum: 1,
+      }
+      let urlPath = ''
+      if (type === 'new') {
+        urlPath = '/lesson-app/index/queryLatestLessons'
+      } else if (type === 'hot') {
+        urlPath = '/lesson-app/index/queryHotLessons'
+      }
+      // else if (type === 'rec') {
+      //   urlPath = '/lesson-app/index/queryRecommendLessons'
+      // }
+
+      try {
+        this.apiGet({ urlPath }, params).then(res => {
+          console.log('res', res)
+          if (res.code === CTS.constant.SUCCESS_CODE) {
+            this[k] = res.data.records || []
+            console.log(res)
+
+            console.log('hotPaperList', this.hotPaperList)
+            console.log('newsPaperList', this.newsPaperList)
+          }
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    getLocalPaperList() {
+      // let params = {
+      //   stage: this.currSubject.periodCode,
+      //   subject: this.currSubject.subjectCode,
+      //   pageSize: 3,
+      // }
+      // this.newPost({urlPath: '/paper-builder/personal/myUpload'}, params).then(res => {
+      //   this.localPaperList = res.data.rows || []
+      // })
+    },
+    formatNumber(value) {
+      console.log('value', value)
+      if (!value) return '0'
+      if (value >= 10000) {
+        return (value / 10000).toFixed(1) + 'w'
+      }
+      return value
+    },
+    showLogin() {
+      this.$emit('showLogin')
+    },
+    formatTimestamp(value, type) {
+      if (typeof value === 'number' || /^\d+$/.test(value)) {
+        let timestamp = Number(value)
+
+        if (timestamp.toString().length === 10) {
+          timestamp *= 1000
+        }
+
+        const date = new Date(timestamp)
+        if (type == 1) {
+          return moment(date).format('YYYY-MM-DD')
+        }
+        if (isNaN(date.getTime())) {
+          return value
+        }
+
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        const hours = String(date.getHours()).padStart(2, '0')
+        const minutes = String(date.getMinutes()).padStart(2, '0')
+        const seconds = String(date.getSeconds()).padStart(2, '0')
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+      }
+      return value
+    },
+    // 更新服务端默认学科
+    updateServerSubject(currSubject, isRefresh = true) {
+      let parms = {
+        stage: currSubject.periodCode,
+        subject: currSubject.subjectCode,
+      }
+      let set = {
+        authCode: 2,
+      }
+      this.apiPost(API.UPDATE_DEFAULT_SUBJECT, parms, set).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          setCookieSubjectVolume(currSubject)
+          this.updateCurrentSubject(currSubject)
+          isRefresh && window.location.reload()
+        } else if (res.code === CTS.constant.AUTH_TOKEN_CALLBACK_CODE) {
+          // 本地token过期
+          this.updateCurrentSubject(currSubject)
+          isRefresh && window.location.reload()
+        }
+      })
+    },
+    selectSubject(item, subItem) {
+      console.log(item, subItem, 111)
+      let currSubject = {
+        periodCode: item.code || item.id,
+        periodName: item.name,
+        subjectCode: subItem.code || subItem.id,
+        subjectName: subItem.name,
+      }
+      if (!isLogin()) {
+        // 未登录本地无token
+        setCookieSubjectVolume(currSubject)
+        this.updateCurrentSubject(currSubject)
+        window.location.reload()
+      } else {
+        // 已登录本地有token
+        this.updateServerSubject(currSubject)
+      }
+      // 组卷编辑和组卷预览特殊处理学科切换
+    },
+
+    getSubjectList() {
+      return this.$store
+        .dispatch('getConfigData', { vm: this, type: 2, strParams: {} })
+        .then(res => {
+          console.log(res)
+
+          this.listData = res || []
+        })
+    },
+    toPaper(v) {
+      this.$router.push(v)
+    },
+    initOutline() {
+      const data = {
+        stage: this.currSubject.periodCode,
+        subject: this.currSubject.subjectCode,
+        type: 1,
+      }
+      this.newPost({ urlPath: '/lesson-app/lessonApp/initOutline' }, data, {
+        showLoading: true,
+      }).then(res => {
+        if (res.code === 200) {
+          this.$router.replace(
+            `/teachingPlanEdit?id=${res.data}&type=1&manual=1`,
+          )
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+  },
+}
+</script>
+<style scoped lang="scss">
+@import "@/assets/css/variables.scss";
+.line-box {
+  background: #edeff3;
+  width: 16px;
+  height: 100%;
+}
+.papers > .header {
+  margin-top: 12px;
+  display: flex;
+
+  .subject-menu {
+    padding: 16px;
+    position: relative;
+    margin-top: -12px;
+    width: 260px;
+    height: 332px;
+    background: #ffffff;
+    box-shadow: 0px 3px 4px 1px rgba(14, 31, 71, 0.1);
+    border-radius: 0px 0px 12px 12px;
+    border: 1px solid #487fff;
+    border-top: 0;
+  }
+  .subject-menu-item {
+    background: none;
+    //margin-bottom: 20px;
+    height: auto;
+    line-height: 16px;
+    padding: 0;
+
+    .title {
+      margin: 10px 0;
+      color: $color-text-d;
+      font-size: 14px;
+      font-family: Microsoft YaHei, Microsoft YaHei;
+      font-weight: 400;
+      color: #1e1e1e;
+      line-height: 0px;
+      text-align: left;
+      font-style: normal;
+      text-transform: none;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+
+      .line {
+        display: inline-block;
+        vertical-align: -1px;
+        width: 4px;
+        height: 18px;
+        background: $color-theme;
+        margin-right: 8px;
+      }
+    }
+
+    .content {
+      overflow: hidden;
+      padding: 8px 0;
+      font-size: 12px;
+
+      .text {
+        cursor: pointer;
+        float: left;
+        line-height: 12px;
+        //margin: 0px 1px;
+        color: $color-text;
+        padding: 4px 8px;
+        border: 1px solid transparent;
+        position: relative;
+        margin-right: 2px;
+        margin-bottom: 10px;
+        font-size: 12px;
+
+        &:hover,
+        &.active {
+          color: $color-white;
+          border-radius: 4px;
+          background: $color-theme;
+        }
+
+        &.vip::after {
+          content: '';
+          position: absolute;
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          top: -8px;
+          right: 0px;
+          //background-image: url('../../assets/images/index/vip-icon.png');
+          background-size: 16px 16px;
+        }
+
+        &.vip:hover,
+        &.vip.active {
+          background: #fef8e7;
+          border: 1px solid #ffdb94;
+          color: #9b610b;
+        }
+      }
+    }
+  }
+
+  .categories-container {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+  }
+
+  .category-section {
+    margin-bottom: 16px;
+  }
+
+  .category-section h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    color: #333;
+  }
+
+  .subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .subject {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .subject:hover {
+    background-color: rgba(72, 127, 255, 0.15);
+    color: #487fff;
+  }
+
+  .subject.active {
+    background-color: #487fff;
+    color: #fff;
+  }
+  .banner {
+    flex: 1;
+    min-height: 300px;
+    margin: 0 16px;
+
+    :deep(.el-carousel) {
+      .el-carousel__item {
+        border-radius: 12px;
+
+        img {
+          width: 100%;
+          height: 100%;
+          // object-fit: cover;
+          cursor: pointer;
+        }
+      }
+
+      .el-carousel__indicators {
+        .el-carousel__indicator {
+          .el-carousel__button {
+            width: 14px;
+            height: 14px;
+            border-radius: 7px;
+          }
+
+          &.is-active .el-carousel__button {
+            width: 50px;
+          }
+        }
+      }
+    }
+  }
+
+  .mix {
+    width: 260px;
+    padding: 20px 10px;
+    background: #fff;
+    border-radius: 12px;
+
+    .today {
+      display: flex;
+      margin-bottom: 28px;
+      position: relative;
+
+      i {
+        position: absolute;
+        width: 2px;
+        height: 40px;
+        background: #e2e2e2;
+        left: 50%;
+        top: 5px;
+      }
+
+      > div {
+        flex: 1;
+        text-align: center;
+
+        p {
+          font-size: 12px;
+          margin-bottom: 12px;
+        }
+
+        span {
+          font-size: 20px;
+          font-weight: bold;
+          color: #ff6900;
+          line-height: 26px;
+        }
+      }
+    }
+
+    .el-button {
+      display: block;
+      width: 100%;
+      margin-bottom: 18px;
+      font-size: 16px;
+    }
+
+    .apply {
+      display: flex;
+      padding-top: 8px;
+
+      > div {
+        flex: 1;
+        text-align: center;
+        cursor: pointer;
+
+        img {
+          width: 50px;
+          height: 50px;
+          margin-bottom: 10px;
+        }
+
+        span {
+          display: block;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+.hot-new-sync-paper {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  .hot-new-paper {
+    width: 100%;
+    // height: 360px;
+    overflow: hidden;
+    display: flex;
+  }
+  .sync-paper {
+    flex: 1;
+    // height: 360px;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-left: 16px;
+    padding: 14px 20px 20px;
+    .tabs {
+      :deep(.el-tabs) {
+        margin-bottom: 8px;
+        .el-tabs__header {
+          margin: 0;
+          .el-tabs__nav-wrap::after {
+            content: none;
+          }
+          .el-tabs__item {
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+            &.is-active {
+              font-size: 18px;
+            }
+          }
+        }
+      }
+    }
+    .school_list {
+      padding-top: 11px;
+      .item {
+        padding: 14px 10px;
+        background: #dbe6ff;
+        &:not(:last-child) {
+          margin-bottom: 15px;
+        }
+        h6 {
+          font-size: 12px;
+          color: #134c84;
+          margin-bottom: 12px;
+        }
+        span {
+          font-size: 10px;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+    .teacher_list {
+      .item {
+        padding: 10px 0;
+        display: flex;
+        img {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          margin-right: 16px;
+        }
+        > div {
+          > div {
+            display: flex;
+            margin-bottom: 20px;
+            h6 {
+              font-weight: bold;
+              font-size: 16px;
+              margin-right: 10px;
+            }
+            .el-tag {
+              margin-right: 8px;
+            }
+          }
+          > span {
+            font-style: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.hot-paper-content {
+  padding-right: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+.new-paper-content,
+.hot-paper-content,
+.local_paper {
+  flex: 1;
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 20px;
+    margin-bottom: 7px;
+    img {
+      width: 140px;
+      height: 50px;
+    }
+    .more {
+      cursor: pointer;
+      color: #487fff;
+    }
+  }
+  .paper-item-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0px 15px 20px;
+    //padding:  15px 20px;
+    cursor: pointer;
+    &.local {
+      justify-content: flex-start;
+      align-items: center;
+      > img {
+        width: 50px;
+      }
+      .paper-name {
+        margin-right: auto;
+      }
+    }
+    .paper-name {
+      position: relative;
+      max-width: 345px;
+      cursor: pointer;
+      user-select: none;
+      padding-left: 22px;
+      line-height: 22px;
+      &:hover {
+        color: #487fff;
+      }
+    }
+    .paper-name::before {
+      position: absolute;
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 21px;
+      left: 0;
+      top: 0;
+    }
+    .paper-sort-0::before {
+      background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/bb2b4580-8f9d-4fd2-956a-886f28def936.png)
+        no-repeat;
+      background-size: 14px 21px;
+    }
+    .paper-sort-1::before {
+      background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/af1d4e1c-18ef-42ca-b693-0a953c66fa93.png)
+        no-repeat;
+      background-size: 14px 21px;
+    }
+    .paper-sort-2::before {
+      background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/7cf42c85-d711-47e5-ad82-46fa4a7e79fe.png)
+        no-repeat;
+      background-size: 14px 21px;
+    }
+    &:nth-child(n + 5) {
+      .paper-name::before {
+        left: 5px;
+        top: 5px;
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        background: #487fff;
+        filter: drop-shadow(#487fff4d -4px 0);
+      }
+    }
+  }
+  .paper-item-info-special {
+    position: relative;
+    padding-bottom: 0px;
+
+    div {
+      display: flex;
+      align-items: center;
+    }
+    .head-img {
+      background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/bb2b4580-8f9d-4fd2-956a-886f28def936.png)
+        no-repeat;
+      background-size: 20px 30px;
+      margin-right: 10px;
+      width: 20px;
+      height: 30px;
+    }
+    .paper-sort-0::before {
+      position: absolute;
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 21px;
+      left: 0;
+      top: 0;
+      background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/bb2b4580-8f9d-4fd2-956a-886f28def936.png)
+        no-repeat;
+      background-size: 14px 21px;
+    }
+
+    display: flex;
+    height: fit-content;
+    margin-bottom: 0;
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      cursor: pointer;
+      height: 72px;
+      & > * {
+        font-size: 12px;
+        line-height: 18px;
+        color: #8491a5;
+      }
+      .paper-name {
+        font-family: MicrosoftYaHei, MicrosoftYaHei;
+        font-weight: normal;
+        font-size: 13px;
+        color: #333333;
+        &:hover {
+          color: #487fff;
+        }
+      }
+      .flex {
+        display: flex;
+      }
+      .paper-tag {
+        text-align: center;
+        padding: 2px 8px;
+        font-family: MicrosoftYaHei, MicrosoftYaHei;
+        font-weight: normal;
+        font-size: 12px;
+        color: #487fff;
+        line-height: 18px;
+        text-align: left;
+        font-style: normal;
+        text-transform: none;
+        // width: 40px;
+        height: 20px;
+        background: rgba(72, 127, 255, 0.1);
+        border-radius: 2px 2px 2px 2px;
+        margin-right: 8px;
+      }
+      .paper-time {
+        .time:hover {
+          color: #487fff;
+        }
+      }
+      .common-data {
+        & > div:hover {
+          :last-child {
+            color: #487fff;
+          }
+        }
+        .num {
+          color: #ff6900;
+        }
+        div > :last-child {
+          margin-right: 8px;
+        }
+      }
+    }
+    .content > * {
+      display: inline-block;
+    }
+    .content > *:not(:first-child) {
+      padding-left: 20px;
+    }
+    img {
+      width: 60px;
+      height: 72px;
+    }
+    &:nth-child(n + 5) {
+      .paper-name::before {
+        background: none;
+      }
+    }
+  }
+  .paper-item-info {
+    &:nth-of-type(2).paper-item-info-special {
+      .head-img {
+        background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/bb2b4580-8f9d-4fd2-956a-886f28def936.png)
+          no-repeat;
+        background-size: 14px 21px;
+      }
+    }
+    &:nth-of-type(3).paper-item-info-special {
+      .head-img {
+        background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/af1d4e1c-18ef-42ca-b693-0a953c66fa93.png)
+          no-repeat;
+        background-size: 14px 21px;
+      }
+    }
+    &:nth-of-type(4).paper-item-info-special {
+      .head-img {
+        background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/7cf42c85-d711-47e5-ad82-46fa4a7e79fe.png)
+          no-repeat;
+        background-size: 14px 21px;
+      }
+    }
+    &:nth-of-type(n + 5).paper-item-info-special {
+      .head-img {
+        //left: 5px;
+        //top: 5px;
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        background: #487fff;
+        filter: drop-shadow(rgba(72, 127, 255, 0.301961) -4px 0);
+      }
+    }
+  }
+  .paper-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    line-height: 18px;
+    font-size: 13px;
+    font-weight: normal;
+    color: #333333;
+  }
+  .paper-time {
+    line-height: 18px;
+    font-size: 13px;
+    font-weight: normal;
+    color: #999999;
+    &:hover {
+      color: #487fff;
+    }
+    i {
+      margin-left: 4px;
+      font-style: 14px;
+    }
+  }
+  .view-count {
+    display: inline-block;
+    min-width: 50px;
+    text-align: right;
+  }
+}
+.local_sync {
+  display: flex;
+  margin-top: 16px;
+  > div {
+    background: #fff;
+    border-radius: 12px;
+  }
+  .local_paper {
+    margin-right: 16px;
+    .paper-item-info {
+      .paper-name {
+        max-width: 420px;
+        white-space: initial;
+        text-overflow: initial;
+        &::before {
+          content: none;
+        }
+      }
+    }
+  }
+  .sync {
+    width: 100%;
+  }
+}
+.new-paper-content {
+  padding-right: 20px;
+  width: 50%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+.content-normal {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  .paper-time {
+    line-height: 18px;
+    font-size: 13px;
+    font-weight: normal;
+    color: #999999;
+    &:hover {
+      color: #487fff;
+    }
+    i {
+      margin-left: 4px;
+      font-style: 14px;
+    }
+  }
+  .view-count {
+    display: inline-block;
+    min-width: 50px;
+    text-align: right;
+  }
+}
+.content {
+  .name-info {
+    display: flex !important;
+    align-items: center;
+    .paper-name {
+      width: max-content;
+      overflow: hidden;
+      white-space: break-spaces;
+    }
+    .paper-tag {
+      align-self: start;
+      margin: 0 8px;
+    }
+  }
+}
+</style>

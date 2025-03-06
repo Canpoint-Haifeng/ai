@@ -168,12 +168,11 @@ export default {
     },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-:deep(.el-drawer)) {
+:deep(.el-drawer) {
     .el-drawer__body .drawer_content{
         padding: 0 20px;
         .switch_tab {
@@ -253,3 +252,4 @@ export default {
     }
 }
 </style>
+

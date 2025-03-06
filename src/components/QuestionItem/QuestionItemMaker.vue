@@ -214,7 +214,6 @@
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -361,7 +360,7 @@
   .operate-cp-number-input {
     width: 55px;
   }
-  :deep(.operate-cp-number-input)) {
+  :deep(.operate-cp-number-input) {
     .el-input__inner {
       line-height: 20px;
       height: 20px;
@@ -373,3 +372,4 @@
     }
   }
 </style>
+

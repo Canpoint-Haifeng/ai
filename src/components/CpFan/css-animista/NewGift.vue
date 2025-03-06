@@ -34,8 +34,8 @@ export default defineComponent({
   }
 })
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
 .new-gift {
   width: 100px;
   height: 100px;
@@ -75,3 +75,4 @@ export default defineComponent({
   }
 }
 </style>
+

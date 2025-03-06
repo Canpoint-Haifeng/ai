@@ -1,0 +1,239 @@
+<template>
+  <div class="multi-good-question">
+    <div class="good-question-item">
+      <div class="title">
+        <div class="name good-question-week">每周好题</div>
+        <div class="more" @click="openGoodQuestionList">
+          更多<i class="el-icon-arrow-right"></i>
+        </div>
+      </div>
+      <div class="good-quesiton-content" v-if="questionItem">
+        <div class="good-question-left question-container">
+          <div class="good-question-box question-content">
+            <question-cell
+              :showAttr="false"
+              :showRegion="false"
+              :level="1"
+              :quesStructPm="
+                questionItem.quesStruct && questionItem.quesStruct.code
+                  ? questionItem.quesStruct.code
+                  : '-1'
+              "
+              :ques="questionItem"
+              :showExplain="false"
+            >
+            </question-cell>
+            <div style="height: 40px"></div>
+          </div>
+          <div class="detail" @click="openGoodQuestionDetial(questionItem)">
+            查看详情
+          </div>
+        </div>
+        <div class="good-question-right">
+          <div class="good-question-reason">
+            <div v-html="questionItem.reason"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="testing-stage-enter">
+      <SynchroForReference @showLogin="showLogin"></SynchroForReference>
+    </div>
+  </div>
+</template>
+
+<script>
+  import { mapState } from 'vuex'
+  import { API } from '@/api/config.js'
+  import QuestionCell from '@/components/QuestionItem/QuestionCell.vue'
+  import SynchroForReference from './SynchroForReference.js'
+  import { isLogin } from '@/common/js/util.js'
+
+  export default {
+    components: { QuestionCell, SynchroForReference },
+    computed: {
+      ...mapState(['currSubject']),
+    },
+    data() {
+      return {
+        questionItem: null,
+        questionReason: '',
+      }
+    },
+    mounted() {
+      this.getGreatRecommendListHttp()
+    },
+    methods: {
+      openGoodQuestionList() {
+        this.czcTrackEvent([
+          '_trackEvent',
+          '学科主页',
+          '每周好题+点击更多',
+          '次数',
+        ])
+        // this.openSystemPathLink('paper/plaza/goodQuestion')
+        this.openSystemPathLink('question/goodquestions')
+      },
+      openKnowledgeQuestion() {
+        this.openSystemPathLink('paper/knowledge/selection')
+      },
+      showLogin() {
+        this.$emit('showLogin')
+      },
+      // 监听查看试题详情
+      async openGoodQuestionDetial(questionInfo) {
+        this.czcTrackEvent([
+          '_trackEvent',
+          '学科主页',
+          '每周好题+点击查看详情',
+          '次数',
+        ])
+        if (!isLogin()) {
+          this.showLogin()
+        } else {
+          let source = '1'
+          let queryStr =
+            '?good=1&questionId=' +
+            questionInfo.questionId +
+            '&source=' +
+            source +
+            '&id=' +
+            questionInfo.recommendId
+          //  学段学科 已传进去
+          if (this.currSubject.subjectCode) {
+            queryStr += '&subject=' + this.currSubject.subjectCode
+          }
+          // this.openWindowLink(
+          //   process.env.VUE_APP_SRC + 'paper/plaza/questionDetail' + queryStr,
+          // )
+          this.openWindowLink(
+            process.env.VUE_APP_SRC + 'question/detail' + queryStr,
+          )
+        }
+      },
+      getGreatRecommendListHttp() {
+        let params = {
+          period: this.currSubject.periodCode,
+          subject: this.currSubject.subjectCode,
+        }
+        this.questionReason = ''
+        this.apiGet(API.QUESITON_GREATRECOMMEND_HOME, params).then((res) => {
+          if (this.checkoutRes(res)) {
+            this.questionItem = res.data
+          }
+        })
+      },
+      getQuestConfigType() {},
+    },
+  }
+</script>
+<style scoped lang="scss">
+@import "@/assets/css/variables.scss";
+  .multi-good-question {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    .good-question-item {
+      width: 794px;
+      height: 360px;
+      background: #ffffff;
+      border-radius: 6px;
+    }
+    .testing-stage-enter {
+      width: 390px;
+    }
+  }
+  .good-question-item {
+    .title {
+      line-height: 59px;
+      border-bottom: 1px solid #eeeeee;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      .name {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333333;
+      }
+      .more {
+        font-size: 14px;
+        font-weight: 400;
+        color: #666666;
+        cursor: pointer;
+        user-select: none;
+        &:hover {
+          color: $color-theme;
+        }
+      }
+    }
+  }
+  .good-quesiton-content {
+    display: flex;
+    padding: 20px;
+    .good-question-left {
+      position: relative;
+      width: 460px;
+      padding-right: 60px;
+      .good-question-box {
+        height: 235px;
+        overflow: hidden;
+      }
+      .detail {
+        position: absolute;
+        width: 110px;
+        line-height: 30px;
+        height: 30px;
+        background: #f0f6ff;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 400;
+        color: $color-theme;
+        text-align: center;
+        bottom: 0;
+        right: 60px;
+        user-select: none;
+        cursor: pointer;
+        &:hover {
+          color: $color-theme-d;
+        }
+      }
+    }
+    .good-question-right {
+      width: 223px;
+      height: 270px;
+      background: #fff5ea;
+      border-radius: 10px;
+      padding: 19px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      .good-question-reason {
+        height: 230px;
+
+        line-height: 24px;
+        letter-spacing: 1px;
+      }
+      .reason-title {
+        color: #de640c;
+        font-weight: bold;
+        line-height: 30px;
+      }
+    }
+  }
+  .good-question-week {
+    position: relative;
+    padding-left: 28px;
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 22px;
+      background: url(//cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/7128c76d-89d4-40e3-a962-b0b1d5b6c380.png)
+        no-repeat;
+      background-size: 20px 22px;
+      position: absolute;
+      left: 0;
+      top: 18px;
+    }
+  }
+</style>
+

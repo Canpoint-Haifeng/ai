@@ -40,7 +40,7 @@
 <script>
 import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
 import CTS from '@/common/js/constant'
-import { delCatalogueTypeByTree } from '@/common/js/util.js'
+import { delCatalogueTypeByTree } from '@/common/js/util'
 import { isLogin } from '@/common/js/util'
 import { API } from '@/api/config'
 import { mapState } from 'vuex'
@@ -455,16 +455,16 @@ export default {
     width: 914px;
     background-color: transparent;
 
-    :deep(.el-tabs .el-tabs__header)) {
+    :deep(.el-tabs .el-tabs__header) {
       // padding: 0 20px;
       margin: 0;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
       background-color: $color-theme;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
       color: $color-theme;
     }
   }

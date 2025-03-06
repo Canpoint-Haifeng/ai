@@ -42,8 +42,8 @@
     }
   })
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .app-invite-bear {
     position: fixed;
     right: 100px;
@@ -52,3 +52,4 @@
     height: 40px;
   }
 </style>
+

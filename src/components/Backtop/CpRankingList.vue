@@ -214,8 +214,8 @@
     }
   })
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .cp-ti-ranking-list {
     position: fixed;
     top: 155px;
@@ -363,3 +363,4 @@
     }
   }
 </style>
+

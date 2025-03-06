@@ -555,7 +555,6 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -585,7 +584,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
         }
       }
       .el-form {
-        :deep(.el-form-item)) {
+        :deep(.el-form-item) {
           margin-right: 90px;
           .el-form-item__label {
             line-height: inherit;
@@ -627,7 +626,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
       }
     }
 
-    :deep(.tip-dia)) {
+    :deep(.tip-dia) {
       .el-dialog__header {
         background: #fff;
         padding: 26px 40px;
@@ -662,3 +661,4 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
     }
   }
 </style>
+

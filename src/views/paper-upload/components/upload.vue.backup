@@ -1,0 +1,427 @@
+<template>
+  <div
+    ref="select_frame"
+    class="upload-file-paper"
+    @click.stop="uploadWrapClick($event)"
+  >
+    <el-upload
+      ref="elupload"
+      action=""
+      class="upload-demo"
+      :disabled="isDisabled"
+      drag
+      :limit="1"
+      :headers="myHeaders"
+      :data="getFormInline"
+      name="uploadFiles"
+      :http-request="myRequest"
+      :before-upload="handbeforeupload"
+      :on-progress="handprogress"
+      :on-success="handleAvatarSuccess"
+      :on-error="imgOnError"
+      :on-preview="handlePreview"
+      :on-remove="handleRemove"
+      :before-remove="beforeRemove"
+      :on-exceed="handleExceed"
+    >
+      <img
+        :src="uploadFileUrl"
+        width="60px"
+        height="78px"
+      >
+      <div class="el-upload__text">
+        <h1 :class="{ error: isError, success: isSuccess }">
+          {{ uploadTitle }}
+        </h1>
+        <p>
+          <span
+            class="span_start"
+            @click="continueUpload(startTip, $event)"
+          >{{
+            startTip
+          }}</span>
+          <span
+            v-if="seeOtherPaper && isSeePaper"
+            class="span_see"
+            @click="seePaper"
+          >查看已传试卷</span>
+        </p>
+        <strong v-show="false">{{ getFormInline }}</strong>
+      </div>
+      <template #tip>
+        <div class="el-upload__tip" />
+      </template>
+    </el-upload>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import CTS from '@/common/js/constant.js'
+import { getToken } from '@/common/js/util.js'
+export default {
+  props: {
+    formInline: {
+      type: Object,
+    },
+    seeOtherPaper: {
+      type: Boolean,
+      default: false,
+    },
+    isFileType: {
+      type: String,
+      default: '.doc/.docx/.pdf',
+    },
+  },
+  setup() {
+    const elupload = ref(null)
+    const select_frame = ref(null)
+    
+    const state = reactive({
+      myHeaders: {
+        CANPOINTTOKEN: getToken(),
+        'Resource-Request-Source': 'RESOURCE_WEB',
+      },
+      isUpload: false, // 是否正在上传
+      uploadFileUrl: import.meta.env.BASE_URL + 'assets/images/upload_dia_bg.png',
+      fileListArr: [],
+      fileList: [],
+      uploadTitle: '将文件拖拽至此处上传',
+      startTip: '点击选择文件',
+      isError: false, // 是否上传失败
+      isSuccess: false, // 是否上传成功
+      isDisabled: true, // 是否可以上传
+      newFormInline: null,
+      isSeePaper: false,
+    })
+  computed: {
+    getFormInline: function () {
+      console.log(this.formInline);
+      let newFormInline = this.formInline
+      // console.log(newFormInline);
+      // if (
+      //   newFormInline &&
+      //   newFormInline.location &&
+      //   newFormInline.location.length
+      // ) {
+      //   newFormInline.location =
+      //     newFormInline.location[newFormInline.location.length - 1]
+      // } else {
+      //   delete newFormInline.location
+      // }
+      // return newFormInline
+      return newFormInline
+    },
+  },
+  setup() {
+    onMounted(() => {
+      setTimeout(() => {
+        select_frame.value.ondrop = e => {
+          e.preventDefault() // 阻止拖放后的浏览器默认行为
+          uploadWrapClick(e)
+        }
+      }, 1000)
+    })
+  methods: {
+    // 设置是否可上传
+    setDisable(a) {
+      this.isDisabled = a
+    },
+    uploadWrapClick(e) {
+      e.stopPropagation()
+      this.$emit('validateFrom')
+    },
+    myRequest(params) {
+      console.log(params)
+      let url = {
+        // urlPath: import.meta.env.VITE_PAPER_GENERATOR + '/v2/paper/upload',
+        urlPath: '/paper-builder/personal/upload'
+      }
+      console.log(this.getFormInline);
+      let parms = this.getFormInline
+      parms.uploadFile = params.file
+      // if (!parms.location) {
+      //   delete parms.location
+      // }
+      const uploadProgressEvent = progressEvent => {
+        this.startTip = '0%'
+        params.onProgress({
+          percent: (progressEvent.loaded * 100) / progressEvent.total,
+        })
+      }
+      this.apiPost(url, parms, {
+        file: true,
+        uploadProgressEvent,
+      }).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          params.onSuccess(res)
+        } else {
+          params.onError(res)
+          this.$message({
+            type: 'error',
+            showClose: true,
+            message: res.msg,
+          })
+        }
+      })
+    },
+    // 上传文件
+    handbeforeupload(file) {
+      const isLt5M = file.size / 1024 / 1024 < 5
+      if (!isLt5M) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: file.name + '文件大小超过 5MB!',
+        })
+        return false
+      }
+      let fileType = file.name.substring(file.name.lastIndexOf('.'))
+      fileType = fileType.toLowerCase()
+      if (this.isFileType.indexOf(fileType) === -1) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '上传文件只能是' + this.isFileType + '格式!',
+        })
+        return false
+      }
+     
+      // if (!/.(doc|docx|pdf)$/.test(fileType.toLowerCase())) {
+      //   this.$message({
+      //     type: 'warning',
+      //     showClose: true,
+      //     message: '上传文件只能是.doc/.docx/.pdf格式!'
+      //   })
+      //   return false
+      // }
+      console.log(file)
+      this.uploadTitle = '正在上传'
+      this.isError = false
+      this.isSuccess = false
+      this.isUpload = true
+      this.$emit('setFormDisabled', true)
+      return isLt5M
+    },
+    // 上传中
+    handprogress(event, file, fileList) {
+      console.log(event.percent)
+      this.startTip = event.percent.toFixed(2) + '%'
+      this.isUpload = true
+    },
+    handleAvatarSuccess(res, file, fileList) {
+      if (res && res.code && res.code === 200) {
+        this.fileListArr.push({
+          name: file.name,
+          url: res.url,
+        })
+        this.fileList = fileList
+        this.isUpload = false
+        this.uploadFileUrl = import.meta.env.BASE_URL + 'assets/images/upload_dia_success.png'
+        this.uploadTitle = '上传成功'
+        this.startTip = '继续上传其它试卷'
+        this.isSuccess = true
+        this.isDisabled = true
+        this.isSeePaper = true
+        console.log(this.fileList, this.fileListArr, 'gggggg', this.formInline)
+      } else {
+        this.beforeRemove()
+        this.uploadTitle = '上传失败'
+        this.startTip = '请重新拖拽或选择文件进行上传'
+        this.isError = true
+        this.$emit('setFormDisabled', false)
+        this.$message({
+          type: 'error',
+          showClose: true,
+          message: '上传文件失败！',
+        })
+        this.$refs.elupload.clearFiles()
+      }
+    },
+    imgOnError() {
+      this.uploadTitle = '上传失败'
+      this.startTip = '请重新拖拽或选择文件进行上传'
+      this.isError = true
+      this.$emit('setFormDisabled', false)
+      this.$message({
+        type: 'error',
+        showClose: true,
+        message: '上传文件失败！',
+      })
+      this.$refs.elupload.clearFiles()
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleExceed(files, fileList) {
+      this.$message({
+        type: 'warning',
+        showClose: true,
+        message: '不能上传多个文件',
+      })
+    },
+    beforeRemove(file, fileList) {
+      for (let item of this.fileListArr) {
+        if (file.id === item.id) {
+          this.fileListArr.splice(item, 1)
+        }
+      }
+      this.fileList = fileList
+      console.log(this.fileListArr)
+    },
+    // 继续上传
+    continueUpload(val, e) {
+      if (this.isSuccess === true) {
+        e.stopPropagation() // 阻止拖放后的浏览器默认行为
+        this.isError = false
+        this.isSuccess = false
+        this.isSeePaper = false
+        this.uploadFileUrl = import.meta.env.BASE_URL + 'assets/images/upload_dia_bg.png'
+        this.uploadTitle = '将文件拖拽至此处上传'
+        this.startTip = '点击选择文件'
+        this.$emit('cleanForm')
+        this.$refs.elupload.clearFiles()
+
+        this.$emit('setFormDisabled', false)
+      }
+    },
+    // 查看已上传试卷
+    seePaper() {
+      this.$router.push('/paper/resources/papers?tabActiveName=myUploadPaper')
+    },
+  },
+}
+</script>
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+  
+.upload-file-paper {
+  margin-top: 40px;
+
+  :deep(.upload-demo) {
+    .el-upload {
+      width: 862px;
+
+      .el-upload-dragger {
+        width: 100%;
+        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
+        height: 300px;
+        background: #fbfcff;
+        border-radius: 24px 24px 24px 24px;
+        border: 2px dashed #4b8ff5;
+
+        >img {
+          margin-top: 70px;
+          margin-bottom: 40px;
+        }
+
+        .el-upload__text {
+          .span_start {
+            color: #4b8ff5;
+            font-weight: bold;
+            font-size: 17px;
+          }
+
+          >h1 {
+            font-size: 20px;
+            font-family: Microsoft YaHei;
+            font-weight: bold;
+            color: #999999;
+          }
+
+          .error {
+            color: #ff7575;
+          }
+
+          .success {
+            color: #666666;
+            font-size: 18px;
+          }
+
+          .success+p {
+            span {
+              color: $color-theme;
+            }
+
+            span:nth-child(2) {
+              margin-left: 50px;
+            }
+          }
+
+          >p {
+            font-size: 16px;
+            font-family: Microsoft YaHei;
+            font-weight: 400;
+            color: #487FFF;
+            margin-top: 24px;
+
+            span {
+              display: inline-block;
+              // border-bottom: 1px solid;
+              padding-bottom: 3px;
+            }
+          }
+
+          .span_see {
+            font-weight: bold;
+            font-size: 17px;
+          }
+        }
+      }
+    }
+
+    .el-upload-list__item-status-label {
+      position: static;
+    }
+
+    .el-upload-list__item.is-success .el-upload-list__item-status-label {
+      display: inline-block;
+      line-height: 14px;
+      padding: 12px 0 10px;
+      vertical-align: top;
+      font-size: 14px;
+      color: #3a9d43;
+    }
+
+    .el-upload-list {
+      .el-upload-list__item {
+        .el-upload-list__item-name {
+          font-size: 16px;
+          font-family: Microsoft YaHei;
+          font-weight: 400;
+          color: #333333;
+          margin-right: 10px;
+          padding-left: 0px;
+          display: inline-block;
+
+          .el-icon-document {
+            font-family: 'iconfont' !important;
+            font-size: 20px;
+            color: #4680fe;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+          }
+
+          .el-icon-document:before {
+            content: '\e6a8';
+          }
+        }
+
+        .el-icon-close {
+          top: 10px;
+          display: none;
+        }
+      }
+
+      .el-progress {
+        display: none;
+      }
+    }
+  }
+}
+</style>

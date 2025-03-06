@@ -26,8 +26,8 @@
     }
   })
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .rank_no_1 {
     width: 23px;
     height: 18px;
@@ -62,3 +62,4 @@
     text-align: center;
   }
 </style>
+

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :visible="visible" @update:visible="$emit('update:visible', $event)"
     title="相似题"
     width="1200px"
     class="auth-dialog"
@@ -175,7 +175,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -245,3 +244,4 @@ export default {
     padding: 10px 20px 0 20px;
   }
 </style>
+

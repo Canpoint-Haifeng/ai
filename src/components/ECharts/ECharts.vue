@@ -108,8 +108,8 @@ export default {
   }
 }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .echarts-wrapper {
     width: 100%;
     height: 100%;
@@ -140,3 +140,4 @@ export default {
     }
   }
 </style>
+

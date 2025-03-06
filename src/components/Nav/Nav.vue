@@ -96,7 +96,6 @@ const isDisabledNav = (navType) => {
   return false
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -268,3 +267,4 @@ const isDisabledNav = (navType) => {
   min-width: 120px;
 }
 </style>
+

@@ -1324,6 +1324,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
@@ -1447,7 +1451,7 @@ export default {
         width: 560px;
         padding-bottom: 20px;
 
-        :deep(.el-input)) {
+        :deep(.el-input) {
           .el-input__inner,
           .el-input__icon {
             height: 30px;
@@ -1471,7 +1475,7 @@ export default {
             padding-bottom: 10px;
           }
 
-          :deep(.el-select)) {
+          :deep(.el-select) {
             width: 270px;
             margin-right: 20px;
             margin-bottom: 30px;
@@ -1498,7 +1502,7 @@ export default {
           padding: 20px 30px;
 
           .edition {
-            :deep(.el-select)) {
+            :deep(.el-select) {
               width: 270px;
               margin-bottom: 20px;
 
@@ -1562,7 +1566,7 @@ export default {
               text-align: right;
             }
 
-            :deep(.el-input-number)) {
+            :deep(.el-input-number) {
               span[role='button'] {
                 height: 28px;
               }
@@ -1578,7 +1582,7 @@ export default {
         }
       }
 
-      :deep(.page-table)) {
+      :deep(.page-table) {
         .el-table {
           thead {
             th:first-child {
@@ -1745,10 +1749,5 @@ export default {
     }
   }
 }
-</style>
-<style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-@import "@/assets/css/variables.scss";
-@import "@/assets/css/variables.scss";
 /* SCSS styles */
 </style>

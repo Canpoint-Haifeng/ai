@@ -83,7 +83,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/mixins.scss";
@@ -93,23 +92,23 @@ export default {
   text-align: center;
   background: $color-white;
   
-  :deep(.el-pagination span:not([class*=suffix])) {
+  :deep(.el-pagination span:not([class*=suffix]) {
     color: $color-text-l;
   }
   
-  :deep(.el-pagination button)) {
+  :deep(.el-pagination button) {
     color: $color-text-l;
   }
   
-  :deep(.el-pagination .btn-prev)) {
+  :deep(.el-pagination .btn-prev) {
     padding-right: 12px;
   }
   
-  :deep(.el-pagination .btn-next)) {
+  :deep(.el-pagination .btn-next) {
     padding-left: 12px;
   }
   
-  :deep(.el-pagination .el-pager li)) {
+  :deep(.el-pagination .el-pager li) {
     border-radius: 4px;
     font-size: 13px;
     min-width: 28px;
@@ -127,3 +126,4 @@ export default {
   }
 }
 </style>
+

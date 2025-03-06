@@ -335,7 +335,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -364,7 +363,7 @@ export default {
     font-weight: bold;
     color: #333333;
     position: relative;
-    :deep(.scsne_tip)) {
+    :deep(.scsne_tip) {
       cursor: pointer;
       position: absolute;
       top: -10px;
@@ -458,13 +457,13 @@ export default {
   .user-content-right {
     width: 914px;
     height: min-content;
-    :deep(.el-tabs .el-tabs__header)) {
+    :deep(.el-tabs .el-tabs__header) {
       padding: 0 20px;
     }
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
       background-color: $color-theme;
     }
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
       color: $color-theme;
     }
   }
@@ -482,3 +481,4 @@ export default {
   // white-space: normal;
 }
 </style>
+

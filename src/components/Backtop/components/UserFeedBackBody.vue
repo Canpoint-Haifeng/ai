@@ -139,8 +139,8 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .user-feed-back-body {
     height: 370px;
     padding: 18px;
@@ -266,3 +266,4 @@
     }
   }
 </style>
+

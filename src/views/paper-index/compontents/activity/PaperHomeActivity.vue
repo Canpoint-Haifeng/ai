@@ -12,10 +12,10 @@
   /**
    *  这是一个首页活动管理器
    * **/
-  // import ThreeGoodGift from './ThreeGoodGift.js'
-  // import HelpMidtermActivityItem from './HelpMidtermActivityItem.js'
-  import WxActivityItem from './WxActivityItem.js'
-  import { setCookie, getCookie } from '@/common/js/util.js'
+  // import ThreeGoodGift from './ThreeGoodGift'
+  // import HelpMidtermActivityItem from './HelpMidtermActivityItem'
+  import WxActivityItem from './WxActivityItem'
+  import { setCookie, getCookie } from '@/common/js/util'
   export default {
     components: { WxActivityItem },
     data() {
@@ -77,6 +77,7 @@
     },
   }
 </script>
-
 <style scoped lang="scss"></style>
 @import "@/assets/css/variables.scss";
+</style>
+

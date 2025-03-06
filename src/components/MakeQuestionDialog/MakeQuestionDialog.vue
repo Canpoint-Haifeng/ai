@@ -1,7 +1,7 @@
 <template>
   <div class="dialog-wrapper">
     <el-dialog
-      v-model="visible"
+      :visible="visible" @update:visible="$emit('update:visible', $event)"
       :title="title"
       :modal-append-to-body="false"
       :lock-scroll="false"
@@ -60,8 +60,8 @@ export default {
   }
 }
 </script>
-
 <style lang="scss">
+@import "@/assets/css/variables.scss";
   .dialog-content {
     text-align: center;
     .search-tips {
@@ -71,3 +71,4 @@ export default {
     }
   }
 </style>
+

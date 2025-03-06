@@ -42,7 +42,6 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -53,3 +52,4 @@ export default defineComponent({
   margin: 20px 0;
 }
 </style>
+

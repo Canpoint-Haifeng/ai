@@ -1,0 +1,3743 @@
+<template>
+  <div class="teaching_plan_edit">
+    <div class="head">
+      <div class="back">
+        <el-button
+          type="primary"
+          size="medium"
+          plain
+          icon="iconfont icon-goback"
+          @click="exit"
+        >
+          退出编辑
+        </el-button>
+      </div>
+      <div class="center">
+        <el-button
+          type="text"
+          size="medium"
+          icon="el-icon-circle-plus"
+          @click="addExaminationDirection"
+        >
+          选择备课范围
+        </el-button>
+      </div>
+      <div class="tab-box">
+        <el-radio-group
+          v-if="showTab"
+          v-model="showType"
+        >
+          <el-radio-button label="2">
+            预习学案
+          </el-radio-button>
+          <el-radio-button label="1">
+            教学设计
+          </el-radio-button>
+        </el-radio-group>
+      </div>
+      <div class="save_download">
+        <!-- <em v-if="requestLoading">生成中...</em> -->
+        <el-button
+          v-if="requestLoading"
+          type="primary"
+          :loading="true"
+        >
+          生成中
+        </el-button>
+        <!-- <p>{{ requestNum }}---{{ requestDone }}</p> -->
+        <div
+          v-else
+          class="ai-start-btn"
+          @click="aiGeneration"
+        >
+          <img
+            src="../../assets/images/ai/ai-start.png"
+            alt="AI备课"
+          >
+          AI备课
+        </div>
+        <el-button
+          type="primary"
+          size="medium"
+          plain
+          icon="iconfont icon-save_2_line"
+          @click="save(1)"
+        >
+          保存教案
+        </el-button>
+        <el-button
+          v-if="reviseVisible"
+          type="primary"
+          size="medium"
+          @click="revise"
+        >
+          提交修订
+        </el-button>
+        <el-button
+          v-else
+          type="primary"
+          size="medium"
+          icon="iconfont icon-plus-download"
+          @click="download"
+        >
+          下载教案
+        </el-button>
+      </div>
+    </div>
+    <div
+      v-if="planTreeData.length"
+      class="main"
+    >
+      <div class="structure">
+        <section>
+          <el-button
+            class="switch"
+            type="text"
+            size="medium"
+            @click="outlineVisible = !outlineVisible"
+          >
+            {{ outlineVisible ? '收起' : '展开' }}
+            <i
+              class="iconfont"
+              :class="outlineVisible ? 'icon-shouqi' : 'icon-zhankai'"
+            />
+          </el-button>
+          <transition name="outline">
+            <div
+              v-if="outlineVisible"
+              class="outline"
+            >
+              <div class="head">
+                <h6>教案结构</h6>
+              </div>
+              <div class="tree">
+                <div
+                  v-if="showType == 2"
+                  class="plan"
+                >
+                  <el-tree
+                    ref="plantree"
+                    :data="[planTreeData[0]]"
+                    default-expand-all
+                    :expand-on-click-node="false"
+                    :props="defaultProps"
+                  >
+                    <template #default="{ node, data }">
+                      <div
+                        class="custom-tree-node"
+                        @click="handleNodeClick(data)"
+                      >
+                        <span>{{ data.name }}</span>
+                        <div @click.stop="aa(data, node)">
+                          <i
+                            class="iconfont"
+                            :class="data.isShow === 1 ? 'icon-view' : 'icon-hide'"
+                            @click="toggleNode(data, node)"
+                          />
+                        </div>
+                      </div>
+                    </template>
+                  </el-tree>
+                </div>
+                <div
+                  v-else
+                  class="design"
+                >
+                  <p>教学设计</p>
+                  <!-- :filter-node-method="filterNode" -->
+                  <el-tree
+                    ref="tree"
+                    :data="planTreeData[1].child"
+                    default-expand-all
+                    :expand-on-click-node="false"
+                    :props="defaultProps"
+                  >
+                    <template #default="{ node, data }">
+                      <div
+                        class="custom-tree-node"
+                        @click="handleNodeClick(data)"
+                      >
+                        <span :title="data.showName">{{
+                          data.showName || data.name
+                        }}</span>
+                        <div
+                          v-if="data.icon === 'del'"
+                          @click.stop="delNode(data, node)"
+                        >
+                          <i class="el-icon-delete" />
+                        </div>
+                        <!--  v-if="data.icon === 'view'" -->
+                        <div @click.stop="aa(data, node)">
+                          <i
+                            class="iconfont"
+                            :class="data.isShow === 1 ? 'icon-view' : 'icon-hide'"
+                            @click="toggleNode(data, node)"
+                          />
+                        </div>
+                      </div>
+                    </template>
+                  </el-tree>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </section>
+      </div>
+      <div class="edit_content">
+        <div class="head_title">
+          <el-input
+            v-model="info.title"
+            class="title"
+            placeholder="请输入内容"
+            maxlength="40"
+          />
+          <el-input
+            v-model="info.subTitle"
+            class="sub"
+            placeholder="请输入内容"
+            maxlength="40"
+          />
+        </div>
+        <div
+          v-if="type != 1 && planTreeData[0]"
+          v-show="planTreeData[0].isShow === 1"
+          class="teaching_plan"
+        >
+          <div class="knowledge_structure">
+            <div
+              :id="`t${planTreeData[0].id}`"
+              class="title"
+            >
+              <h5>知识结构</h5>
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[0].isShow = 2"
+              />
+            </div>
+            <section class="edit_container">
+              <separateSignCkeditor
+                ref="wordSignEdit1"
+                editid="wordSignEdit1"
+                :content="planTreeData[0].content[0].content"
+                :showborder="false"
+                :client-height="600"
+                @updata-ck-editor-data="
+                  updataCkEditorData(planTreeData[0].content[0], $event)
+                "
+              />
+
+              <div class="operation">
+                <el-button
+                  type="text"
+                  @click="changeContent(planTreeData[0].content[0], 1)"
+                >
+                  更换
+                </el-button>
+              </div>
+            </section>
+
+            <!-- <div v-else class="empty-box">
+
+              <div class="example_empty">
+                <el-button type="text" icon="el-icon-circle-plus">添加试题1</el-button>
+              </div>
+
+            </div> -->
+          </div>
+        </div>
+        <!-- :class="{notChapter: type != 1}" -->
+        <div
+          v-if="type == 1 && planTreeData[0].child.length && showType == 2"
+          v-show="planTreeData[0].isShow === 1"
+          :class="['teaching_plan', themeStyleName]"
+        >
+          <div
+            :id="`t${planTreeData[0].id}`"
+            class="headline part-two"
+          >
+            <!-- <h3 class="part-two"></h3> -->
+          </div>
+          <div
+            v-show="planTreeData[0].child[0].isShow === 1"
+            class="knowledge_structure"
+          >
+            <div
+              :id="`t${planTreeData[0].child[0].id}`"
+              class="title"
+            >
+              <h5 class="children-title zsjg-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[0].child[0].isShow = 2"
+              />
+            </div>
+            <section class="edit_container">
+              <separateSignCkeditor
+                ref="wordSignEdit2"
+                editid="wordSignEdit2"
+                :content="planTreeData[0].child[0].content[0].content"
+                :showborder="false"
+                :client-height="600"
+                @updata-ck-editor-data="
+                  updataCkEditorData(
+                    planTreeData[0].child[0].content[0],
+                    $event,
+                  )
+                "
+                @change-show="changeShow('wordSignEdit2')"
+              />
+              <div class="operation">
+                <el-button
+                  type="text"
+                  @click.stop="
+                    chatAIChange(
+                      planTreeData[0].child[0],
+                      planTreeData[0].child[0].content[0],
+                      1,
+                      '',
+                      '',
+                      $event,
+                    )
+                  "
+                >
+                  <div class="chatai-btn">
+                    <img
+                      src="../../assets/images/ai/bling_fill.png"
+                      alt="AI备课"
+                    >
+                    <span>
+                      AI
+                    </span>
+                  </div>
+                </el-button>
+                <el-button
+                  type="text"
+                  @click="changeContent(planTreeData[0].child[0].content[0], 1)"
+                >
+                  更换
+                </el-button>
+              </div>
+            </section>
+            <!--             
+            <div  v-show="!wordSignEdit2Flag" class="empty-box">
+
+              <div class="example_empty" @click="editAddClick('wordSignEdit2')">
+                <el-button type="text" icon="el-icon-circle-plus">添加内容</el-button>
+              </div>
+
+            </div> -->
+          </div>
+          <div
+            v-show="planTreeData[0].child[1].isShow === 1"
+            class="prepare_target textarea"
+          >
+            <div
+              :id="`t${planTreeData[0].child[1].id}`"
+              class="title"
+            >
+              <h5 class="children-title yxmb-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[0].child[1].isShow = 2"
+              />
+            </div>
+            <section class="edit_container">
+              <separateSignCkeditor
+                ref="wordSignEdit3"
+                editid="wordSignEdit3"
+                :content="planTreeData[0].child[1].content[0].content"
+                :showborder="false"
+                :client-height="400"
+                @updata-ck-editor-data="
+                  updataCkEditorData(
+                    planTreeData[0].child[1].content[0],
+                    $event,
+                  )
+                "
+              />
+              <div class="operation">
+                <el-button
+                  class="button-Ai"
+                  type="text"
+                  @click.stop="
+                    chatAIChange(
+                      planTreeData[0].child[1],
+                      planTreeData[0].child[1].content[0],
+                      2,
+                      '',
+                      '',
+                      $event,
+                    )
+                  "
+                >
+                  <div class="chatai-btn">
+                    <img
+                      src="../../assets/images/ai/bling_fill.png"
+                      alt="AI备课"
+                    >
+                    <span>
+                      AI
+                    </span>
+                  </div>
+                </el-button>
+                <el-button
+                  type="text"
+                  @click="changeContent(planTreeData[0].child[1].content[0], 2)"
+                >
+                  更换
+                </el-button>
+              </div>
+              <!-- <el-input type="textarea" :rows="5" resize="none" placeholder="请输入内容" v-model="planTreeData[0].child[1].content[0].content"> </el-input> -->
+            </section>
+
+            <!-- <div v-else class="empty-box">
+
+              <div class="example_empty">
+                <el-button type="text" icon="el-icon-circle-plus">添加试题3</el-button>
+              </div>
+
+            </div> -->
+          </div>
+          <div
+            v-show="planTreeData[0].child[2].isShow === 1"
+            class="prepare_task textarea"
+          >
+            <div
+              :id="`t${planTreeData[0].child[2].id}`"
+              class="title"
+            >
+              <h5 class="children-title yxrw-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[0].child[2].isShow = 2"
+              />
+            </div>
+            <section class="edit_container">
+              <separateSignCkeditor
+                ref="wordSignEdit4"
+                editid="wordSignEdit4"
+                :content="planTreeData[0].child[2].content[0].content"
+                :showborder="false"
+                :client-height="400"
+                @updata-ck-editor-data="
+                  updataCkEditorData(
+                    planTreeData[0].child[2].content[0],
+                    $event,
+                  )
+                "
+              />
+              <div class="operation">
+                <el-button
+                  class="button-Ai"
+                  type="text"
+                  @click.stop="
+                    chatAIChange(
+                      planTreeData[0].child[2],
+                      planTreeData[0].child[2].content[0],
+                      3,
+                      '',
+                      '',
+                      $event,
+                    )
+                  "
+                >
+                  <div class="chatai-btn">
+                    <img
+                      src="../../assets/images/ai/bling_fill.png"
+                      alt="AI备课"
+                    >
+                    <span>
+                      AI
+                    </span>
+                  </div>
+                </el-button>
+
+                <el-button
+                  type="text"
+                  @click="changeContent(planTreeData[0].child[2].content[0], 3)"
+                >
+                  更换
+                </el-button>
+              </div>
+              <!-- <el-input type="textarea" :rows="5" resize="none" placeholder="请输入内容" v-model="planTreeData[0].child[2].content[0].content"> </el-input> -->
+            </section>
+
+            <!-- <div v-else class="empty-box">
+
+              <div class="example_empty">
+                <el-button type="text" icon="el-icon-circle-plus">添加试题4</el-button>
+              </div>
+
+            </div> -->
+          </div>
+          <div
+            v-show="planTreeData[0].child[3].isShow === 1"
+            class="prepare_gapfilling textarea"
+          >
+            <div
+              :id="`t${planTreeData[0].child[3].id}`"
+              class="title"
+            >
+              <h5 class="children-title yxtk-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[0].child[3].isShow = 2"
+              />
+            </div>
+            <section>
+              <div
+                v-for="(v, i) in planTreeData[0].child[3].content"
+                :key="i"
+                class="item"
+              >
+                <div class="operation">
+                  <el-button
+                    type="text"
+                    @click="changeContent(v, 4)"
+                  >
+                    更换
+                  </el-button>
+                </div>
+                <!-- <el-input type="textarea" :rows="5" resize="none" readonly placeholder="请输入内容" v-model="v.content"> </el-input> -->
+                <div
+                  class="content"
+                  style="line-height: 22px"
+                  v-html="v.content"
+                />
+              </div>
+            </section>
+          </div>
+          <div
+            v-show="planTreeData[0].child[4].isShow === 1"
+            class="prepare_detection"
+          >
+            <div
+              :id="`t${planTreeData[0].child[4].id}`"
+              class="title"
+            >
+              <h5 class="children-title yxjc-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[0].child[4].isShow = 2"
+              />
+            </div>
+            <div>
+              <div
+                v-for="(v, i) in planTreeData[0].child[4].child"
+                v-show="v.isShow == 1"
+                :key="i"
+                class="detection"
+              >
+                <div class="title">
+                  <!-- <div class="dot"></div> -->
+                  <h6 class="practice-title">
+                    {{ v.name }}
+                  </h6>
+                  <span
+                    class="type"
+                    style="margin-left: 4px"
+                    :class="{ optional: v.childRule.mustDo === 2 }"
+                  >{{ v.childRule.mustDo === 1 ? '必做' : '选做' }}</span>
+                  <div class="hover_view">
+                    <el-button
+                      type="text"
+                      @click="addQuestion(v.content, v.id)"
+                    >
+                      新增试题
+                    </el-button>
+                    <i
+                      class="icon iconfont icon-view"
+                      @click="v.isShow = 2"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div
+                    v-for="(y, j) in v.content"
+                    :key="j"
+                    @click="bb(y.generalQuestionVo)"
+                  >
+                    <question
+                      v-if="
+                        y.generalQuestionVo &&
+                          Object.keys(y.generalQuestionVo).length > 0
+                      "
+                      type="1"
+                      :index="j + 1"
+                      :info="y.generalQuestionVo || {}"
+                      :total-num="v.content.length"
+                      @change="changeQuestion(v.content, j, v, $event)"
+                    />
+                    <div v-else>
+                      <div class="example_empty">
+                        <el-button
+                          type="text"
+                          icon="el-icon-circle-plus"
+                          @click="addQuestion(y, '')"
+                        >
+                          添加试题
+                        </el-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="detection" v-show="planTreeData[0][0].children[4].children[1].visible">
+                                <div class="title" id="t07">
+                                    <div class="dot"></div>
+                                    <h6>拔高检测</h6>
+                                    <span class="type ">选做</span>
+                                    <div class="hover_view">
+                                        <el-button type="text" @click="addQuestion(planTreeData[0][0].children[4].children[1].children)">新增试题</el-button>
+                                        <i class="icon iconfont icon-view" @click="planTreeData[0][0].children[4].children[1].visible = false"></i></template>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div v-for="(v, i) in planTreeData[0][0].children[4].children[1].children" :key="i">
+                                        <question type='1' :info="v.data" @change="changeQuestion(planTreeData[0][0].children[4].children[1].children, i, $event)"/>
+                                    </div>
+                                </div>
+                            </div> -->
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="planTreeData[1].child.length && showType == 1"
+          :class="['teaching_design', themeStyleName]"
+        >
+          <div class="headline part-one" />
+          <div
+            v-show="planTreeData[1].child[0].isShow === 1"
+            class="teaching_project design_item"
+          >
+            <div
+              :id="`t${planTreeData[1].child[0].id}`"
+              class="order_title"
+            >
+              <!-- <b></b> -->
+              <div class="jxgh-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[1].child[0].isShow = 2"
+              />
+            </div>
+            <div>
+              <div
+                v-show="planTreeData[1].child[0].child[0].isShow === 1"
+                class="textarea"
+                style="position: relative"
+              >
+                <div
+                  :id="`t${planTreeData[1].child[0].child[0].id}`"
+                  class="title"
+                >
+                  <h5 class="children-title jxmb-title" />
+                  <i
+                    class="iconfont icon-view"
+                    @click="planTreeData[1].child[0].child[0].isShow = 2"
+                  />
+                </div>
+                <section class="edit_container">
+                  <separateSignCkeditor
+                    ref="wordSignEdit6"
+                    editid="wordSignEdit6"
+                    :content="
+                      planTreeData[1].child[0].child[0].content[0].content
+                    "
+                    :showborder="false"
+                    :client-height="400"
+                    @updata-ck-editor-data="
+                      updataCkEditorData(
+                        planTreeData[1].child[0].child[0].content[0],
+                        $event,
+                      )
+                    "
+                  />
+                  <div class="operation">
+                    <el-button
+                      class="button-Ai"
+                      type="text"
+                      @click.stop="
+                        chatAIChange(
+                          planTreeData[1].child[0].child[0],
+                          planTreeData[1].child[0].child[0].content[0],
+                          5,
+                          '',
+                          '',
+                          $event,
+                        )
+                      "
+                    >
+                      <div class="chatai-btn">
+                        <img
+                          src="../../assets/images/ai/bling_fill.png"
+                          alt="AI备课"
+                        >
+                        <span>
+                          AI
+                        </span>
+                      </div>
+                    </el-button>
+
+                    <el-button
+                      type="text"
+                      @click="
+                        changeContent(
+                          planTreeData[1].child[0].child[0].content[0],
+                          5,
+                        )
+                      "
+                    >
+                      更换
+                    </el-button>
+                  </div>
+
+                  <!-- <el-input type="textarea" :rows="5" resize="none" placeholder="请输入内容" v-model="planTreeData[1].child[0].child[0].content[0].content"> </el-input> -->
+                </section>
+
+                <!-- 
+                <div v-else class="empty-box">
+
+                  <div class="example_empty">
+                    <el-button type="text" icon="el-icon-circle-plus">添加试题6</el-button>
+                  </div>
+
+                </div> -->
+              </div>
+              <div
+                v-show="planTreeData[1].child[0].child[1].isShow === 1"
+                class="textarea"
+              >
+                <div
+                  :id="`t${planTreeData[1].child[0].child[1].id}`"
+                  class="title"
+                >
+                  <h5 class="children-title zdnd-title" />
+                  <i
+                    class="iconfont icon-view"
+                    @click="planTreeData[1].child[0].child[1].isShow = 2"
+                  />
+                </div>
+                <section class="edit_container">
+                  <separateSignCkeditor
+                    ref="wordSignEdit7"
+                    editid="wordSignEdit7"
+                    :content="
+                      planTreeData[1].child[0].child[1].content[0].content
+                    "
+                    :showborder="false"
+                    :client-height="400"
+                    @updata-ck-editor-data="
+                      updataCkEditorData(
+                        planTreeData[1].child[0].child[1].content[0],
+                        $event,
+                      )
+                    "
+                  />
+                  <div class="operation">
+                    <el-button
+                      class="button-Ai"
+                      type="text"
+                      @click.stop="
+                        chatAIChange(
+                          planTreeData[1].child[0].child[1],
+                          planTreeData[1].child[0].child[1].content[0],
+                          6,
+                          '',
+                          '',
+                          $event,
+                        )
+                      "
+                    >
+                      <div class="chatai-btn">
+                        <img
+                          src="../../assets/images/ai/bling_fill.png"
+                          alt="AI备课"
+                        >
+                        <span>
+                          AI
+                        </span>
+                      </div>
+                    </el-button>
+                    <el-button
+                      type="text"
+                      @click="
+                        changeContent(
+                          planTreeData[1].child[0].child[1].content[0],
+                          6,
+                        )
+                      "
+                    >
+                      更换
+                    </el-button>
+                  </div>
+                  <!-- <el-input type="textarea" :rows="5" resize="none" placeholder="请输入内容" v-model="planTreeData[1].child[0].child[1].content[0].content"> </el-input> -->
+                </section>
+                <!-- 
+                <div v-else class="empty-box">
+
+                  <div class="example_empty">
+                    <el-button type="text" icon="el-icon-circle-plus">添加试题7</el-button>
+                  </div>
+
+                </div>-->
+              </div>
+              <div
+                v-show="planTreeData[1].child[0].child[2].isShow === 1"
+                class="textarea"
+              >
+                <div
+                  :id="`t${planTreeData[1].child[0].child[2].id}`"
+                  class="title"
+                >
+                  <h5 class="children-title jxff-title" />
+                  <i
+                    class="iconfont icon-view"
+                    @click="planTreeData[1].child[0].child[2].isShow = 2"
+                  />
+                </div>
+                <section class="edit_container">
+                  <separateSignCkeditor
+                    ref="wordSignEdit8"
+                    editid="wordSignEdit8"
+                    :content="
+                      planTreeData[1].child[0].child[2].content[0].content
+                    "
+                    :showborder="false"
+                    :client-height="400"
+                    @updata-ck-editor-data="
+                      updataCkEditorData(
+                        planTreeData[1].child[0].child[2].content[0],
+                        $event,
+                      )
+                    "
+                  />
+                  <div class="operation">
+                    <el-button
+                      type="text"
+                      @click.stop="
+                        chatAIChange(
+                          planTreeData[1].child[0].child[2],
+                          planTreeData[1].child[0].child[2].content[0],
+                          7,
+                          '',
+                          '',
+                          $event,
+                        )
+                      "
+                    >
+                      <div class="chatai-btn">
+                        <img
+                          src="../../assets/images/ai/bling_fill.png"
+                          alt="AI备课"
+                        >
+                        <span>
+                          AI
+                        </span>
+                      </div>
+                    </el-button>
+
+                    <el-button
+                      type="text"
+                      @click="
+                        changeContent(
+                          planTreeData[1].child[0].child[2].content[0],
+                          7,
+                        )
+                      "
+                    >
+                      更换
+                    </el-button>
+                  </div>
+                  <!-- <el-input type="textarea" :rows="5" resize="none" placeholder="请输入内容" v-model="planTreeData[1].child[0].child[2].content[0].content"> </el-input> -->
+                </section>
+
+                <!-- <div v-else class="empty-box">
+
+                  <div class="example_empty">
+                    <el-button type="text" icon="el-icon-circle-plus">添加试题7</el-button>
+                  </div>
+
+                </div> -->
+              </div>
+            </div>
+          </div>
+          <div
+            v-show="planTreeData[1].child[1].isShow === 1"
+            class="teaching_course design_item"
+          >
+            <div
+              :id="`t${planTreeData[1].child[1].id}`"
+              class="order_title"
+            >
+              <!-- <b></b> -->
+              <span class="jxgc-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[1].child[1].isShow = 2"
+              />
+            </div>
+            <div>
+              <template v-for="(v, i) in planTreeData[1].child[1].child">
+                <div
+                  v-if="v.name === '新课导入'"
+                  v-show="v.isShow === 1"
+                  class="new_lesson textarea"
+                >
+                  <div
+                    :id="`t${v.id}`"
+                    class="title"
+                  >
+                    <h5 class="xkdr-title">
+                      新课导入
+                    </h5>
+                    <i
+                      class="iconfont icon-view"
+                      @click="v.isShow = 2"
+                    />
+                  </div>
+                  <section class="editor">
+                    <separateSignCkeditor
+                      ref="wordSignEdit9"
+                      editid="wordSignEdit9"
+                      :content="v.content[0].content"
+                      :showborder="false"
+                      :client-height="400"
+                      @updata-ck-editor-data="
+                        updataCkEditorData(v.content[0], $event)
+                      "
+                    />
+
+                    <div class="operation">
+                      <el-button
+                        type="text"
+                        @click.stop="
+                          chatAIChange(v, v.content[0], 1, '', '', $event)
+                        "
+                      >
+                        <div class="chatai-btn">
+                          <img
+                            src="../../assets/images/ai/bling_fill.png"
+                            alt="AI备课"
+                          >
+                          <span>
+                            AI
+                          </span>
+                        </div>
+                      </el-button>
+                    </div>
+                    <!-- <div class="operation">
+                               <el-button type="text" @click="changeKnowledgeStructure">更换</el-button>
+                                        </div> -->
+                  </section>
+                </div>
+                <div
+                  v-else
+                  v-show="v.isShow === 1"
+                  class="knowledge textarea"
+                >
+                  <div class="point">
+                    <div
+                      :id="`t${v.id}`"
+                      class="title point_title"
+                    >
+                      <!-- <h4>知识点{{ i + (planTreeData[1].child[1].child[0].name === '新课导入' ? 0 : 1)}}: {{ v.name }}</h4> -->
+                      <div class="knowledge-points">
+                        <h4 class="point-til">
+                          知识点
+                        </h4>
+                        <span class="point-index">{{
+                          //注意：手动备课此处多处一条新课导入，智能备课没有，索引不一致
+                          v.showName ? getKnowledgeNumber(v.showName) : i
+                        }}</span>
+                        {{ v.name }}
+                      </div>
+                      <div
+                        style="margin-left: auto"
+                        class="hover_view"
+                      >
+                        <el-button
+                          type="text"
+                          @click="addExamDirection(v)"
+                        >
+                          新增考向
+                        </el-button>
+                        <i
+                          class="el-icon-delete"
+                          style="margin-left: 12px"
+                          @click="
+                            delItem(
+                              planTreeData[1].child[1].child,
+                              i + 1,
+                              'knowledge',
+                            )
+                          "
+                        />
+                      </div>
+                    </div>
+                    <section v-if="v.child.length">
+                      <section v-show="v.child[0].isShow === 1">
+                        <div class="title">
+                          <h5 class="zssl-title children-title" />
+                          <div class="hover_view">
+                            <!-- <el-button type="text"
+                                                            @click="addMaterial(); setKnowledge(v)">新增素材</el-button> -->
+                            <i
+                              class="iconfont icon-view"
+                              @click="v.child[0].isShow = 2"
+                            />
+                          </div>
+                        </div>
+                        <section class="editor">
+                          <separateSignCkeditor
+                            :ref="'edit' + v.id"
+                            :editid="'edit' + v.id"
+                            :content="v.child[0].content[0].content"
+                            :showborder="false"
+                            :client-height="600"
+                            @updata-ck-editor-data="
+                              updataCkEditorData(v.child[0].content[0], $event)
+                            "
+                          />
+                          <div class="operation">
+                            <el-button
+                              type="text"
+                              @click.stop="
+                                chatAIChange(
+                                  v.child[0],
+                                  v.child[0].content[0],
+                                  1,
+                                  v,
+                                  'zssl',
+                                  $event,
+                                )
+                              "
+                            >
+                              <div class="chatai-btn">
+                                <img
+                                  src="../../assets/images/ai/bling_fill.png"
+                                  alt="AI备课"
+                                >
+                                <span>
+                                  AI
+                                </span>
+                              </div>
+                            </el-button>
+
+                            <el-button
+                              type="text"
+                              @click="
+                                changeContent(v.child[0].content[0], 8)
+                                setKnowledge(v)
+                              "
+                            >
+                              更换
+                            </el-button>
+                          </div>
+                        </section>
+
+                        <!--                             
+            <div  v-show="showC2('edit' + v.id,v.child[0])" class="empty-box">
+
+<div class="example_empty" @click="editAddClick('edit' + v.id)">
+  <el-button type="text" icon="el-icon-circle-plus">添加内容</el-button>
+</div>
+
+</div> -->
+                      </section>
+                      <section
+                        v-for="(y, j) in v.child.slice(1)"
+                        v-show="y.isShow == 1"
+                        :key="j"
+                        class="direction"
+                      >
+                        <div
+                          :id="`t${y.id}`"
+                          class="title"
+                        >
+                          <!-- <div class="dot"></div> -->
+                          <!-- <h4 style="margin: 0 10px;">考向{{j+1}}: {{ y.name }}</h4> -->
+                          <div class="examination-place">
+                            <div class="exam-point">
+                              考向
+                              <span class="exam-index">{{ j + 1 }}</span>
+                            </div>
+                            {{ y.name }}
+                          </div>
+                          <div
+                            v-if="y.catalogueInfo"
+                            class="tag"
+                          >
+                            <span>{{
+                              ['困难', '较难', '中等', '较易', '容易'][
+                                y.catalogueInfo.difficulty - 1
+                              ] || '-'
+                            }}</span>
+                            <span>{{
+                              ['很高', '较高', '中等', '较低', '很低'][
+                                y.catalogueInfo.testFrequency - 1
+                              ] || '-'
+                            }}</span>
+                          </div>
+                          <div class="hover_view">
+                            <el-button
+                              type="text"
+                              @click="
+                                addExampleModule({ ...y, type: 'example' })
+                                setKnowledge(y)
+                              "
+                            >
+                              新增例题
+                            </el-button>
+                            <i
+                              class="el-icon-delete"
+                              @click="delItem(v.child, j + 1, 'point')"
+                            />
+                          </div>
+                        </div>
+                        <section>
+                          <div
+                            v-show="y.child[0] && y.child[0].isShow === 1"
+                            class="textarea"
+                          >
+                            <div class="title">
+                              <h5 class="children-title jftj-title" />
+                              <i
+                                class="iconfont icon-view"
+                                @click="y.child[0].isShow = 2"
+                              />
+                            </div>
+                            <section class="editor">
+                              <separateSignCkeditor
+                                :ref="'edit' + y.id"
+                                :editid="'edit' + y.id"
+                                :content="
+                                  y.child[0] && y.child[0].content[0]
+                                    ? y.child[0].content[0].content
+                                    : ''
+                                "
+                                :showborder="false"
+                                :client-height="400"
+                                @updata-ck-editor-data="
+                                  updataCkEditorData(
+                                    y.child[0].content[0],
+                                    $event,
+                                  )
+                                "
+                              />
+
+                              <div class="operation">
+                                <el-button
+                                  type="text"
+                                  @click.stop="
+                                    chatAIChange(
+                                      y.child[0],
+                                      y.child[0].content[0],
+                                      10,
+                                      y,
+                                      'jftj',
+                                      $event,
+                                    )
+                                  "
+                                >
+                                  <div class="chatai-btn">
+                                    <img
+                                      src="../../assets/images/ai/bling_fill.png"
+                                      alt="AI备课"
+                                    >
+                                    <span>
+                                      AI
+                                    </span>
+                                  </div>
+                                </el-button>
+                              </div>
+
+                              <!-- <div class="operation">
+                                                                <i class="el-icon-delete" @click="delItem(y.children, 0)"></i></template>
+                                                                <el-button type="text" @click="changeKnowledgeStructure">更换</el-button>
+                                                            </div> -->
+                            </section>
+                          </div>
+                          <template v-for="(a, b) in y.child.slice(1)">
+                            <div
+                              v-show="a.isShow == 1"
+                              :id="`t${a.id}`"
+                              :key="a.id"
+                              class="example textarea"
+                            >
+                              <div class="title">
+                                <!-- <span class="iconfont icon-tag_2_fill"></span> -->
+                                <!-- <h5>例题{{ b + 1 }}</h5> -->
+                                <h5 class="example-question">
+                                  例题
+                                </h5>
+                                <div class="hover_view">
+                                  <el-button
+                                    type="text"
+                                    @click="
+                                      changeExampleModule(a)
+                                      setKnowledge(y)
+                                    "
+                                  >
+                                    更换碎片
+                                  </el-button>
+                                  <!-- <el-button type="text"><i class="el-icon-top"></i></template></el-button>
+                                                                    <el-button type="text"><i class="el-icon-bottom"></i></template></el-button> -->
+                                  <i
+                                    class="el-icon-delete"
+                                    @click="delItem(y.child, b + 1)"
+                                  />
+                                </div>
+                              </div>
+                              <section class="">
+                                <question
+                                  v-if="
+                                    a.content[0] &&
+                                      a.content[0].generalQuestionVo &&
+                                      a.content[0].generalQuestionVo.questionId
+                                  "
+                                  type="1"
+                                  :sort="true"
+                                  :info="a.content[0].generalQuestionVo"
+                                  :defaul-expand="true"
+                                  :total-num="1"
+                                  :btn-flag="'例题'"
+                                  @change="changeExample(a.content, 0, $event)"
+                                  @ques-set="
+                                    quesSetExam(a.content, a, b, $event)
+                                  "
+                                />
+                                <div
+                                  v-else
+                                  class="example_empty"
+                                >
+                                  <el-button
+                                    type="text"
+                                    icon="el-icon-circle-plus"
+                                    @click="
+                                      addQuestion(a.content[0])
+                                      setKnowledge(y)
+                                    "
+                                  >
+                                    添加例题
+                                  </el-button>
+                                </div>
+                                <template v-for="(c, d) in a.child">
+                                  <div
+                                    v-show="c.isShow == 1"
+                                    :id="`t${c.id}`"
+                                    :key="c.id"
+                                    class="textarea"
+                                  >
+                                    <div class="title">
+                                      <h5 class="practice-title">
+                                        {{ c.name }}
+                                      </h5>
+                                      <div class="hover_view">
+                                        <el-button
+                                          type="text"
+                                          @click="
+                                            addQuestion(
+                                              a.child[d].content,
+                                              a.child[d].id,
+                                            )
+                                            setKnowledge(y)
+                                          "
+                                        >
+                                          新增试题
+                                        </el-button>
+                                        <!-- <i
+                                          class="el-icon-delete"
+                                          @click="delItem(a.child, d, 'child')"
+                                        ></i></template> -->
+                                      </div>
+                                    </div>
+                                    <section class="">
+                                      <div
+                                        v-for="(item, index) in c.content"
+                                        :key="index"
+                                      >
+                                        <question
+                                          v-if="
+                                            item.generalQuestionVo &&
+                                              Object.keys(
+                                                item.generalQuestionVo,
+                                              ).length > 0
+                                          "
+                                          :btn-flag="c.name"
+                                          :sort="true"
+                                          type="1"
+                                          :index="index + 1"
+                                          :info="item.generalQuestionVo"
+                                          :total-num="c.content.length"
+                                          @change="
+                                            changeQuestion(
+                                              c.content,
+                                              index,
+                                              c,
+                                              $event,
+                                            )
+                                          "
+                                          @ques-set="
+                                            quesSet(
+                                              item,
+                                              c.content,
+                                              c,
+                                              d,
+                                              a,
+                                              y,
+                                              b,
+                                              index,
+                                              $event,
+                                            )
+                                          "
+                                        />
+                                        <div v-else>
+                                          <div class="example_empty">
+                                            <el-button
+                                              type="text"
+                                              icon="el-icon-circle-plus"
+                                              @click="addQuestion(item, '')"
+                                            >
+                                              添加试题
+                                            </el-button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </section>
+                                  </div>
+                                  <!-- <div class="textarea" v-if="c.name === '课后作业'">
+                                                                        <div class="title">
+                                                                            <h5>课后作业</h5>
+                                                                            <div class="hover_view">
+                                                                                <el-button type="text" @click="addQuestion(a.child[d].content)">新增试题</el-button>
+                                                                                <i class="el-icon-delete" @click="delItem(a.child, d+1)"></i></template>
+                                                                            </div>
+                                                                        </div>
+                                                                        <section class="">
+                                                                            <div v-for="(item,index) in c.content" :key="index">
+                                                                                <question type='1' :info="item.generalQuestionVo"  @change="changeQuestion(c.content, index, $event)"/>
+                                                                            </div>
+                                                                        </section>
+                                                                    </div> -->
+                                </template>
+                              </section>
+                            </div>
+                          </template>
+                        </section>
+                      </section>
+                    </section>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+          <div
+            v-show="planTreeData[1].child[2].isShow === 1"
+            class="teaching_summary design_item"
+          >
+            <div
+              id="t30"
+              class="order_title"
+            >
+              <!-- <b></b> -->
+              <span class="jxzj-title" />
+              <i
+                class="iconfont icon-view"
+                @click="planTreeData[1].child[2].isShow = 2"
+              />
+            </div>
+            <!-- <div>
+                            <el-input type="textarea" :rows="5" resize="none" placeholder="请输入内容"
+                                v-model="planTreeData[1].child[2].content[0].content"></el-input>
+                        </div> -->
+            <div class="edit_container  summary-box">
+              <separateSignCkeditor
+                ref="wordSignEditx1"
+                editid="wordSignEditx1"
+                :content="planTreeData[1].child[2].content[0].content"
+                :showborder="false"
+                :client-height="600"
+                @updata-ck-editor-data="
+                  updataCkEditorData(
+                    planTreeData[1].child[2].content[0],
+                    $event,
+                  )
+                "
+              />
+              <div class="operation">
+                <el-button
+                  type="text"
+                  @click.stop="
+                    chatAIChange(
+                      planTreeData[1].child[2],
+                      planTreeData[1].child[2].content[0],
+                      12,
+                      '',
+                      '',
+                      $event,
+                    )
+                  "
+                >
+                  <div class="chatai-btn">
+                    <img
+                      src="../../assets/images/ai/bling_fill.png"
+                      alt="AI备课"
+                    >
+                    <span>
+                      AI
+                    </span>
+                  </div>
+                </el-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="holder">
+        <transition name="el-fade-in-linear">
+          <div
+            v-show="!showStyleSet"
+            class="style-set"
+            @click="showStyleSet = true"
+          >
+            样式设置
+          </div>
+        </transition>
+
+        <transition name="el-fade-in-linear">
+          <div
+            v-show="showStyleSet"
+            class="template-box"
+          >
+            <div class="template-head">
+              <div class="template-til">
+                <b />样式设置
+              </div>
+              <span
+                class="close-btn el-icon-close"
+                @click="showStyleSet = false"
+              />
+            </div>
+            <ul class="template-list">
+              <li
+                v-for="(item, index) in templateList"
+                :key="index"
+                :class="['template-item', selectIndex == index ? 'active' : '']"
+                @click="selectTemplate(index)"
+              >
+                <div class="template-img">
+                  <img
+                    :src="item.imgUrl"
+                    :alt="item.name"
+                  >
+                  <i class="el-icon-success select-icon" />
+                </div>
+                <div class="template-name">
+                  {{ item.name }}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </transition>
+      </div>
+      <!-- 这个是教案结构 -->
+      <tree
+        v-model="examinationDirectionVisible"
+        :ids="versionData.knowLedgeList"
+        :lesson-info-id="info.id"
+        @submit="submitExaminationDirection"
+        @select-grade="selectGrade"
+      />
+      <!-- 这个是多媒体 -->
+      <knowledgeBase
+        v-model="knowledgeBaseVisible"
+        :type="changeType"
+        @select="selectKnowledge"
+        @knowledge-error-click="knowledgeReport"
+      />
+      <!-- 这个是知识点 -->
+      <questionBase
+        v-model="questionBaseVisible"
+        :select-questions="selectQuestionsList"
+        @select="selectQuestion"
+      />
+      <!-- 这个是试卷 -->
+      <changeQuestion
+        v-model="changeQuestionVisible"
+        :current-obj="currentObj"
+        @select="selectQuestion"
+      />
+      <!-- 这个是基础 -->
+      <exampleBase
+        v-model="exampleBaseVisible"
+        @select="selectExample"
+      />
+      <!-- 这个是重点 -->
+      <multimediaBase v-model="multimediaBaseVisible" />
+      <!-- 这个是上传 -->
+      <download
+        v-model="downloadVisible"
+        :info="info"
+      />
+      <!-- 这个是考向 -->
+      <examDirection
+        v-model="examDirectionVisible"
+        :info="currentObj"
+        :point-list="pointList"
+        @on-point="onPointChange"
+      />
+      <!-- 这个是报错 -->
+      <reportDialog ref="reportDialog" />
+
+      <reportKnowledgeError
+        ref="konwledegError"
+        :change-type-val="changeType"
+      />
+
+      <inputChat
+        v-if="chatAiVisible"
+        ref="popoverBox"
+        v-model="chatAiVisible"
+        :x="popoverX"
+        :y="popoverY"
+        :cur-chat-parent="curChatParent"
+        @close="chatAiVisible = false"
+        @on-chat="onSelectAi"
+      />
+    </div>
+    <div style="height: 60px" />
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import separateSignCkeditor from '@/components/CkeditorText/separate-sign-ckeditor.vue'
+import question from './components/question.vue'
+import knowledgeBase from './components/knowledgeBase.vue'
+import exampleBase from './components/exampleBase.vue'
+import questionBase from './components/questionBase.vue'
+import changeQuestion from './components/changeQuestion.vue'
+import multimediaBase from './components/multimediaBase.vue'
+import tree from './components/tree.vue'
+import download from './components/download.vue'
+import examDirection from './components/examDirection.vue'
+import reportDialog from '@/components/ReportDialog/ReportDialog.js'
+
+import reportKnowledgeError from './components/reportKnowledgeError.vue'
+
+import inputChat from './components/inputChat.js'
+import mixin from './components/mixin.js'
+// import 'element-ui/lib/theme-chalk/base.css';
+// import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
+export default {
+  components: {
+    separateSignCkeditor,
+    question,
+    knowledgeBase,
+    tree,
+    questionBase,
+    changeQuestion,
+    exampleBase,
+    multimediaBase,
+    download,
+    examDirection,
+    reportDialog,
+    reportKnowledgeError,
+    inputChat,
+  },
+  mixins: [mixin],
+  computed: {
+    ...mapState(['currSubject']),
+
+    // hasData1() {r
+    //   // 计算属性会自动追踪依赖的数据变化
+    //   return (
+    //     this.planTreeData&&
+    //     this.planTreeData[0]&&
+    //     this.planTreeData[0].content&&
+    //     this.planTreeData[0].content[0]&&
+    //     this.planTreeData[0].content[0].content
+    //   );
+    // },
+    // show1(){
+    //   return this.hasData1 || this.wordSignEdit1Flag;
+    // },
+
+    // showC(){
+    //   return (editor, val) => {
+    //   let flag = editor + "Flag";
+    //   return (
+    //     val &&
+    //     val.content &&
+    //     val.content[0] &&
+    //     val.content[0].content
+    //   ) || this[flag]; // 访问 this[flag] 以获取动态属性
+    // };
+    // },
+
+    // showC2(){
+    //   return (editor, val) => {
+    //   return (
+    //     val &&
+    //     val.content &&
+    //     val.content[0] &&
+    //     !val.content[0].content
+    //   )
+    //   }
+    // },
+  },
+  provide() {
+    return {
+      app: this,
+      treeSelectInfo: () => this.treeSelectInfo,
+    }
+  },
+  data() {
+    return {
+      showTab: false, //是否展示顶部tab切换
+      templateList: [
+        {
+          name: '样式一',
+          className: 'style-one',
+          imgUrl: require('@/assets/images/template/template_one.png'),
+        },
+        {
+          name: '样式二',
+          className: 'style-two',
+          imgUrl: require('@/assets/images/template/template_two.png'),
+        },
+        {
+          name: '样式三',
+          className: 'style-three',
+          imgUrl: require('@/assets/images/template/template_three.png'),
+        },
+        {
+          name: '样式四',
+          className: 'style-four',
+          imgUrl: require('@/assets/images/template/template_four.png'),
+        },
+        {
+          name: '样式五',
+          className: 'style-five',
+          imgUrl: require('@/assets/images/template/template_five.png'),
+        },
+        {
+          name: '样式六',
+          className: 'style-six',
+          imgUrl: require('@/assets/images/template/template_six.png'),
+        },
+      ],
+      treeSelectInfo: {},
+      showStyleSet: false,
+      selectIndex: 0,
+      themeStyleName: 'style-one',
+      currentEditor: null,
+      defaultProps: {
+        children: 'child',
+        label: 'name',
+      },
+      outlineVisible: true,
+      planTreeData: [],
+      knowledgeBaseVisible: false,
+      examinationDirectionVisible: false,
+      changeType: 0,
+      questionBaseVisible: false,
+      changeQuestionVisible: false,
+      exampleBaseVisible: false,
+      multimediaBaseVisible: false,
+      downloadVisible: false,
+      type: '',
+      currentObj: {},
+      info: {},
+      lessonCondition: {},
+      versionData: {},
+      currentId: '',
+      currentKnowledge: {},
+      reviseVisible: false,
+      requestNum: 0,
+      requestDone: 0,
+      requestLoading: false,
+      examDirectionVisible: false,
+      showType: '1', // 1 教学设计 2预习学案
+      selectQuestionsList: [], //已选择的试题，用去筛选新增试题列表
+      pointList: [],
+
+      wordSignEdit1Flag: true,
+      wordSignEdit2Flag: false,
+      wordSignEdit3Flag: true,
+      wordSignEdit4Flag: true,
+      wordSignEdit5Flag: true,
+      wordSignEdit6Flag: true,
+      wordSignEdit7Flag: true,
+      wordSignEdit8Flag: true,
+
+      popoverX: 1,
+      popoverY: 1,
+      curChatParent: {},
+      curKonwledgeList: [],
+      chatAiVisible: false,
+    }
+  },
+  watch: {
+    showType(val) {
+      window.scrollTo(0, 0)
+    },
+    questionBaseVisible(newVal) {
+      if (newVal) {
+        this.selectQuestionsList = this.questionList()
+      }
+    },
+    selectIndex(newVal) {
+      this.themeStyleName = this.templateList[newVal].className
+    },
+  },
+
+  mounted() {
+    this.reviseVisible = !!this.$route.query.revise
+    this.$store.dispatch('getVersionGrade', { vm: this, reload: true })
+    this.type = this.$route.query.type || 1
+    this.showType = this.type == 1 ? '2' : '1'
+    // if(this.type) {
+    //     this.planTreeData[0] = [{label: '知识结构', visible: true, anchor: 't01'}]
+    // }
+    // this.getTemplateData()
+
+    this.getLessonDetail().then(() => {
+      this.$nextTick(() => {
+        if (this.$route.query.manual) {
+          this.examinationDirectionVisible = true
+        }
+      })
+    })
+
+    this.Bus.$on('referenceError', info => {
+      this.$nextTick(() => {
+        this.$refs.reportDialog && this.$refs.reportDialog.showDialog(info)
+      })
+    })
+
+    document.addEventListener('click', this.handleClickOutside)
+    window.addEventListener('wheel', this.handleScroll)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
+    window.removeEventListener('wheel', this.handleScroll)
+    this.chatAiVisible = false
+  },
+  methods: {
+    knowledgeReport(val) {
+      this.$refs.konwledegError && this.$refs.konwledegError.showDialog(val)
+    },
+    //获取试题列表
+    questionList() {
+      const getQuestionUuids = nodes => {
+        let uuids = []
+        if (!nodes) return uuids
+
+        nodes.forEach(node => {
+          // 检查节点级别的 childRule
+          if (node.childRule && node.childRule.defaultDataType === 2) {
+            // 处理当前节点的 content
+            if (node.content) {
+              uuids = uuids.concat(
+                node.content
+                  .filter(
+                    item =>
+                      item.generalQuestionVo &&
+                      item.generalQuestionVo.questionId,
+                  )
+                  .map(item => item.generalQuestionVo.questionId),
+              )
+            }
+          }
+
+          // 递归处理子节点
+          if (node.child && node.child.length) {
+            uuids = uuids.concat(getQuestionUuids(node.child))
+          }
+        })
+
+        return uuids
+      }
+
+      return getQuestionUuids(this.info.outline || [])
+    },
+
+    getKnowledgeNumber(str) {
+      const regex = /知识点(\d+):/
+      const match = str.match(regex)
+      return match ? match[1] : ''
+    },
+    quesSetExam(item, a, b, flag) {
+      if (flag === 'out') {
+        // 设为课外
+        const target1 = a.child.find(i => {
+          return i.name.includes('课后作业')
+        })
+        if (target1) {
+          target1.content = target1.content || []
+          if (target1.content.length === 1) {
+            const firstItem = target1.content[0]
+            if (
+              !firstItem.generalQuestionVo ||
+              Object.keys(firstItem.generalQuestionVo).length === 0
+            ) {
+              firstItem.generalQuestionVo = item[0].generalQuestionVo
+            } else {
+              target1.content.push(item[0])
+            }
+          } else {
+            target1.content.push(item[0])
+          }
+        }
+      }
+      if (flag === 'inner') {
+        const target2 = a.child.find(i => {
+          return i.name.includes('课内练习')
+        })
+
+        target2.content = target2.content || []
+        if (target2.content.length === 1) {
+          const firstItem = target2.content[0]
+          if (
+            !firstItem.generalQuestionVo ||
+            Object.keys(firstItem.generalQuestionVo).length === 0
+          ) {
+            firstItem.generalQuestionVo = item[0].generalQuestionVo
+          } else {
+            target2.content.push(item[0])
+          }
+        } else {
+          target2.content.push(item[0])
+        }
+      }
+      this.$set(item, 0, { ...item[0], generalQuestionVo: {} }) // 清空例题的数据
+      // a.content.splice(0, 1);
+    },
+    quesSet(item, t, c, d, a, y, b, index, flag) {
+      if (flag == 'example') {
+        // 设为例题
+        a.content.splice(0, 1, item) // 替换例题项
+      }
+      if (flag === 'out') {
+        // 设为课外
+        const target1 = a.child.find(i => {
+          return i.name.includes('课后作业')
+        })
+        // if (target1) {
+        //   if (target1.content) {
+        //     target1.content.push(item)
+        //   } else {
+        //     this.$set(target1, 'content', [item])
+        //   }
+        // }
+
+        target1.content = target1.content || []
+        if (target1.content.length === 1) {
+          const firstItem = target1.content[0]
+          if (
+            !firstItem.generalQuestionVo ||
+            Object.keys(firstItem.generalQuestionVo).length === 0
+          ) {
+            firstItem.generalQuestionVo = item.generalQuestionVo
+          } else {
+            target1.content.push(item)
+          }
+        } else {
+          // this.$set(target1, 'content', [item])
+          target1.content.push(item)
+        }
+      }
+      if (flag == 'inner') {
+        const target2 = a.child.find(i => {
+          return i.name.includes('课内练习')
+        })
+
+        if (target2) {
+          // if (target2.content) {
+          //   target2.content.push(item)
+          // } else {
+          //   this.$set(target2, 'content', [item])
+          // }
+
+          target2.content = target2.content || []
+          if (target2.content.length === 1) {
+            const firstItem = target2.content[0]
+            if (
+              !firstItem.generalQuestionVo ||
+              Object.keys(firstItem.generalQuestionVo).length === 0
+            ) {
+              firstItem.generalQuestionVo = item.generalQuestionVo
+            } else {
+              target2.content.push(item)
+            }
+          } else {
+            target2.content.push(item)
+          }
+        }
+      }
+      // 删除当前项
+      if (c.content.length === 1) {
+        this.$set(c.content, 0, { ...c.content[0], generalQuestionVo: {} })
+      } else {
+        c.content.splice(index, 1)
+      }
+    },
+    //选择模版样式
+    selectTemplate(index) {
+      this.selectIndex = index
+    },
+    aiGeneration() {
+      if (this.requestLoading) {
+        return this.$message.warning('正在生成中')
+      }
+      this.requestDone = 0
+      this.requestLoading = true
+      this.generationFn()
+    },
+    generationFn(arr = this.planTreeData, parent) {
+      arr.forEach(item => {
+        item.pNmae = parent ? parent.name : ''
+        this.getGenerationData(item)
+        item.child.length && this.generationFn(item.child, item)
+      })
+    },
+    getGenerationData(v) {
+      let knamesStr = (this.curKonwledgeList || [])
+        .map(item => item.name)
+        .join(',') // 知识点名字
+      if (
+        /(知识结构|预习目标|预习任务|教学目标|重点难点|教学方法|新课导入|知识梳理|解法探究|教学总结)/i.test(
+          v.name,
+        )
+      ) {
+        // const str = `生成${this.currSubject.periodName}${this.currSubject.subjectName}知识点点为${this.currentKnowledge.name}200字左右的${v.name}备课内容`
+        const str = this.demand(
+          v.name,
+          /(知识梳理|解法探究)/.test(v.name) ? v.pNmae : knamesStr,
+        )
+        this.newPost(
+          { urlPath: '/lesson-app/douBao/questionsAnswerDialogue' },
+          str,
+        )
+          .then(res => {
+            res.data && (v.content[0].content = res.data)
+            if (res.data) {
+              // v.content[0].content = res.data.split('---')[1]
+              v.content[0].content = v.content[0].content.replace(/\n/g, '<br>')
+              if (v.name !== '教学总结') {
+              }
+            }
+          })
+          .finally(() => {
+            this.requestDone++
+            this.requestLoading = this.requestDone < this.requestNum
+          })
+      }
+    },
+    demand(type, v) {
+      console.log(this.currSubject)
+      // {this.currSubject.periodName}${this.currSubject.subjectName}
+      const subjectName = this.currSubject.subjectName
+      const stageName = this.currSubject.periodName
+      const obj = {
+        知识结构: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【知识结构】。
+                    # 功能(Skills) 生成一份关于【xx】知识点的【知识结构】。
+                    # 限制(Constraint)
+                    - 结构图应该简洁清晰，有明显的层级。
+                    - 最末级层级不需要有解释内容。
+                    - 层级不超过三级。
+                    # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        预习目标: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【预习目标】。
+                    # 功能(Skills) 生成一份关于【xx】知识点的【预习目标】。
+                    # 限制(Constraint)
+                    - 预习目标应该分为知识认知目标、技能掌握目标、思维启发目标。
+                    - 每个里面不要超过三条。
+                    - 不要生成与预习目标无关内容。
+                    - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                    - 任何时候都不能出现高中或大学才学习到的知识或符号。
+                    # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        预习任务: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【预习任务】。
+                    # 功能(Skills) 生成一份关于【xx】知识点的【预习任务】。
+                    # 限制(Constraint)
+                    - 预习任务应该符合学生自主学习的习惯
+                    - 不要生成与预习任务无关内容。
+                    - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                    - 任何时候都不能出现高中或大学才学习到的知识或符号。
+                    # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        教学目标: `# 角色(Role) 你是一位资深的${stageName}${subjectName}老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【教学目标】。
+                    # 功能(Skills) 生成一份关于【xx】知识点的【教学目标】。
+                    # 限制(Constraint)
+                    - 教学目标应该分为知识与技能目标、过程与方法目标、情感态度与价值观目标。
+                    - 每个里面不要超过三条。
+                    - 不要生成与教学目标无关内容。
+                    - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                    - 任何时候都不能出现高中或大学才学习到的知识或符号。
+                    # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        重点难点: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【重点难点】。
+                    # 功能(Skills) 生成一份关于【xx】知识点的【重点难点】。
+                    # 限制(Constraint)
+                    - 重点难点应该分开逐条说明。
+                    - 每个里面不要超过三条。
+                    - 不要生成与重点难点无关内容。
+                    - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                    - 任何时候都不能出现高中或大学才学习到的知识或符号。
+                    # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        教学方法: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【教学方法】。
+                    # 功能(Skills) 生成一份关于【xx】知识点的【教学方法】。
+                    # 限制(Constraint)
+                    - 简要概述老师上课讲授所需要用到的方法。
+                    - 不要生成与教学方法无关内容。
+                    - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                    - 任何时候都不能出现高中或大学才学习到的知识或符号。
+                    # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        新课导入: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【新课导入】。
+
+                    # 功能(Skills) 生成一份关于【xx】知识点的【新课导入】。
+
+                    # 限制(Constraint)
+                    - 新课导入内容应符合初中数学的上课习惯。
+                    - 不要生成与新课导入无关内容。
+                    - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                    - 任何时候都不能出现高中或大学才学习到的知识或符号。
+
+                 # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        知识梳理: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【知识梳理】。                        
+                
+                  # 功能(Skills) 生成一份关于【xx】知识点的【知识梳理】。
+
+                  # 限制(Constraint)
+                  - 知识梳理内容应符合初中数学学生的上课习惯。
+                  - 知识梳理应当把这个知识点下学生需要掌握的内容有条理的罗列清楚。
+                  - 不要生成与知识梳理无关内容。
+                  - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                  - 任何时候都不能出现高中或大学才学习到的知识或符号。
+
+                  # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        解法探究: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【解法探究】。
+
+                  # 功能(Skills) 生成一份关于【xx】知识点的【解法探究】。
+
+                  # 限制(Constraint)
+                  - 以老师的身份总结这个所学的知识点。
+                  - 不要生成与教学总结无关内容。
+                  - 内容应当简短、凝练，不要过度展开。
+                  - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                  - 任何时候都不能出现高中或大学才学习到的知识或符号。
+
+                  # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+        教学总结: `# 角色(Role) 你是一位资深的【${stageName}】【${subjectName}】老师，能够快速理清【${stageName}】【${subjectName}】各个知识点的【教学总结】。
+
+                  # 功能(Skills) 生成一份关于【xx】知识点的【教学总结】。 
+
+                  # 限制(Constraint)
+                  - 以老师的身份总结这个所学的知识点。
+                  - 不要生成与教学总结无关内容。
+                  - 内容应当简短、凝练，不要过度展开。
+                  - 内容要做到专业、简洁、通顺、清晰，符合人类的阅读习惯。
+                  - 任何时候都不能出现高中或大学才学习到的知识或符号。
+
+                  # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现。`,
+      }
+
+      return obj[type].replace('xx', v)
+    },
+    bb(v) {
+      localStorage.setItem('bb', JSON.stringify(v))
+    },
+    getLessonDetail() {
+      return new Promise((resolve, reject) => {
+        const data = {
+          lessonId:
+            this.$route.query.id || '010b1830-0cc4-2182-a198-041405116418',
+          lessonType: this.$route.query.type || 1,
+          source: this.$route.query.source || 2,
+        }
+        this.apiPost({ urlPath: '/lesson-app/myLesson/lessonDetail' }, data, {
+          showLoading: true,
+        }).then(res => {
+          if (res.code !== 200) return
+          this.selectIndex = res.data.style ? res.data.style * 1 : 0
+
+          this.showTab = res.data.lessonType == 1
+          if (
+            res.data.stageId !== this.currSubject.periodCode ||
+            res.data.subjectId !== this.currSubject.subjectCode
+          ) {
+            this.$router.replace(
+              `/manualPrepare?type=${this.$route.query.type}`,
+            )
+            return
+          }
+          this.apiGet(
+            { urlPath: '/lesson-app/lessonApp/getLessonCondition' },
+            { lessonInfoId: res.data.id },
+          ).then(res => {
+            if (res.code === 200) {
+              if (res.data && res.data.details) {
+                console.log(JSON.parse(res.data.details))
+                this.lessonCondition = res.data
+                this.versionData = JSON.parse(res.data.details)
+                this.currentKnowledge = this.versionData.knowLedgeList[0]
+                this.curKonwledgeList = this.versionData.knowLedgeList || []
+              } else {
+                this.lessonCondition = {}
+                this.versionData = {}
+                this.currentKnowledge = {}
+              }
+            }
+            resolve(1)
+          })
+          let requestNum = 0
+          function format(arr) {
+            arr.forEach(item => {
+              if (
+                [
+                  '教学规划',
+                  '教学目标',
+                  '重点难点',
+                  '教学方法',
+                  '教学过程',
+                  '新课导入',
+                  '知识梳理',
+                  '解法探究',
+                  '教学总结',
+                ].includes(item.name)
+              ) {
+                item.icon = 'view'
+              }
+              if (
+                /(知识结构|预习目标|预习任务|教学目标|重点难点|教学方法|新课导入|知识梳理|解法探究|教学总结)/i.test(
+                  item.name,
+                )
+              ) {
+                requestNum++
+              }
+              // if(/[知识点|考向|课后作业|课内练习|例题]/.test(item.name)) {
+              //     item.icon = 'del'
+              // }
+              item.icon = item.icon || 'del'
+              if (item.content && !item.content.length) {
+                item.content = [
+                  {
+                    content: '',
+                    lessonInfoId: item.lessonInfoId,
+                    lessonOutlineId: item.id,
+                  },
+                ]
+              }
+              item.content.forEach(v => {
+                let type = 1
+                if (
+                  /(知识结构|预习目标|预习任务|预习填空|教学目标|重点难点|教学方法|新课导入|解法探究|教学总结)/i.test(
+                    item.name,
+                  )
+                ) {
+                  type = 2
+                }
+                if (item.name === '知识梳理') {
+                  type = 3
+                }
+                // if(/(例题)/i.test(item.name)) {
+                //     type = 4
+                // }
+                delete v.questionVo
+                v.sourceType = v.sourceType || type
+              })
+              // if (/(基础检测|拔高检测)/i.test(item.name)) {
+              //     item.content = item.content.filter(v => v.generalQuestionVo)
+              //     console.log(item.content)
+              // }
+              if (item.child && item.child.length) {
+                format(item.child)
+              }
+            })
+          }
+          format(res.data.outline)
+          this.requestNum = requestNum
+          this.info = res.data
+          this.planTreeData = res.data.outline
+          // console.log(this.planTreeData.at(-1))
+          // console.log(this.planTreeData[0].child[0])
+        })
+      })
+    },
+    getTemplateData() {
+      const data = {
+        configType: 1,
+        knowLedgeList: [
+          {
+            children: [
+              {
+                children: [{}],
+                id: '02071810-0cc9-fc9c-f780-082760552448',
+                importance: 1,
+                name: '概率与方程的综合',
+                questionConfigList: [
+                  {
+                    afterClassQuestion: [
+                      {
+                        count: 2,
+                        difficulty: 1,
+                        quesType: 121211,
+                      },
+                    ],
+                    inClassQuestion: [
+                      {
+                        count: 2,
+                        difficulty: 1,
+                        quesType: 121211,
+                      },
+                    ],
+                    questionExample: {
+                      count: 1,
+                      difficulty: 1,
+                      quesType: 121211,
+                    },
+                  },
+                ],
+                type: 2,
+              },
+            ],
+            id: '02071810-0cc9-fc9c-f780-082760552448',
+            importance: 1,
+            name: '单元综合',
+            questionConfigList: [],
+            type: 1,
+          },
+        ],
+        stage: '12',
+        subject: '9912',
+        suitType: 2,
+        type: 2,
+      }
+      this.newPost(
+        { urlPath: '/lesson-app/smartLesson/smartGenerate' },
+        data,
+      ).then(res => {})
+    },
+    toggleNode(v, node) {
+      v.isShow = v.isShow === 1 ? 2 : 1
+      // 递归更新所有子节点的 isShow
+      const updateChildren = (nodes, isShow) => {
+        if (!nodes || !nodes.length) return
+        nodes.forEach(item => {
+          item.isShow = isShow
+          if (item.child && item.child.length) {
+            updateChildren(item.child, isShow)
+          }
+        })
+      }
+      // 递归调用
+      if (v.child && v.child.length) {
+        updateChildren(v.child, v.isShow)
+      }
+    },
+    filterNode(value, data) {
+      console.log(data.del)
+      console.log(!data.del, data.label)
+      return !data.del
+    },
+    async delNode(v, y) {
+      const index = y.parent.data.child.findIndex(item => item.name === v.name)
+      y.parent.data.child.splice(index, 1)
+      await this.save()
+      await this.getLessonDetail()
+
+      // v.del = true
+      // this.$refs.tree.filter();
+    },
+    hideItem(v, i) {
+      // this.$set(v, i, {...v[i], del: true})
+      // this.$refs.tree.filter();
+      v.splice(i, 1)
+    },
+    async delItem(v, i, flag) {
+      if (flag && flag == 'knowledge') {
+        const newArr = v.slice(0, i - 1).concat(v.slice(i)) || []
+        this.$set(this.planTreeData[1].child[1], 'child', newArr)
+        await this.save()
+        await this.getLessonDetail()
+      } else if (flag && flag == 'point') {
+        v.splice(i, 1)
+        await this.save()
+        await this.getLessonDetail()
+      } else {
+        v.splice(i, 1)
+      }
+    },
+    handleNodeClick(v) {
+      // console.log(v)
+      const dom = document.getElementById(`t${v.id}`)
+      // dom&&dom.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
+      dom &&
+        window.scrollTo({
+          top: dom.getBoundingClientRect().top + window.scrollY - 60,
+          behavior: 'smooth',
+        })
+    },
+    aa(a, b) {
+      console.log(a, b)
+    },
+    setKnowledge(v) {
+      this.currentKnowledge = {
+        ...v,
+        id: v.chapterCode,
+      }
+    },
+    addExaminationDirection() {
+      if (!this.verify()) return
+      this.save()
+      this.examinationDirectionVisible = true
+    },
+    updataCkEditorData(v, str) {
+      v.content = str
+      // console.log(this.$refs.wordSignEdit.resultCkEditorData())
+    },
+
+    handleScroll(event) {
+      this.chatAiVisible = false
+    },
+    handleClickOutside(event) {
+      const popoverEl =
+        (this.$refs.popoverBox && this.$refs.popoverBox.$el) ||
+        this.$refs.popoverBox
+      if (popoverEl && popoverEl.contains(event.target)) {
+        return
+      }
+      this.chatAiVisible = false
+    },
+    changeShow(editor) {
+      let flag = editor + 'Flag'
+      this[flag] = false
+    },
+    editAddClick(editor) {
+      let flag = editor + 'Flag'
+      this[flag] = true
+      this.$set(this, flag, true)
+
+      if (Array.isArray(this.$refs[editor]) && this.$refs[editor][0]) {
+        this.$refs[editor][0].editorClick()
+      } else {
+        this.$refs[editor].editorClick()
+      }
+
+      // this.wordSignEdit2Flag = true
+      // this.$refs[editor] && this.$refs[editor].editorClick()
+    },
+
+    getContent(content) {
+      if (content) {
+        content = content.replace(/(\r?\n)+/g, '<br/>')
+        return content
+      }
+    },
+
+    // 单个生成方式
+    async createContent(str) {
+      try {
+        const res = await this.newPost(
+          { urlPath: '/lesson-app/douBao/questionsAnswerDialogue' },
+          str,
+        )
+        if (res.code == 200) {
+          return this.getContent(res.data) || ''
+        } else {
+          this.$message.error(res.msg)
+          return ''
+        }
+      } catch (error) {
+        console.error('请求失败:', error)
+        return ''
+      }
+    },
+
+    async onSelectAi(val) {
+      const curParent = this.curChatParent
+      const curContent = this.currentObj.content
+      let knamesStr = (this.curKonwledgeList || [])
+        .map(item => item.name)
+        .join(',') // 知识点名字
+      if (this.curChatOuter && /(知识梳理|解法探究)/.test(curParent.name)) {
+        knamesStr = this.curChatOuter.name
+      }
+      let str = this.demand(curParent.name, knamesStr)
+      str += `
+        # 现有内容为 【${curContent}】 
+        # 请根据要求 【${val}】 
+        # 输出(Output) - 合理运用 markdown 格式，将你的回复进行结构化呈现
+        `
+      if (
+        /(知识结构|预习目标|预习任务|教学目标|重点难点|教学方法|新课导入)/i.test(
+          curParent.name,
+        )
+      ) {
+        try {
+          const res = await this.createContent(str)
+          if (res) {
+            this.currentObj.content += `<br />${res}`
+          }
+        } catch (error) {
+          console.error('生成内容失败:', error)
+        }
+      }
+    },
+    //  ai 按钮
+    chatAIChange(content, val, i, parent, flag, event) {
+      event.stopPropagation()
+      // 计算弹框位置
+      this.popoverX = event.clientX - 400
+      this.popoverY = event.clientY + 30
+
+      this.curChatParent = content // 当前数据的父节点
+      this.currentObj = val // 当前需要修改的数据
+      if ((flag && flag == 'jftj') || flag == 'zssl') {
+        // 数据结构不同，特殊处理一下
+        this.curChatOuter = parent
+      } else {
+        this.curChatOuter = null
+      }
+
+      // this.changeType = i
+      this.chatAiVisible = true
+    },
+    changeContent(v, i) {
+      this.currentObj = v
+      this.changeType = i
+      this.knowledgeBaseVisible = true
+    },
+    addQuestion(v, id) {
+      console.log('添加试题===', v, id)
+      this.currentObj = v
+      this.currentId = id
+      this.questionBaseVisible = true
+      console.log(this.questionBaseVisible)
+    },
+    addMaterial() {
+      this.multimediaBaseVisible = true
+    },
+    changeExample(v, i, type) {
+      if (type === 'change') {
+        this.changeQuestion(v, i, '', type)
+      }
+      console.log(v[i].generalQuestionVo, type)
+      if (type === 'del') {
+        this.$set(v, i, { ...v[i], generalQuestionVo: {} })
+        // v[i].generalQuestionVo = {}
+      }
+    },
+
+    questionUp(queslist, index, type) {
+      if (index > 0 && index < queslist.length) {
+        queslist.splice(index - 1, 2, queslist[index], queslist[index - 1])
+      }
+    },
+    questionDown(queslist, index, type) {
+      if (index >= 0 && index < queslist.length - 1) {
+        queslist.splice(index, 2, queslist[index + 1], queslist[index])
+      }
+    },
+    changeQuestion(v, i, parent, type) {
+      if (type === 'change') {
+        // 添加
+        this.currentObj = v[i]
+        this.changeQuestionVisible = true
+      }
+      if (type === 'del') {
+        if (v.length === 1) {
+          // this.$message.warning('至少保留一个题目')
+          // v[i].generalQuestionVo = {}
+          // v[i] = { ...v[i], generalQuestionVo: {} };
+          this.$set(v, i, { ...v[i], generalQuestionVo: {} })
+          return
+        }
+        v.splice(i, 1)
+        // this.deleteOutlineContent(v[i].id, 2)
+      }
+      if (type === 'up') {
+        this.questionUp(v, i, type)
+      }
+      if (type === 'down') {
+        this.questionDown(v, i, type)
+      }
+    },
+    selectQuestion(v) {
+      //对于替换试题，替换后关闭便于重新获取需要排除的选中试题，对于push可以连续选择
+      console.log('选题', this.currentObj)
+      this.selectQuestionsList.push(v.questionId)
+      if (this.currentObj.type === 'example') {
+        this.addExamQuestion(v)
+        this.closeDialog()
+      }
+      if (this.currentObj.length) {
+        const item = {
+          generalQuestionVo: v,
+          label: this.currentObj.length + 1,
+          sourceType: 1,
+          lessonInfoId: this.info.id,
+          lessonOutlineId: this.currentId,
+        }
+        if (this.currentObj.length === 1) {
+          const firstItem = (this.currentObj && this.currentObj[0]) || {}
+          if (
+            !firstItem.generalQuestionVo ||
+            Object.keys(firstItem.generalQuestionVo).length === 0
+          ) {
+            firstItem.generalQuestionVo = v
+          } else {
+            this.currentObj.push(item)
+          }
+        } else {
+          this.currentObj.push(item)
+        }
+      } else {
+        this.currentObj.generalQuestionVo = v
+        this.closeDialog()
+      }
+      console.log(this.currentObj)
+      //this.closeDialog()
+    },
+    selectKnowledge(v) {
+      console.log(v)
+      this.currentObj.content = v
+      console.log(this.currentObj)
+      this.closeDialog()
+    },
+    addExampleModule(v) {
+      if (!this.verify()) return
+      this.save()
+      this.currentObj = v
+      this.questionBaseVisible = true
+    },
+    addExamQuestion(v) {
+      const data = {
+        lessonInfoId: this.info.id,
+        outlineId: this.currentObj.id,
+        questionId: v.questionId,
+      }
+      this.newPost({ urlPath: '/lesson-app/lessonApp/addExamQuestion' }, data, {
+        showLoading: true,
+      }).then(res => {
+        if (res.code === 200) {
+          this.getLessonDetail()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    changeExampleModule(v) {
+      this.currentObj = v
+      this.exampleBaseVisible = true
+    },
+    selectExample(v) {
+      const data = {
+        lessonInfoId: this.info.id,
+        outlineId: this.currentObj.id,
+        pieceOutline: { ...v.outline, ...v.pieceInfo },
+      }
+      this.newPost(
+        { urlPath: '/lesson-app/material/replacePieceOutline' },
+        data,
+        {
+          showLoading: true,
+        },
+      ).then(res => {
+        if (res.code === 200) {
+          this.$message.success('操作成功')
+          this.closeDialog()
+          this.getLessonDetail()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+
+    getExamPoint(val) {
+      let params = {
+        lessonInfoId: this.info.id,
+        knowledgeId: val.chapterCode,
+      }
+      this.apiGet(
+        { urlPath: '/lesson-app/lessonApp/getKnowledgeNext' },
+        params,
+        { showLoading: true },
+      ).then(res => {
+        if (res.code == 200) {
+          this.pointList = res.data || []
+
+          this.examDirectionVisible = true
+        }
+      })
+    },
+    async onPointChange(val) {
+      await this.save()
+      let arr = this.pointList.filter(item => val.includes(item.uuid))
+      const newArr = arr.map(v => {
+        return { ...v, type: 2, id: v.uuid }
+      })
+      let temArr = [
+        {
+          name: this.currentObj.name,
+          id: this.currentObj.chapterCode,
+          type: 1,
+          // importance:0,
+          children: newArr,
+        },
+      ]
+      const data = {
+        lessonGenerateType: this.$route.query.lessonType || 1,
+        lessonInfoId: this.info.id,
+        knowledgeList: temArr,
+        lessonConditionBo: {},
+      }
+      this.newPost({ urlPath: '/lesson-app/lessonApp/addKnowledge' }, data, {
+        showLoading: true,
+      }).then(res => {
+        if (res.code === 200) {
+          this.getLessonDetail()
+          this.$message.warning('请添加新增考向下的试题')
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+
+    addExamDirection(v) {
+      this.getExamPoint(v)
+      this.currentObj = v
+      console.log(v)
+    },
+    closeDialog() {
+      this.knowledgeBaseVisible = false
+      this.questionBaseVisible = false
+      this.multimediaBaseVisible = false
+      this.exampleBaseVisible = false
+      this.changeQuestionVisible = false
+      this.examinationDirectionVisible = false
+      this.examDirectionVisible = false
+    },
+    selectGrade(info) {
+      console.log('0000', info)
+      this.treeSelectInfo = info
+    },
+    submitExaminationDirection(arr) {
+      this.closeDialog()
+      this.getLessonDetail()
+      return
+      const knowledge = this.planTreeData[1][1].children
+      const uuid = knowledge.slice(1).map(v => v.uuid)
+      const res = []
+      arr.forEach(v => {
+        if (uuid.includes(v.uuid)) {
+          const i = uuid.findIndex(y => y === v.uuid)
+          const item = { ...knowledge[i + 1], children: [] }
+          v.children.forEach(y => {
+            const child = knowledge[i + 1].children.find(
+              z => z.uuid === y.uuid,
+            ) || {
+              label: y.name,
+              uuid: y.uuid,
+              visible: true,
+              anchor: 't' + y.uuid,
+              icon: 'del',
+              children: [{ label: '解法探究', visible: true, icon: 'view' }],
+            }
+            item.children.push(child)
+          })
+          res.push(item)
+        } else {
+          const item = {
+            label: v.name,
+            uuid: v.uuid,
+            visible: true,
+            anchor: 't' + v.uuid,
+            icon: 'del',
+            children: [
+              { label: '知识梳理', visible: true, icon: 'view' },
+              ...v.children.map(y => {
+                return {
+                  label: y.name,
+                  uuid: y.uuid,
+                  visible: true,
+                  anchor: 't' + y.uuid,
+                  icon: 'del',
+                  children: [
+                    { label: '解法探究', visible: true, icon: 'view' },
+                  ],
+                }
+              }),
+            ],
+          }
+          res.push(item)
+        }
+      })
+      this.planTreeData[1][1].children = [knowledge[0], ...res]
+      console.log(this.planTreeData[1][1].children)
+      this.closeDialog()
+    },
+    deleteOutlineContent(id, type) {
+      const data = {
+        id,
+        type,
+      }
+      this.newPost(
+        { urlPath: '/lesson-app/lessonApp/deleteOutlineContent' },
+        data,
+      ).then(res => {
+        this.getLessonDetail()
+      })
+    },
+    verify() {
+      if (!this.info.title) {
+        this.$message.warning('请输入教案名称')
+        return false
+      }
+      if (!this.info.subTitle) {
+        this.$message.warning('请输入教案标题')
+        return false
+      }
+      return true
+    },
+    save(v) {
+      this.info.style = this.selectIndex
+      const data = {
+        lessonConditionBo: this.lessonCondition,
+        lessonVo: this.info,
+      }
+      this.newPost({ urlPath: '/lesson-app/lessonApp/saveLesson' }, data, {
+        showLoading: true,
+      }).then(res => {
+        if (res.code === 200) {
+          v && this.$message.success('教案保存成功')
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    download() {
+      if (!this.verify()) return
+      this.save()
+      this.downloadVisible = true
+    },
+    exit() {
+      this.$router.go(-1)
+    },
+    revise() {
+      const data = {
+        lessonInfoId: this.info.id,
+      }
+      this.apiPost({ urlPath: '/lesson-app/backstage/submitModify' }, data, {
+        showLoading: true,
+      }).then(res => {
+        if (res.code === 200) {
+          this.$message.success('操作成功')
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+
+    // hasData2() {
+    //     return (
+    //       this.planTreeData&&
+    //       this.planTreeData[0]&&
+    //       this.planTreeData[0].child&&
+    //       this.planTreeData[0].child[0]&&
+    //       this.planTreeData[0].child[0].content &&
+    //       this.planTreeData[0].child[0].content[0] &&
+    //       this.planTreeData[0].child[0].content[0].content
+    //     );
+    //   },
+    //   show2(){
+    //     return this.hasData2 || this.wordSignEdit2Flag;
+    //   },
+    //   hasData2(val) {
+    //     return (
+    //       val&&
+    //       val.content&&
+    //       val.content[0]&&
+    //       val.content[0].content
+    //     );
+    //   },
+
+    // showC(editor,val){
+    //    let flag = editor + 'Flag'
+    //   return this.hasData2(val) || this[flag];
+    // },
+
+    // showC2(editor,val){
+    //   return !this.hasData2(val) ;
+    // },
+  },
+}
+</script>
+<style>
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.cke_top {
+  background: #fff !important;
+}
+@mixin bg($bg) {
+  background: url('../../assets/images/template/'+$bg) no-repeat;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+@mixin base-style {
+  .children-title {
+    width: 350px;
+    height: 50px;
+  }
+
+  .example-question {
+    width: 56px;
+    height: 28px;
+    background: #999;
+    color: #fff;
+    text-align: center;
+    line-height: 28px;
+    border-radius: 28px / 14px;
+  }
+  .knowledge-points {
+    min-width: 340px;
+    width: fit-content;
+    height: 28px;
+    border-radius: 4px;
+    color: #333;
+    display: flex;
+    font-size: 18px;
+    line-height: 28px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    .point-til {
+      font-size: 16px;
+      font-weight: normal;
+    }
+    .point-index {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      font-size: 16px;
+      border-radius: 4px;
+      text-align: center;
+      margin: 0 6px;
+      transform: translateY(-2px);
+    }
+  }
+  .examination-place {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    margin-right: 10px;
+    .exam-point {
+      display: flex;
+      width: 100px;
+      height: 24px;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-right: 20px;
+      .exam-index {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: block;
+        text-align: center;
+        line-height: 28px;
+        margin-left: 10px;
+      }
+    }
+  }
+  .practice-title {
+    width: 80px;
+    height: 24px;
+    background: rgba(72, 127, 255, 0.2);
+    text-align: center;
+    line-height: 24px;
+    position: relative;
+    &::before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-top: 12px solid transparent;
+      border-right: 9px solid rgba(72, 127, 255, 0.2);
+      border-bottom: 12px solid transparent;
+      position: absolute;
+      left: -9px;
+    }
+    &::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-top: 12px solid transparent;
+      border-left: 9px solid rgba(72, 127, 255, 0.2);
+      border-bottom: 12px solid transparent;
+      position: absolute;
+      right: -9px;
+    }
+  }
+}
+
+@mixin theme-backgrounds($theme) {
+  .part-one {
+    @include bg('#{$theme}/jxjh.png');
+  }
+  .jxgh-title {
+    @include bg('#{$theme}/jxgh.png');
+  }
+  .jxmb-title {
+    @include bg('#{$theme}/jxmb.png');
+  }
+  .zdnd-title {
+    @include bg('#{$theme}/zdnd.png');
+  }
+  .jxff-title {
+    @include bg('#{$theme}/jxff.png');
+  }
+  .jxgc-title {
+    @include bg('#{$theme}/jxgc.png');
+    width: 240px;
+    height: 60px;
+  }
+  .zssl-title {
+    @include bg('#{$theme}/zssl.png');
+  }
+  .jftj-title {
+    @include bg('#{$theme}/jftj.png');
+  }
+  .jxzj-title {
+    @include bg('#{$theme}/jxzj.png');
+  }
+  .part-two {
+    @include bg('#{$theme}/yxxa.png');
+  }
+  .zsjg-title {
+    @include bg('#{$theme}/zsjg.png');
+  }
+  .yxmb-title {
+    @include bg('#{$theme}/yxmb.png');
+  }
+  .yxrw-title {
+    @include bg('#{$theme}/yxrw.png');
+  }
+  .yxtk-title {
+    @include bg('#{$theme}/yxtk.png');
+  }
+  .yxjc-title {
+    @include bg('#{$theme}/yxjc.png');
+  }
+}
+@mixin font-color($fontColor, $bgColor) {
+  .knowledge-points {
+    background: $bgColor;
+    .point-index {
+      color: #fff;
+      background: $fontColor;
+    }
+  }
+  .examination-place {
+    .exam-point {
+      background: $fontColor;
+      color: #fff;
+      .exam-index {
+        background: #ffff;
+        color: $fontColor;
+      }
+    }
+  }
+}
+.style-one {
+  @include base-style;
+  @include font-color(#56a2ff, rgba(86, 162, 255, 0.1));
+  @include theme-backgrounds('styleOne');
+}
+.style-two {
+  @include base-style;
+  @include font-color(#c21318, rgba(194, 19, 24, 0.1));
+  @include theme-backgrounds('styleTwo');
+}
+.style-three {
+  @include base-style;
+  @include font-color(#4b7fff, rgba(72, 127, 255, 0.1));
+  @include theme-backgrounds('styleThree');
+}
+
+.style-four {
+  @include base-style;
+  @include font-color(#487fff, rgba(72, 127, 255, 0.1));
+  @include theme-backgrounds('styleFour');
+}
+.style-five {
+  @include base-style;
+  @include font-color(#ab92ff, rgba(238, 233, 255, 0.1));
+  @include theme-backgrounds('styleFive');
+}
+.style-six {
+  @include base-style;
+  @include font-color(#7d9bff, rgba(125, 155, 255, 0.1));
+  @include theme-backgrounds('styleSix');
+}
+.holder {
+  margin-left: 16px;
+  position: relative;
+  .style-set {
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
+    width: 88px;
+    height: 40px;
+    background: #ffffff;
+    box-shadow: 3px 5px 20px 1px rgba(42, 77, 138, 0.16);
+    border-radius: 10px;
+    font-size: 12px;
+    color: #487fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      display: block;
+      margin-left: 4px;
+      background: url(../../assets/images/paint_brush_line.png) 0 0 no-repeat;
+    }
+  }
+  .template-box {
+    background: #ffffff;
+    box-shadow: 3px 5px 20px 1px rgba(42, 77, 138, 0.3);
+    border-radius: 10px 10px 10px 10px;
+    height: 100%;
+    transition: all 0.3s;
+    .template-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e2e2;
+      height: 60px;
+      line-height: 60px;
+      padding: 0 20px;
+      box-sizing: border-box;
+      .template-til {
+        display: flex;
+        align-items: center;
+        b {
+          display: block;
+          height: 20px;
+          width: 4px;
+          border-radius: 2px;
+          background: #487fff;
+          margin-right: 10px;
+        }
+      }
+      .close-btn {
+        cursor: pointer;
+      }
+    }
+
+    .template-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 24px 20px;
+      box-sizing: border-box;
+      .template-item {
+        margin-bottom: 10px;
+        .template-img {
+          width: 120px;
+          height: 180px;
+          border-radius: 4px 4px 4px 4px;
+          border: 1px solid #e2e2e2;
+          position: relative;
+          img {
+            width: 100%;
+          }
+        }
+        .select-icon {
+          color: #487fff;
+          position: absolute;
+          bottom: 12px;
+          right: 12px;
+          display: none;
+        }
+        .template-name {
+          width: 100%;
+          margin-top: 10px;
+          text-align: center;
+        }
+      }
+    }
+    .active {
+      .template-img {
+        border: 1px solid #487fff !important;
+        .select-icon {
+          display: block;
+        }
+      }
+    }
+  }
+}
+.tab-box {
+  flex: 1;
+  display: grid;
+  place-items: center; /* 水平和垂直居中 */
+}
+.teaching_plan_edit {
+  .title {
+    line-height: 1;
+    margin: 0;
+  }
+  .outline-enter-active,
+  .outline-leave-active {
+    transition: all 0.2s;
+  }
+  .outline-enter,
+  .outline-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+  > .head {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin: 16px 0;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    :deep() button {
+      display: flex;
+      align-items: center;
+      i {
+        margin-right: 4px;
+      }
+    }
+    // .back
+    // .save_download {
+    //   flex: 1;
+    // }
+    .back {
+      padding-left: 30px;
+      margin-right: 16px;
+      :deep(button) {
+        i {
+          font-size: 12px;
+        }
+      }
+    }
+    .save_download {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 30px;
+      align-items: center;
+      > em {
+        margin-right: 12px;
+        word-break: keep-all;
+      }
+      img {
+        width: 46px;
+        height: 34px;
+        margin-right: 12px;
+        cursor: pointer;
+      }
+      .ai-start-btn {
+        width: 112px;
+        height: 40px;
+        background: linear-gradient(135deg, #04befd 0%, #a54bff 100%);
+        border-radius: 4px 4px 4px 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-family: Microsoft YaHei, Microsoft YaHei;
+        font-weight: 400;
+        font-size: 16px;
+        color: #ffffff;
+        line-height: 0px;
+        text-align: left;
+        font-style: normal;
+        text-transform: none;
+        justify-content: center;
+        margin-right: 30px;
+        img {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+        }
+      }
+      > .el-button {
+        height: 40px;
+        width: 112px;
+        margin-right: 30px;
+        margin-left: 0px;
+      }
+    }
+    .center {
+      // width: 1200px;
+      // max-width: 63vw;
+    }
+  }
+  .main {
+    display: flex;
+    .structure,
+    .holder {
+      flex: 1;
+    }
+    .structure {
+      margin-right: 16px;
+      position: relative;
+      > section {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        position: sticky;
+        top: 70px;
+        > .switch {
+          position: absolute;
+          z-index: 1;
+          top: 12px;
+          right: 14px;
+        }
+      }
+      .outline {
+        background: #fff;
+        box-shadow: 3px 5px 20px 1px rgba(42, 77, 138, 0.3);
+        border-radius: 10px;
+        width: 280px;
+        // max-height: 60vh;
+        // overflow-y: auto;
+        .head {
+          padding: 20px;
+          border-bottom: 1px solid #e2e2e2;
+          h6 {
+            line-height: 20px;
+            font-size: 16px;
+            border-left: 4px solid #487fff;
+            padding-left: 10px;
+          }
+        }
+        .tree {
+          max-height: calc(100vh - 160px);
+          overflow: auto;
+          > div {
+            padding: 13px;
+            :deep(.el-tree) {
+              .el-tree-node.is-current {
+                > .el-tree-node__content {
+                  background: #fff;
+                  color: #487fff;
+                }
+              }
+              .el-tree-node__content {
+                height: 36px;
+                &:hover {
+                  color: #487fff;
+                  background: #fff;
+                }
+                .custom-tree-node {
+                  flex: 1;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding-right: 6px;
+                  overflow: hidden;
+                  .el-icon-delete {
+                    color: #ff4b36;
+                    margin-right: 8px;
+                  }
+                  span {
+                    flex: 1;
+                    // max-width: 190px;
+                    // overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    // text-overflow: ellipsis;
+                  }
+                }
+              }
+            }
+          }
+          .plan {
+            border-bottom: 1px solid #e2e2e2;
+          }
+        }
+      }
+    }
+    :deep(.edit_content) {
+      width: 1200px;
+      max-width: 63vw;
+      background: #fff;
+      padding: 20px;
+      h3 {
+        font-weight: bold;
+        font-size: 18px;
+      }
+      h4 {
+        font-weight: bold;
+        font-size: 16px;
+      }
+      h5 {
+        font-weight: bold;
+        font-size: 14px;
+      }
+      h6 {
+        font-weight: bold;
+        font-size: 14px;
+        color: #666666;
+      }
+      .el-icon-delete {
+        color: #ff4b36;
+        cursor: pointer;
+      }
+      .icon-view {
+        color: #487fff;
+      }
+      .el-button + .el-button {
+        margin-left: 0;
+      }
+      .title {
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 4px;
+          background: #487fff;
+          filter: drop-shadow(#487fff4d -4px 0);
+        }
+      }
+      .operation {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        border-top: 1px solid #487fff;
+        border-left: 1px solid #487fff;
+        display: none;
+        height: 28px;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        min-width: 50px;
+        button {
+          padding: 0 10px;
+        }
+      }
+      .el-input,
+      .el-textarea {
+        .el-input__inner {
+          text-align: center;
+          font-size: 18px;
+          line-height: 42px;
+          height: 42px;
+        }
+        .el-input__inner,
+        .el-textarea__inner {
+          transition: all 0.2s;
+          &:not(:focus) {
+            border-color: #fff;
+            &:hover {
+              background: #f3f7fb;
+              border: 1px solid #e2e2e2;
+            }
+          }
+        }
+        .el-textarea__inner {
+          &:not(:focus) {
+            border-color: #fff;
+            &:hover {
+              background: #fff;
+              border: 1px solid #487fff;
+            }
+          }
+        }
+      }
+      .head_title {
+        .el-input {
+          &.title {
+            margin-bottom: 10px;
+            .el-input__inner {
+              font-size: 20px;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+      .edit_container {
+        border: 1px solid transparent;
+        &:hover {
+          border-radius: 6px !important;
+          border-color: #487fff !important;
+        }
+      }
+      .teaching_plan.notChapter {
+        .headline,
+        .prepare_target,
+        .prepare_task,
+        .prepare_gapfilling,
+        .prepare_detection {
+          display: none;
+        }
+      }
+      .teaching_plan,
+      .teaching_design {
+        // .knowledge_structure {
+        //     position: relative;
+        //     border: 1px solid #fff;
+        //     &:hover {
+        //         border-color: #487FFF;
+        //         .operation {
+        //             display: flex;
+        //         }
+        //     }
+        // }
+        > .headline {
+          display: flex;
+          width: 100%;
+          height: 70px;
+          .line {
+            display: flex;
+            gap: 3px;
+            transform: skew(12deg);
+            margin-right: 8px;
+            i {
+              width: 5px;
+              height: 18px;
+              background: #487fff;
+            }
+          }
+        }
+        > h5 {
+          margin: 20px 0;
+        }
+        .textarea,
+        .knowledge_structure {
+          // border-radius: 6px;
+          // overflow: hidden;
+          margin-top: 12px;
+          .title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 40px;
+            padding: 0 20px 0 10px;
+            border-radius: 6px 6px 0 0;
+            border: 1px solid #fff;
+            border-bottom: none;
+            i {
+              cursor: pointer;
+              display: none;
+            }
+            & + section {
+              border: 1px solid #fff;
+              border-radius: 0 0 6px 6px;
+              position: relative;
+              &:hover > .operation {
+                display: flex;
+              }
+              > .operation {
+                &:hover + .el-textarea {
+                  .el-textarea__inner {
+                    &:not(:focus) {
+                      border: 1px solid #487fff;
+                    }
+                  }
+                }
+              }
+            }
+            & ~ .empty-box {
+              border: 1px solid #fff;
+              border-radius: 0 0 6px 6px;
+            }
+
+            &:hover {
+              background: rgba(72, 127, 255, 0.1);
+              border-color: #487fff;
+              i {
+                display: block;
+              }
+              & + section {
+                border-color: #487fff;
+                border-top-color: #fff;
+              }
+              & ~ .empty-box {
+                // &:hover {
+                border-color: #487fff;
+                border-top-color: #fff;
+                // }
+              }
+            }
+          }
+        }
+        .knowledge_structure {
+          > section {
+            position: relative;
+            &:hover {
+              border: 1px solid #487fff;
+              border-radius: 6px;
+            }
+          }
+        }
+        .prepare_gapfilling {
+          > section > div {
+            position: relative;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            &:hover {
+              border-color: #487fff;
+              .operation {
+                display: flex;
+                background: #fff;
+              }
+            }
+            padding: 5px 15px;
+            min-height: 117px;
+          }
+        }
+        .prepare_detection {
+          margin-top: 12px;
+          .title {
+            display: flex;
+            align-items: center;
+            height: 40px;
+            padding: 0 20px 0 10px;
+            border-radius: 6px 6px 0 0;
+            border: 1px solid #fff;
+            border-bottom: none;
+            h6 {
+              margin: 0 8px;
+            }
+            .type {
+              background: #ff6e5d;
+              border-radius: 6px 6px 6px 0px;
+              font-size: 12px;
+              padding: 5px 10px;
+              color: #fff;
+              &.optional {
+                background: #bababa;
+              }
+            }
+            .hover_view,
+            > i {
+              align-items: center;
+              display: none;
+              margin-left: auto;
+              .icon {
+                cursor: pointer;
+                &:hover {
+                  color: #487fff;
+                }
+              }
+              button {
+                padding: 0 10px;
+                margin-right: 16px;
+              }
+            }
+            & + div {
+              border: 1px solid #fff;
+              border-radius: 0 0 6px 6px;
+              position: relative;
+            }
+            &:hover {
+              background: rgba(72, 127, 255, 0.1);
+              border-color: #487fff;
+              .hover_view,
+              > i {
+                display: flex;
+              }
+              & + div {
+                border-color: #487fff;
+                border-top-color: #fff;
+              }
+            }
+          }
+        }
+        .example_empty {
+          border: 1px solid transparent;
+          height: 100px;
+          border-radius: 6px;
+          display: grid;
+          .el-button {
+            place-self: center;
+          }
+          &:hover {
+            border-color: #487fff;
+          }
+        }
+      }
+      .teaching_design {
+        .design_item {
+          .editor {
+            &:hover {
+              border-radius: 6px;
+              border-color: #487fff;
+            }
+          }
+          .order_title {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            padding: 10px 20px 10px 0;
+            border: 1px solid #fff;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            > i {
+              display: none;
+              cursor: pointer;
+              margin-left: auto;
+              &:hover {
+                color: #487fff;
+              }
+            }
+            & + div {
+              border: 1px solid #fff;
+              border-radius: 0 0 6px 6px;
+              position: relative;
+            }
+            &:hover {
+              background: rgba(72, 127, 255, 0.1);
+              border-color: #487fff;
+              > i {
+                display: flex;
+              }
+              & + div {
+                border-color: #487fff;
+                border-top-color: #fff;
+              }
+            }
+            b {
+              height: 20px;
+              width: 4px;
+              border-radius: 2px;
+              background: #487fff;
+              margin-right: 10px;
+            }
+            span {
+              font-size: 16px;
+              font-weight: bold;
+              line-height: 20px;
+            }
+            .jxgh-title,
+            .jxzj-title {
+              width: 240px;
+              height: 60px;
+            }
+          }
+          .new_lesson {
+          }
+          .knowledge {
+            > .point {
+              margin-top: 12px;
+              .point_title {
+                color: #487fff;
+              }
+              .title {
+                justify-content: flex-start;
+                i {
+                  margin-left: auto;
+                }
+                .hover_view {
+                  margin-left: auto;
+                  display: none;
+                  align-items: center;
+                  button {
+                    margin: 0 10px;
+                  }
+                }
+                &:hover {
+                  .hover_view {
+                    display: flex;
+                  }
+                }
+              }
+              > .title {
+                // background: linear-gradient(270deg, #ffffff 0%, #487fff33 100%);
+                i {
+                  margin-left: auto;
+                }
+                & + section {
+                  padding-top: 10px;
+                }
+              }
+              .direction {
+                margin-top: 10px;
+                .tag {
+                  background: #fef2ee;
+                  border-radius: 4px;
+                  border: 1px solid #fbe0c7;
+                  display: flex;
+                  padding: 3px 2px;
+                  span {
+                    font-size: 12px;
+                    color: #ff822e;
+                    line-height: 14px;
+                    padding: 0 3px;
+                    &:not(:last-child) {
+                      border-right: 1px solid #ff822e;
+                    }
+                  }
+                }
+                .example {
+                  .title {
+                    .iconfont {
+                      color: #487fff;
+                      margin-right: 5px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .teaching_summary {
+        .summary-box {
+          &:hover {
+            > .operation {
+              display: flex;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.edit_container {
+  :deep(.cke_button__source) {
+    display: none !important;
+  }
+  :deep(.cke_button__cptool) {
+    display: none !important;
+  }
+  :deep(.cke_button__preblank) {
+    display: none !important;
+  }
+  :deep(.cke_button__prefill) {
+    display: none !important;
+  }
+  :deep(.cke_toolgroup a.cke_button:last-child:after),
+  :deep(.cke_toolgroup a.cke_button.cke_button_disabled:hover:last-child:after) {
+    border-right: unset !important;
+  }
+  :deep(.cke_contents) {
+    min-height: 100px;
+  }
+}
+
+.chatai-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+  span {
+    font-size: 14px;
+  }
+}
+</style>

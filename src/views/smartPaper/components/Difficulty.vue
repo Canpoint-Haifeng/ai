@@ -384,7 +384,7 @@ export default {
 .sliderAlone {
   width: 380px;
 }
-:deep(.alone)) {
+:deep(.alone) {
   width: 380px;
   .el-slider__bar {
     background: transparent !important;
@@ -457,14 +457,14 @@ export default {
   }
 }
 
-:deep(.el-slider__marks-stop)) {
+:deep(.el-slider__marks-stop) {
   border-radius: 0;
 }
-:deep(.el-slider__runway)) {
+:deep(.el-slider__runway) {
   height: 8px;
   border-radius: 0;
 }
-:deep(.el-slider__bar)) {
+:deep(.el-slider__bar) {
   height: 8px;
   border-radius: 0;
 }
@@ -555,10 +555,10 @@ export default {
 .mb-30 {
   margin-bottom: 30px;
 }
-:deep(.el-slider__marks-stop)) {
+:deep(.el-slider__marks-stop) {
 	height: 8px;
 }
-:deep(.el-slider__marks-text)) {
+:deep(.el-slider__marks-text) {
 	margin-top: 24px;
 	color: #666;
 	pointer-events: none;

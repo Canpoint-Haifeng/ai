@@ -832,7 +832,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -1003,7 +1002,7 @@ export default {
   width: 100px;
 }
 
-.operate-cp-number-input :deep(.el-input__inner)) {
+.operate-cp-number-input :deep(.el-input__inner) {
     line-height: 24px;
     padding: 0 10px;
     height: 24px;
@@ -1015,7 +1014,7 @@ export default {
 }
 
 .form-input-paper-maker {
-  :deep(.el-input__inner)) {
+  :deep(.el-input__inner) {
       border-radius: 4px;
     }
   }
@@ -1059,3 +1058,4 @@ export default {
   }
 }
 </style>
+

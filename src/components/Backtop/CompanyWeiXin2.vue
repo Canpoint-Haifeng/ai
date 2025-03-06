@@ -39,8 +39,8 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
+<style>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
@@ -87,10 +87,9 @@ export default defineComponent({
     text-align: center;
   }
 }
-</style>
-<style>
 .company-weixin-qr.el-popover {
   min-width: 100px;
   border-radius: 6px;
 }
 </style>
+

@@ -107,7 +107,7 @@ import { API } from '@/api/config'
 import { mapState } from 'vuex'
 import PaperTypeSelf from '@/components/Category/PaperTypeSelf'
 import ResourcePaperItem from '@/components/Resources/ResourcePaperItem'
-import { TopPagination } from '@/components/CpFan/index.js'
+import { TopPagination } from '@/components/CpFan/index'
 import BaseDialog from '@/components/BaseDialog/BaseDialog'
 import paperShareMixin from '@/common/mixins/paperShareMixin'
 import paperPayMixin from '@/common/mixins/paperPayMixin'
@@ -302,7 +302,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -343,3 +342,4 @@ export default {
   }
 }
 </style>
+

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :visible="visible" @update:visible="$emit('update:visible', $event)"
     title="推荐试题"
     width="800px"
     class="recommend-dialog"
@@ -96,13 +96,12 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
 .recommend-dialog {
-  :deep(.el-dialog__body)) {
+  :deep(.el-dialog__body) {
     padding: 20px;
   }
   
@@ -154,3 +153,4 @@ export default defineComponent({
   }
 }
 </style>
+

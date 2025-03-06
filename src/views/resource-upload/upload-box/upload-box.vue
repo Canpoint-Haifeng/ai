@@ -70,12 +70,11 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-  :deep(.upload-box)) {
+  :deep(.upload-box) {
     width: 100%;
     height: 430px;
     margin-top: 70px;
@@ -118,3 +117,4 @@ export default {
     }
   }
 </style>
+

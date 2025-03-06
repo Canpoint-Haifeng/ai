@@ -1,0 +1,390 @@
+<template>
+  <div class="content-container">
+    <div class="user-content">
+      <div class="user-content-left">
+        <div class="my-share-segment">
+          <div class="share-user-info">
+            <div class="info_header">
+              <img
+                v-if="userInfo.profilePhoto"
+                class="user-img"
+                :src="userInfo.profilePhoto"
+              >
+              <img
+                v-else
+                class="user-img"
+                src="@/assets/images/avatar.png"
+              >
+            </div>
+            <div class="share-info-part">
+              <div class="share-like">
+                <div class="share-like-bg" />
+                <div class="share-item-icon">
+                  <img src="@/assets/images/users/share/praise.png">
+                </div>
+                <div class="share-item-num">
+                  {{ likeCount || 0 }}
+                </div>
+                <div class="share-item-link">
+                  喜欢
+                </div>
+              </div>
+              <div class="share-rewards">
+                <div class="share-rewards-bg" />
+                <div class="share-item-icon">
+                  <img src="@/assets/images/users/share/reward.png">
+                </div>
+                <div class="share-item-num">
+                  {{ reward || 0 }}
+                </div>
+                <div
+                  class="share-item-link"
+                  @click="myPropertySkip"
+                >
+                  下载券<span class="iconfont iconarrow" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="share-nav-list">
+            <div
+              class="share-nav-item"
+              :class="activeName == 'questionShare' ? 'active' : 'no-active'"
+              @click="activeName = 'questionShare'"
+            >
+              已分享试题
+            </div>
+            <div
+              class="share-nav-item"
+              :class="activeName == 'paperShare' ? 'active' : 'no-active'"
+              @click="activeName = 'paperShare'"
+            >
+              已分享试卷
+            </div>
+          </div>
+
+          <div class="my-share-rule-part">
+            <div class="my-share-rule">
+              <div class="rule__title">
+                <span class="iconfont iconshiliangzhinengduixiang-01" />奖励规则:
+              </div>
+              <ul class="rule__list">
+                <li>前15个喜欢，每5个获得1张下载券</li>
+                <li>15个喜欢后，每10个获得1张下载券</li>
+                <li>单个分享最多获得10张下载券</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="user-content-right">
+        <component :is="activeName" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import CTS from '@/common/js/constant.js'
+  import { API } from '@/api/config.js'
+  import { mapState } from 'vuex'
+  import Breadcrumb from '@/components/Breadcrumb/Breadcrumb.js'
+  // import ItemOne from '../../school-resources/components/one-selection'
+  import paperShare from './share/paper-share.vue'
+  import questionShare from './share/question-share.vue'
+
+  import merge from 'webpack-merge'
+  export default {
+    components: {
+      Breadcrumb,
+      paperShare,
+      questionShare,
+    },
+    data() {
+      return {
+        checkStrictly: false, // 控制可选和不可选
+        treeLoading: false,
+        questionId: '',
+        questionDome: '',
+        questionVisible: false,
+        nickName: 'Smile',
+        visible: false,
+        crumbsData: [
+          {
+            path: '',
+            isLink: false,
+            text: '校本资源 ',
+          },
+          {
+            path: '',
+            isLink: false,
+            text: '校本题库 ',
+          },
+        ],
+        activeName: 'questionShare',
+        defaultProps: {
+          children: 'children',
+          label: 'name',
+          isLeaf: (data, node) => {
+            return !data.type
+          },
+        },
+        treeDataList: [],
+        likeCount: 0,
+        reward: 0,
+      }
+    },
+
+    watch: {
+      currSubject(val, old) {
+        this.getRelationCategoryId(val.subjectCode)
+      },
+    },
+    computed: {
+      ...mapState([
+        'currSubject',
+        'userInfo',
+        'bookCurrent',
+        'gradeCurrent',
+        'volumeCurrent',
+      ]),
+      tabActiveName() {
+        return this.$route.query.tabActiveName
+          ? this.$route.query.tabActiveName
+          : 'questionShare'
+      },
+    },
+    created() {
+      this.activeName = this.tabActiveName
+      // this.getTreeDataList() // 获取侧边栏数据
+      this.getRelationCategoryId(this.currSubject.subjectCode) // 获取关联id
+      this.queryLikeCountHttp()
+    },
+    methods: {
+      queryLikeCountHttp() {
+        let params = {
+          period: this.currSubject.periodCode,
+          subjectCode: this.currSubject.subjectCode,
+        }
+        this.apiGet(API.SYS_SHAREPAPER_GETMYLIKEANDREWARD, params).then(
+          (res) => {
+            console.log(res)
+            if (this.checkoutRes(res)) {
+              this.likeCount = res.data.likeTotalCount
+              this.reward = res.data.rewardTotalCount
+            }
+          },
+        )
+      },
+      myPropertySkip() {
+        this.$router.push({ path: '/paper/users/myProperty' })
+      },
+      handleClick(tab, event) {
+        this.$router.push({
+          query: merge(this.$route.query, { tabActiveName: tab.name }),
+        })
+        this.crumbsData[1].text = tab.label
+      },
+      // 点击行的选中状态
+      handleRowClick(node, data) {
+        node.checked = !node.checked
+        if (node.checked) {
+          this.$refs['lemonTree'].setChecked(node, true, true)
+        } else {
+          this.$refs['lemonTree'].setChecked(node, false, true)
+        }
+        this.checkClick() // 调用获取题目接口
+      },
+      // 复选框点击问题
+      checkClick(data, isChecked) {
+        let noMore = this.getSimpleCheckedNodes(this.$refs['lemonTree'].store)
+        let str = this.reQuids(JSON.stringify(noMore), 'code')
+        this.Bus.$emit('checkNodeCodeKnowledge', str)
+      },
+    },
+  }
+</script>
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+  .user-content {
+    width: 1200px;
+    min-height: 473px;
+    margin-bottom: 20px;
+    display: flex;
+    .user-content-left {
+      width: 270px;
+      margin-right: 16px;
+    }
+    .user-content-right {
+      width: 914px;
+      min-height: 550px;
+      background-color: $color-white;
+      :deep(.el-tabs .el-tabs__header) {
+        padding: 0 20px;
+      }
+      :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+        background-color: $color-theme;
+      }
+      :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+        color: $color-theme;
+      }
+    }
+  }
+  .my-share-segment {
+    background-color: white;
+    .share-user-info {
+      .info_header {
+        padding: 40px 0 15px 0;
+        width: 100%;
+        .user-img {
+          display: block;
+          margin: 0 auto 0 auto;
+          width: 85px;
+          height: 85px;
+          border: 4px solid #f4f4f4;
+          border-radius: 50%;
+        }
+      }
+      .share-info-part {
+        display: flex;
+        padding: 0 10px;
+        justify-content: space-between;
+        .share-rewards,
+        .share-like {
+          width: 119px;
+          height: 100px;
+          border-radius: 10px;
+          text-align: center;
+          position: relative;
+
+          .share-item-icon {
+            margin: 0 auto;
+            width: 21px;
+            padding-top: 15px;
+            img {
+              width: 21px;
+              height: 21px;
+            }
+          }
+          .share-item-num {
+            padding-top: 8px;
+            font-size: 20px;
+            line-height: 20px;
+            font-weight: bold;
+            color: #222222;
+          }
+          .share-item-link {
+            padding-top: 8px;
+            font-size: 14px;
+            color: #333333;
+            line-height: 14px;
+            cursor: pointer;
+            .iconfont {
+              font-size: 12px;
+            }
+          }
+        }
+        .share-like {
+          background: #e8d4df44;
+          .share-like-bg {
+            position: absolute;
+            background-image: url(http://cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/da702f39-77c7-4644-94e4-149ae32be639.png);
+            background-repeat: no-repeat;
+            background-size: 59px 68px;
+            right: 0;
+            top: 19px;
+            width: 59px;
+            height: 68px;
+            opacity: 0.6;
+          }
+        }
+        .share-rewards {
+          background: #f5e1cc44;
+          .share-rewards-bg {
+            position: absolute;
+            background-image: url(http://cp-cloud-files-tiku.oss-cn-hangzhou.aliyuncs.com/png/211e2f9b-0748-45ba-a558-a2b16a0c1cc5.png);
+            background-repeat: no-repeat;
+            background-size: 49px 62px;
+            right: 0;
+            top: 25px;
+            width: 49px;
+            height: 62px;
+            opacity: 0.6;
+          }
+        }
+      }
+    }
+  }
+
+  .share-nav-list {
+    padding: 15px 10px;
+    .share-nav-item {
+      text-align: center;
+      height: 50px;
+      line-height: 50px;
+      font-size: 16px;
+      color: #333333;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+
+      margin-bottom: 10px;
+
+      &.no-active {
+        background: #fbfbfb;
+        border: 1px solid #f2f2f2;
+        border-radius: 10px;
+      }
+      &.active {
+        background: #f3f7fb;
+        color: $color-theme;
+        font-weight: bold;
+        border-radius: 10px;
+      }
+    }
+  }
+  .my-share-rule-part {
+    padding: 15px 10px;
+  }
+  .my-share-rule {
+    background: #fbfbfb;
+    border-radius: 10px;
+    padding: 20px;
+    .rule__title {
+      font-size: 14px;
+      font-weight: 400;
+      color: #666666;
+      padding-bottom: 10px;
+    }
+    .rule__list {
+      & > li {
+        font-size: 12px;
+        line-height: 20px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #999999;
+        position: relative;
+        padding-left: 10px;
+        &::before {
+          content: ' ';
+          width: 4px;
+          height: 4px;
+          background: #999999;
+          border-radius: 50%;
+          position: absolute;
+          left: 0;
+          top: 8px;
+        }
+      }
+    }
+  }
+
+  // my-share-rule">
+  //           <div class="rule__title">
+  //             <span class="iconfont icondingwei"></span>奖励规则:
+  //           </div>
+  //           <ul class="rule__list
+</style>

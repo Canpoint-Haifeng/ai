@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :visible="visible" @update:visible="$emit('update:visible', $event)"
     title="相似题"
     width="800px"
     :append-to-body="true"
@@ -41,7 +41,6 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -52,3 +51,4 @@ export default defineComponent({
   overflow-y: auto;
 }
 </style>
+

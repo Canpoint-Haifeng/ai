@@ -283,12 +283,11 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-.report-content :deep()) {
+.report-content :deep() {
   padding: 40px 15px 0 10px;
 
   .el-form-item {
@@ -403,3 +402,4 @@ export default {
   height: 32px;
 }
 </style>
+

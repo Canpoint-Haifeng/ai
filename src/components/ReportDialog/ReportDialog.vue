@@ -296,7 +296,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -305,24 +304,24 @@ export default {
   padding: 40px 15px 0 10px;
 }
 
-.report-content :deep(.el-form-item)) {
+.report-content :deep(.el-form-item) {
   margin-bottom: 5px;
 }
 
-.report-content :deep(.el-form-item__content)) {
+.report-content :deep(.el-form-item__content) {
   margin-bottom: 10px;
 }
 
-.report-content :deep(.el-checkbox__label)) {
+.report-content :deep(.el-checkbox__label) {
   padding-left: 6px;
 }
 
-.report-content :deep(.form-textarea)) {
+.report-content :deep(.form-textarea) {
   margin-top: 5px;
   width: 100%;
 }
 
-.report-content :deep(.el-textarea__inner)) {
+.report-content :deep(.el-textarea__inner) {
   width: 100%;
   height: 90px;
   border: 1px solid $color-border;
@@ -417,3 +416,4 @@ export default {
   height: 32px;
 }
 </style>
+

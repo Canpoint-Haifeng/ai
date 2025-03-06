@@ -678,7 +678,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -765,10 +764,10 @@ export default {
 }
 
 .paper-body {
-  :deep(.el-tree-node__content > .el-tree-node__expand-icon)) {
+  :deep(.el-tree-node__content > .el-tree-node__expand-icon) {
     display: none;
   }
-  :deep(.el-tree-node__content)) {
+  :deep(.el-tree-node__content) {
     height: auto;
     cursor: default;
   }
@@ -780,3 +779,4 @@ export default {
   padding-bottom: 10px;
 }
 </style>
+

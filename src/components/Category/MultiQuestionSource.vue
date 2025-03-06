@@ -16,8 +16,8 @@
   import { API } from '@/api/config'
   import { mapState } from 'vuex'
   import CpQuestionMulitFiltrate from '@/components/CpFan/Category/cp-question-mulit-filtrate'
-  import { questionSourceConfig } from '@/common/config/tikuCfg.js'
-  import { getListByPeriod } from '@/common/js/util.js'
+  import { questionSourceConfig } from '@/common/config/tikuCfg'
+  import { getListByPeriod } from '@/common/js/util'
   export default {
   name: 'MultiQuestionSource',
     components: { CpQuestionMulitFiltrate },
@@ -101,7 +101,6 @@
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -155,3 +154,4 @@
     }
   }
 </style>
+

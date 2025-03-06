@@ -232,29 +232,29 @@
       }
     }
   }
-  .video :deep(.vjs-big-play-button)) {
+  .video :deep(.vjs-big-play-button) {
     display: none !important;
   }
-  .video :deep(.video-js.vjs-ended .vjs-big-play-button)) {
+  .video :deep(.video-js.vjs-ended .vjs-big-play-button) {
     display: none !important;
   }
-  .video :deep(.video-js)) {
+  .video :deep(.video-js) {
     background-color: #fff;
     .vjs-tech {
       object-fit: fill;
       height: 506px;
     }
   }
-  .video :deep(.vjs-poster)) {
+  .video :deep(.vjs-poster) {
     background-color: transparent;
   }
 
-  .video :deep(.vjs-text-track-display)) {
+  .video :deep(.vjs-text-track-display) {
     position: absolute;
     bottom: 0em;
     background: rgba(0, 0, 0, 0.2);
   }
-  .video :deep(.video-js .vjs-play-progress:before)) {
+  .video :deep(.video-js .vjs-play-progress:before) {
     z-index: 0;
   }
   .mask-video-image {

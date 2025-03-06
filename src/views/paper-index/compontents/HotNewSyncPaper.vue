@@ -332,12 +332,12 @@
   </div>
 </template>
 <script>
-import CTS from '@/common/js/constant.js'
-import { API } from '@/api/config.js'
-import { isLogin, setCookieSubjectVolume } from '@/common/js/util.js'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
+import { isLogin, setCookieSubjectVolume } from '@/common/js/util'
 import { mapState, mapActions } from 'vuex'
-import SynchronousTeaching from './SynchronousTeaching.js'
-import { commonData } from '../hooks/index.js'
+import SynchronousTeaching from './SynchronousTeaching'
+import { commonData } from '../hooks/index'
 import Index from '@/components/AudioPlay/index.vue'
 import moment from 'moment'
 export default {

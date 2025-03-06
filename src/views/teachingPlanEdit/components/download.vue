@@ -248,13 +248,12 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
   
-:deep(.el-dialog)) {
+:deep(.el-dialog) {
   .download_content {
     padding: 20px 30px 0;
     .item {
@@ -282,3 +281,4 @@ export default {
   }
 }
 </style>
+

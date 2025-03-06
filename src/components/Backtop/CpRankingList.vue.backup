@@ -1,0 +1,366 @@
+<template>
+  <div
+    class="cp-ti-ranking-list"
+    :class="!showRank ? 'hide' : ''"
+  >
+    <div class="cp-ti-ranking-box">
+      <div
+        class="rank-title"
+        @click="onChangeShow"
+      >
+        用户排行
+        <span
+          v-if="showRank"
+          class="iconfont iconshouqi"
+        />
+        <span
+          v-else
+          class="iconfont iconzhankai"
+        />
+      </div>
+      <div class="rank-body">
+        <div class="rank-tabs">
+          <div
+            class="tabs-item"
+            :class="tabsIndex == 0 ? 'active' : ''"
+            @click="tabsIndex = 0"
+          >
+            组题达人
+          </div>
+          <div
+            class="tabs-item"
+            :class="tabsIndex == 1 ? 'active' : ''"
+            @click="tabsIndex = 1"
+          >
+            积分排行
+          </div>
+        </div>
+
+        <div v-show="tabsIndex == 0">
+          <div class="tips">
+            近30天下载次数
+          </div>
+          <div class="rank-body-list-body">
+            <div
+              class="rank-body-list"
+              :class="tabsIndex == 0 ? 'kenburns-top-movie' : ''"
+            >
+              <div
+                v-for="(item, index) in downLoadRankList"
+                :key="item.userGuid"
+                class="rank-body-item"
+              >
+                <div class="sort">
+                  <CpRankIndex :index="index + 1" />
+                </div>
+                <div class="user-name">
+                  {{ item.nickName }}
+                </div>
+                <div class="num">
+                  <span>{{ item.downloadCount }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="home-go-skip">
+            <div
+              class="skip-label"
+              @click="openDownload"
+            >
+              查看详情<i class="el-icon-arrow-right" />
+            </div>
+          </div>
+        </div>
+        <div v-show="tabsIndex == 1">
+          <div class="tips">
+            累计获得胖大海数量
+          </div>
+          <div class="rank-body-list-body">
+            <div
+              class="rank-body-list"
+              :class="tabsIndex == 1 ? 'kenburns-top-movie' : ''"
+            >
+              <div
+                v-for="(item, index) in scoreRankList"
+                :key="item.userGuid"
+                class="rank-body-item"
+              >
+                <div class="sort">
+                  <CpRankIndex :index="index + 1" />
+                </div>
+                <div class="user-name">
+                  {{ item.nickName }}
+                </div>
+                <div class="num">
+                  <span>{{ item.totalPoints }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="home-go-skip">
+            <div
+              class="skip-label"
+              @click="openUserScore"
+            >
+              查看详情<i class="el-icon-arrow-right" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import { API } from '@/api/config.js'
+  import { isLogin } from '@/common/js/util.js'
+  import CpRankIndex from './components/CpRankIndex.vue'
+  import { defineComponent, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue'
+  
+  export default defineComponent({
+    name: 'CpRankingList',
+    components: { CpRankIndex },
+    setup() {
+      const instance = getCurrentInstance()
+      const showRank = ref(false)
+      const downLoadRankList = ref([])
+      const scoreRankList = ref([])
+      const tabsIndex = ref(0)
+      
+      const hideRankList = () => {
+        showRank.value = false
+      }
+      
+      onMounted(() => {
+        // Listen for event
+        instance.proxy.Bus.on('sendShowFixedFlag', hideRankList)
+        
+        // Check screen size
+        try {
+          var w = document.documentElement.offsetWidth || document.body.offsetWidth
+          if (w >= 1500) {
+            showRank.value = true
+          }
+        } catch (e) {
+          console.log(e)
+        }
+        
+        // Load data
+        getUserDownloadRank()
+        getUserScoreRank()
+      })
+      
+      onUnmounted(() => {
+        instance.proxy.Bus.off('sendShowFixedFlag', hideRankList)
+      })
+
+      const openDownload = () => {
+        if (isLogin()) {
+          instance.proxy.openSystemPathLink('topstb/rankdetail')
+        } else {
+          instance.proxy.$emit('showLogin')
+        }
+      }
+      
+      const openUserScore = () => {
+        if (isLogin()) {
+          // instance.proxy.openSystemPathLink('paper/users/myPoints')
+          instance.proxy.openSystemPathLink('topstb/rankdetail?tab=2')
+        } else {
+          instance.proxy.$emit('showLogin')
+        }
+      }
+      
+      const onChangeShow = () => {
+        showRank.value = !showRank.value
+      }
+      
+      const getUserDownloadRank = () => {
+        let params = {
+          type: 2,
+          flag: false,
+        }
+        return instance.proxy.apiGet(API.SYS_USER_USERRANK, params).then((res) => {
+          if (instance.proxy.checkoutRes(res)) {
+            downLoadRankList.value = res.data.rankList
+          }
+        })
+      }
+      
+      const getUserScoreRank = () => {
+        let params = {
+          type: 1,
+          flag: false,
+        }
+        return instance.proxy.apiGet(API.SYS_USER_USERRANK, params).then((res) => {
+          if (instance.proxy.checkoutRes(res)) {
+            scoreRankList.value = res.data.rankList
+          }
+        })
+      }
+      
+      return {
+        showRank,
+        downLoadRankList,
+        scoreRankList,
+        tabsIndex,
+        hideRankList,
+        openDownload,
+        openUserScore,
+        onChangeShow,
+        getUserDownloadRank,
+        getUserScoreRank
+      }
+    }
+  })
+</script>
+<style scoped lang="scss">
+@import "@/assets/css/variables.scss";
+  .cp-ti-ranking-list {
+    position: fixed;
+    top: 155px;
+    right: 0;
+    z-index: 1003;
+
+    width: 210px;
+    height: 330px;
+    background: #ffffff;
+    border-radius: 4px 0px 0px 4px;
+    transform: translateX(0px);
+    transition: transform 0.3s;
+
+    &.hide {
+      transform: translateX(210px);
+    }
+  }
+
+  .cp-ti-ranking-box {
+    position: relative;
+    border-radius: 4px 0px 0px 4px;
+    .rank-title {
+      position: absolute;
+      top: 100px;
+      left: -40px;
+      width: 40px;
+      height: 100px;
+      background: #ffffff;
+      box-shadow: 0px 5px 5px 0px rgba(42, 77, 138, 0.09);
+      border-radius: 4px 0px 0px 4px;
+      box-sizing: border-box;
+      padding: 13px 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #666666;
+      cursor: pointer;
+      user-select: none;
+      .iconfont {
+        display: inline-block;
+        font-size: 12px;
+        color: #666666;
+        padding-top: 5px;
+      }
+      &:hover {
+        color: $color-theme;
+        .iconfont {
+          color: $color-theme;
+        }
+      }
+    }
+
+    .rank-body {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 210px;
+      height: 330px;
+      border-radius: 4px 0px 0px 4px;
+      box-shadow: 0px 5px 10px 0px rgba(42, 77, 138, 0.09);
+      background-color: white;
+    }
+  }
+
+  .rank-body {
+    .rank-tabs {
+      display: flex;
+      padding: 20px 40px 20px 20px;
+      justify-content: space-between;
+      .tabs-item {
+        color: #666666;
+        font-size: 16px;
+        cursor: pointer;
+        user-select: none;
+        &.active {
+          color: #4b8ff5;
+        }
+      }
+    }
+
+    .tips {
+      font-size: 14px;
+      color: #969ca4;
+      padding-bottom: 20px;
+      padding-left: 20px;
+    }
+    .rank-body-list-body {
+      padding: 5px 18px;
+      height: 180px;
+      overflow: hidden;
+    }
+    .rank-body-list {
+      .rank-body-item {
+        display: flex;
+        padding: 10px 0;
+        line-height: 18px;
+        .sort {
+          width: 28px;
+          word-spacing: normal;
+        }
+        .user-name {
+          flex: 1;
+          word-spacing: normal;
+          color: #666666;
+        }
+        .num {
+          width: 70px;
+          word-spacing: normal;
+          text-align: right;
+          span {
+            color: #ff7e00;
+          }
+        }
+      }
+    }
+  }
+  .home-go-skip {
+    text-align: center;
+    padding-top: 15px;
+    .skip-label {
+      cursor: pointer;
+      user-select: none;
+      display: inline-block;
+      .el-icon-arrow-right {
+        padding-left: 5px;
+      }
+      &:hover {
+        color: $color-theme;
+      }
+    }
+  }
+
+  .kenburns-top-movie {
+    animation: kenburns-top 20s linear infinite both;
+  }
+
+  @keyframes kenburns-top {
+    0% {
+      transform: translateY(0);
+    }
+    80% {
+      transform: translateY(-200px);
+    }
+    100% {
+      transform: translateY(-200px);
+    }
+  }
+</style>
+

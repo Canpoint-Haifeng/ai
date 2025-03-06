@@ -81,8 +81,8 @@ export default {
   }
 }
 </script>
-
 <style lang="scss">
+@import "@/assets/css/variables.scss";
   .collect-message-text {
     font-weight: bold;
     color: #487FFF;
@@ -105,3 +105,4 @@ export default {
     }
   }
 </style>
+

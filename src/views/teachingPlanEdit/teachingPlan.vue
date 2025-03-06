@@ -2773,14 +2773,13 @@ export default {
 }
 </script>
 <style>
-.cke_top {
-  background: #fff !important;
-}
-</style>
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
+.cke_top {
+  background: #fff !important;
+}
 @mixin bg($bg) {
   background: url('../../assets/images/template/'+$bg) no-repeat;
   background-size: 100% 100%;
@@ -3122,7 +3121,7 @@ export default {
     .back {
       padding-left: 30px;
       margin-right: 16px;
-      :deep(button)) {
+      :deep(button) {
         i {
           font-size: 12px;
         }
@@ -3223,7 +3222,7 @@ export default {
           overflow: auto;
           > div {
             padding: 13px;
-            :deep(.el-tree)) {
+            :deep(.el-tree) {
               .el-tree-node.is-current {
                 > .el-tree-node__content {
                   background: #fff;
@@ -3269,7 +3268,7 @@ export default {
         }
       }
     }
-    :deep(.edit_content)) {
+    :deep(.edit_content) {
       width: 1200px;
       max-width: 63vw;
       background: #fff;
@@ -3706,23 +3705,23 @@ export default {
   }
 }
 .edit_container {
-  :deep(.cke_button__source)) {
+  :deep(.cke_button__source) {
     display: none !important;
   }
-  :deep(.cke_button__cptool)) {
+  :deep(.cke_button__cptool) {
     display: none !important;
   }
-  :deep(.cke_button__preblank)) {
+  :deep(.cke_button__preblank) {
     display: none !important;
   }
-  :deep(.cke_button__prefill)) {
+  :deep(.cke_button__prefill) {
     display: none !important;
   }
   :deep(.cke_toolgroup a.cke_button:last-child:after),
-  :deep(.cke_toolgroup a.cke_button.cke_button_disabled:hover:last-child:after)) {
+  :deep(.cke_toolgroup a.cke_button.cke_button_disabled:hover:last-child:after) {
     border-right: unset !important;
   }
-  :deep(.cke_contents)) {
+  :deep(.cke_contents) {
     min-height: 100px;
   }
 }

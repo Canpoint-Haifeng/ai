@@ -32,7 +32,6 @@ export default defineComponent({
   emits: ['update:visible']
 })
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -43,3 +42,4 @@ export default defineComponent({
   gap: 10px;
 }
 </style>
+

@@ -162,7 +162,7 @@ export default {
 }
 
 /* 输入框圆角 */
-.custom-input :deep(.el-input__inner)) {
+.custom-input :deep(.el-input__inner) {
   border-radius: 20px;
   font-size: 12px;
 }
@@ -218,7 +218,7 @@ export default {
   background: #ddd;
 }
 /* 让输入框更圆滑 */
-.custom-input :deep(.el-input__inner)) {
+.custom-input :deep(.el-input__inner) {
   border-radius: 20px;
   padding-left: 50px;
   /* 避免左侧 AI 图标遮挡 */

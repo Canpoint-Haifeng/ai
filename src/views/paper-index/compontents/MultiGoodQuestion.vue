@@ -44,10 +44,10 @@
 
 <script>
   import { mapState } from 'vuex'
-  import { API } from '@/api/config.js'
+  import { API } from '@/api/config'
   import QuestionCell from '@/components/QuestionItem/QuestionCell.vue'
-  import SynchroForReference from './SynchroForReference.js'
-  import { isLogin } from '@/common/js/util.js'
+  import SynchroForReference from './SynchroForReference'
+  import { isLogin } from '@/common/js/util'
 
   export default {
     components: { QuestionCell, SynchroForReference },
@@ -127,7 +127,6 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
 @import "@/assets/css/variables.scss";
   .multi-good-question {
@@ -237,3 +236,4 @@
     }
   }
 </style>
+

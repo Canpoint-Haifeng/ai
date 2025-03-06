@@ -206,7 +206,7 @@ export default {
 }
 
 /* 自定义输入框 */
-.custom-input :deep(.el-input__inner)) {
+.custom-input :deep(.el-input__inner) {
   height: 50px;
   border-radius: 14px;
   padding-left: 50px;

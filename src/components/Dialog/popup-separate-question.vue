@@ -87,11 +87,11 @@ import { useStore } from 'vuex'
 import { ElMessage } from 'element-plus'
 import CTS from '@/common/js/constant'
 import { is } from '@/common/js/util'
-import { separateQuestion, splitSeparateQuestion } from './common/common.js'
-import { RenderQuestion } from '@/components/CpFan/index.js'
+import { separateQuestion, splitSeparateQuestion } from './common/common'
+import { RenderQuestion } from '@/components/CpFan/index'
 import separateSignCkeditor from '@/components/CkeditorText/separate-sign-ckeditor.vue'
 import { throttle } from '@/common/helper/throttle-debounce'
-import questionAttributeMixin from '@/common/mixins/questionAttributeMixin.js'
+import questionAttributeMixin from '@/common/mixins/questionAttributeMixin'
 
 export default {
   name: 'PopupSeparateQuestion',
@@ -284,7 +284,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -357,8 +356,9 @@ export default {
     }
   }
 
-  .popup-separate-question :deep(.el-input__inner)) {
+  .popup-separate-question :deep(.el-input__inner) {
     border-radius: 4px;
   }
 </style>
+
 </style>

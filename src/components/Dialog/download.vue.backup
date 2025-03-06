@@ -1,0 +1,259 @@
+<template>
+  <div>
+    <el-dialog
+      :visible="visible" @update:visible="$emit('update:visible', $event)"
+      title="下载教案"
+      width="600px"
+    >
+      <div class="download_content">
+        <div class="item">
+          <div class="label">
+            <span>下载版本：</span>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.downloadType">
+              <el-radio :label="1">
+                教师版
+              </el-radio>
+              <el-radio :label="2">
+                学生版（答案解析统一放置在卷尾）
+              </el-radio>
+            </el-radio-group>
+            <!-- <div class="tip"></div> -->
+          </div>
+        </div>
+        <div class="item">
+          <div class="label">
+            <span>是否显示答案解析：</span>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.showAnswer">
+              <el-radio :label="true">
+                是
+              </el-radio>
+              <el-radio :label="false">
+                否
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="item">
+          <div class="label">
+            <span>知识讲解模板：</span>
+            <p>查看样例</p>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.knowledgeType">
+              <el-radio :label="1">
+                聚合式（知识梳理汇总在一起）
+              </el-radio>
+              <el-radio :label="2">
+                分散式（知识梳理分散在各知识点内）
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="item">
+          <div class="label">
+            <span>文件类型：</span>
+          </div>
+          <div>
+            <el-checkbox-group
+              v-model="formData.fileType"
+              style="margin-bottom: 8px;"
+            >
+              <el-checkbox label="word">
+                Word
+              </el-checkbox>
+              <el-checkbox label="pdf">
+                PDF
+              </el-checkbox>
+              <el-checkbox
+                v-show="formData.downloadType === 1"
+                label="ppt"
+              >
+                PPT
+              </el-checkbox>
+            </el-checkbox-group>
+
+            <el-radio-group
+              v-show="formData.fileType.includes('word')"
+              v-model="formData.word"
+            >
+              <el-radio label="doc">
+                Word2003/2007 doc类型文档
+              </el-radio>
+              <el-radio label="docx">
+                Word2010/2013 docx类型文档
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div
+          v-show="
+            formData.fileType.includes('word') ||
+              formData.fileType.includes('pdf')
+          "
+          class="item"
+        >
+          <div class="label">
+            <span>文档模板样式：</span>
+            <p>查看样例</p>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.aa">
+              <el-radio :label="1">
+                样式一
+              </el-radio>
+              <el-radio :label="2">
+                样式二
+              </el-radio>
+              <el-radio :label="3">
+                样式三
+              </el-radio>
+              <el-radio :label="4">
+                样式四
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div
+          v-show="
+            formData.fileType.includes('ppt') && formData.downloadType === 1
+          "
+          class="item"
+        >
+          <div class="label">
+            <span>PPT模板样式：</span>
+            <p>查看样例</p>
+          </div>
+          <div>
+            <el-radio-group v-model="formData.aa">
+              <el-radio :label="1">
+                样式一
+              </el-radio>
+              <el-radio :label="2">
+                样式二
+              </el-radio>
+              <el-radio :label="3">
+                样式三
+              </el-radio>
+              <el-radio :label="4">
+                样式四
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="visible = false">
+            取 消
+          </el-button>
+          <el-button
+            type="primary"
+            @click="confiem"
+          >
+            下 载
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { ref, computed, watch } from 'vue'
+import { ElMessage } from 'element-plus'
+import question from './question.vue'
+
+export default {
+  name: 'DownloadDialog',
+  components: {
+    question,
+  },
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
+    info: {
+      default: () => {},
+    },
+  },
+  emits: ['input'],
+  setup(props, { emit }) {
+    const formData = ref({
+      downloadType: 1,
+      showAnswer: true,
+      knowledgeType: 1,
+      fileType: ['word'],
+      word: 'doc',
+      aa: 1,
+    })
+    
+    // Computed properties
+    const visible = computed({
+      get: () => props.value,
+      set: (val) => emit('input', val)
+    })
+    
+    const oldQuestion = computed(() => {
+      return props.currentObj?.generalQuestionVo || {}
+    })
+    
+    // Methods
+    const confiem = () => {
+      let params = {
+        ...formData.value,
+        fileType: 'word',
+        lessonInfoId: props.info.id,
+        source: 1,
+        lessonType: props.info.lessonType,
+      }
+      const urlPath = `/lesson-app/myLesson/downloadWithOSS`
+      newPost({ urlPath }, params).then(res => {
+        if (res.code == 200) {
+        } else {
+          ElMessage.error(res.msg || '下载失败')
+        }
+      })
+    }
+    
+    return {
+      formData,
+      visible,
+      oldQuestion,
+      confiem
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+:deep(.el-dialog) {
+  .download_content {
+    padding: 20px 30px 0;
+    .item {
+      .label {
+        display: flex;
+        margin-bottom: 12px;
+        p {
+          color: #487fff;
+          font-size: 12px;
+          cursor: pointer;
+          margin-left: 12px;
+        }
+      }
+      margin-bottom: 16px;
+    }
+  }
+  .el-dialog__footer {
+    padding: 20px;
+    text-align: center;
+  }
+}
+</style>

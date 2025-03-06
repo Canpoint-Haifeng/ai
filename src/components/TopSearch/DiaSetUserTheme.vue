@@ -157,8 +157,8 @@ export default {
   },
 }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
 .set-user-theme-body {
   height: 372px;
   overflow: hidden;
@@ -349,3 +349,4 @@ export default {
   padding: 30px 0;
 }
 </style>
+

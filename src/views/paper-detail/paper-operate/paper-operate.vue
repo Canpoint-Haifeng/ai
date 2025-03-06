@@ -422,7 +422,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -497,14 +496,14 @@ export default {
     }
   }
 
-  .item-checkbox :deep(.el-checkbox__label)) {
+  .item-checkbox :deep(.el-checkbox__label) {
       color: $color-text;
       font-size: $font-size-small;
     }
   }
 
   .analysis {
-    :deep(.el-button)) {
+    :deep(.el-button) {
       width: 100%;
       display: flex;
       justify-content: center;
@@ -573,3 +572,4 @@ export default {
   float: right;
 }
 </style>
+

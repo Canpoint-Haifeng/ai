@@ -33,8 +33,8 @@
   import CTS from '@/common/js/constant'
   import { API } from '@/api/config'
   import { mapState } from 'vuex'
-  import { questionSourceConfig } from '@/common/config/tikuCfg.js'
-  import { getListByPeriod } from '@/common/js/util.js'
+  import { questionSourceConfig } from '@/common/config/tikuCfg'
+  import { getListByPeriod } from '@/common/js/util'
   export default {
   name: 'QuestionSource',
     props: {
@@ -141,7 +141,6 @@
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -195,3 +194,4 @@
     }
   }
 </style>
+

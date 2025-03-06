@@ -1,0 +1,67 @@
+<template>
+  <span />
+</template>
+
+<script>
+  import Login from '../Login/CbLogin.js'
+  import Register from '../Register/Register.js'
+  export default {
+    components: {
+      Login,
+      Register,
+    },
+    methods: {
+      // 显示登录弹框
+      showLogin() {
+        this.$cpLogin({
+          visible: true,
+          onGoRegister: () => {
+            this.onGoregister()
+          },
+        })
+      },
+      // 关闭登录弹窗
+      // closeLogin() {
+      //   this.loginConfig.visible = false
+      //   console.log('关闭登录弹窗')
+      // },
+      // 显示注册弹框
+      showRegister() {
+        this.$cpRegister({
+          visible: true,
+          onGoAgreement: () => {
+            this.$router.push({ name: 'agreement' })
+          },
+          onGoLogin: () => {
+            this.onGologin()
+          },
+        })
+      },
+      // 关闭注册弹窗
+      // closeReg() {
+      //   this.regConfig.visible = false
+      //   console.log('关闭注册弹窗')
+      // },
+      // 去登录
+      onGologin() {
+        this.$cpRegister({ visible: false })
+        setTimeout(() => {
+          this.showLogin()
+        }, 500)
+      },
+      // 去注册
+      onGoregister() {
+        this.$cpLogin({ visible: false })
+        setTimeout(() => {
+          this.showRegister()
+        }, 500)
+      },
+    },
+  }
+</script>
+<style lang="scss" scoped></style>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+</style>
+

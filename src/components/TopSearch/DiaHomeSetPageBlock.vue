@@ -228,8 +228,8 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .select-home-block-segment {
     padding: 10px 0;
     height: 500px;
@@ -320,3 +320,4 @@
     }
   }
 </style>
+

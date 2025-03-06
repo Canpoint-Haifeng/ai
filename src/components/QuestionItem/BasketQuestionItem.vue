@@ -38,8 +38,8 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .basket-question-item {
     position: relative;
     width: 382px;
@@ -75,3 +75,4 @@
     }
   }
 </style>
+

@@ -12,7 +12,7 @@
 <script>
 import { ref, computed, watch, onMounted, onBeforeUnmount, inject } from 'vue'
 import { useStore } from 'vuex'
-import cfgDict from './config.js'
+import cfgDict from './config'
 import { throttle } from '@/common/helper/throttle-debounce'
 import { getToken } from '@/common/js/util'
 
@@ -155,7 +155,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -176,3 +175,4 @@ export default {
   }
 }
 </style>
+

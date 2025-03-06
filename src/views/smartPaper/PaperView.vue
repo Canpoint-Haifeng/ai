@@ -206,7 +206,7 @@ import questionItemMixin from '@/common/mixins/questionItemMixin'
 import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin'
 import KnowledgeView from './KnowledgeView.vue'
 import analysis from './components/analysis.vue'
-import { decrypt } from '@/common/js/util.js'
+import { decrypt } from '@/common/js/util'
 import aaa from './a'
 export default {
   components: {
@@ -928,7 +928,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -1151,3 +1150,4 @@ export default {
   color: #ffffff;
 }
 </style>
+

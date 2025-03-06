@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :visible="visible" @update:visible="$emit('update:visible', $event)"
     title="解析"
     width="800px"
     class="analysis-dialog"
@@ -134,33 +134,32 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
 .analysis-dialog {
-  :deep(.el-dialog__body)) {
+  :deep(.el-dialog__body) {
     padding: 0;
   }
   
   .analysis-tabs {
-    :deep(.el-tabs__header)) {
+    :deep(.el-tabs__header) {
       margin: 0;
       padding: 0 20px;
       background: #f5f7fa;
       border-bottom: 1px solid #e4e7ed;
     }
     
-    :deep(.el-tabs__nav-wrap::after)) {
+    :deep(.el-tabs__nav-wrap::after) {
       display: none;
     }
     
-    :deep(.el-tabs__active-bar)) {
+    :deep(.el-tabs__active-bar) {
       background-color: #487fff;
     }
     
-    :deep(.el-tabs__item)) {
+    :deep(.el-tabs__item) {
       height: 50px;
       line-height: 50px;
       font-size: 14px;
@@ -244,3 +243,4 @@ export default defineComponent({
   }
 }
 </style>
+

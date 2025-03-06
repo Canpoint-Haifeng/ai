@@ -66,8 +66,8 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .back-top-components {
     width: 40px;
     height: 50px;
@@ -97,3 +97,4 @@
     }
   }
 </style>
+

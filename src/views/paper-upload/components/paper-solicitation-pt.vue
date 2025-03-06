@@ -150,7 +150,7 @@ import { ElMessage } from 'element-plus'
   import NoresultCommon from '@/components/Noresult/Noresult-common'
   import { getToken } from '@/common/js/util'
   import { mapState } from 'vuex'
-  import { PaperTimesPicker } from '@/components/CpFan/index.js'
+  import { PaperTimesPicker } from '@/components/CpFan/index'
   export default {
     components: {
       PaperTimesPicker,
@@ -416,7 +416,7 @@ import { ElMessage } from 'element-plus'
         display: flex;
         justify-content: space-between;
 
-        :deep(.el-form-item)) {
+        :deep(.el-form-item) {
           .el-radio-group {
             .el-radio-button {
               margin-right: 16px;
@@ -545,7 +545,7 @@ import { ElMessage } from 'element-plus'
       }
     }
 
-    :deep(.upload-dia)) {
+    :deep(.upload-dia) {
       .el-dialog__header {
         background: #f3f7fb;
         line-height: 44px;
@@ -668,11 +668,11 @@ import { ElMessage } from 'element-plus'
   }
 
   .demo-form-inline {
-    :deep(.el-form-item__label)) {
+    :deep(.el-form-item__label) {
         color: #999999;
       }
     }
-    :deep(.el-radio-button--mini .el-radio-button__inner)) {
+    :deep(.el-radio-button--mini .el-radio-button__inner) {
         font-size: 14px;
       }
     }

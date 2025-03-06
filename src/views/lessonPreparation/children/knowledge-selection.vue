@@ -15,7 +15,7 @@
               >{{ teachCurrentName }} / {{ gradeCurrentName }}</span>
               <span v-else>请点击图标，选择教材</span>
               <el-popover
-                v-model="visible"
+                :visible="visible" @update:visible="$emit('update:visible', $event)"
                 placement="bottom"
                 popper-class="select-popper"
                 width="800"
@@ -358,7 +358,7 @@
 
 <script>
 import CTS from '@/common/js/constant'
-import { getSimpleCheckedLeaf } from '@/common/js/util.js'
+import { getSimpleCheckedLeaf } from '@/common/js/util'
 import { mapState } from 'vuex'
 import BaseDialog from '@/components/BaseDialog/BaseDialog'
 import PaperTime from '@/components/Category/PaperTime.vue'
@@ -928,7 +928,7 @@ export default {
   margin: 15px 18px 5px 18px;
   width: 230px;
 
-  :deep(.el-input__inner)) {
+  :deep(.el-input__inner) {
       border-radius: 4px;
       height: 26px;
       line-height: 26px;

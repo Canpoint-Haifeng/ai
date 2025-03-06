@@ -15,10 +15,10 @@
 </template>
 
 <script>
-import CTS from '@/common/js/constant.js'
-import { API } from '@/api/config.js'
+import CTS from '@/common/js/constant'
+import { API } from '@/api/config'
 import scrollIntoView from 'scroll-into-view'
-import { isLogin, setStore, getStore } from '@/common/js/util.js'
+import { isLogin, setStore, getStore } from '@/common/js/util'
 import Carousel from '@/components/Carousel/Carousel.vue'
 import HotNewSyncPaper from './compontents/HotNewSyncPaper.vue'
 import AppLogin from '@/components/AppLogin/AppLogin.vue'
@@ -35,7 +35,7 @@ import parallelPaperBox from './compontents/parallel-paper-box.vue'
 import MyCompositionPaper from './compontents/MyCompositionPaper.vue'
 import MultiGoodQuestion from './compontents/MultiGoodQuestion.vue'
 import HomeUserApp from './compontents/HomeUserApp.vue'
-import { paperIndexTurnConfig } from '@/common/config/tikuCfg.js'
+import { paperIndexTurnConfig } from '@/common/config/tikuCfg'
 import PaperHomeActivity from './compontents/activity/PaperHomeActivity.vue'
 
 import { ref, reactive, computed, watch, onMounted, nextTick, toRefs } from 'vue'
@@ -366,7 +366,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -797,3 +796,4 @@ export default {
   }
 }
 </style>
+

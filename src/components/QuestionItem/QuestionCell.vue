@@ -334,8 +334,11 @@ eg:
     },
   }
 </script>
-
 <style lang="scss">
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
   /*.underline {
     display: inline-block;
     text-decoration: underline;
@@ -433,12 +436,6 @@ eg:
     padding-bottom: 4px;
     word-break: break-word;
   }*/
-</style>
-
-<style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-@import "@/assets/css/variables.scss";
-@import "@/assets/css/variables.scss";
   .ques-origin {
     overflow: hidden;
     .ques-option {
@@ -526,3 +523,5 @@ eg:
     }
   }
 </style>
+
+

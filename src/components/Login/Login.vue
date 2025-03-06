@@ -618,8 +618,11 @@ export default {
   },
 }
 </script>
-
 <style lang="scss">
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 // .v-modal {
 //   opacity: 0.1;
 // }
@@ -631,13 +634,7 @@ export default {
 .weui_icon_msg:before {
   font-size: 34px;
 }
-</style>
-
-<style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-@import "@/assets/css/variables.scss";
-@import "@/assets/css/variables.scss";
-.login-dialog :deep(.el-dialog)) {
+.login-dialog :deep(.el-dialog) {
     width: 824px;
     padding: 0px;
     box-sizing: border-box;
@@ -707,7 +704,7 @@ export default {
     .noCaptcha-wrapper {
       margin-bottom: 22px;
     }
-    .form-item :deep(.icon-box)) {
+    .form-item :deep(.icon-box) {
       position: relative;
       margin-bottom: 30px;
         position: absolute;
@@ -853,7 +850,7 @@ export default {
     }
 
     .form-item-agree {
-      :deep(.el-checkbox__label)) {
+      :deep(.el-checkbox__label) {
         font-size: 12px;
         padding-left: 6px;
         .text {
@@ -925,9 +922,11 @@ export default {
     color: #487fff;
     font-size: 12px;
   }
-  :deep(.el-checkbox__label)) {
+  :deep(.el-checkbox__label) {
     font-size: 12px;
     padding-left: 6px;
   }
 }
 </style>
+
+

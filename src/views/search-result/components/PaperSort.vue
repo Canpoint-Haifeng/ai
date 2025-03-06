@@ -67,7 +67,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -85,19 +84,19 @@ export default {
   margin: 0 30px 0 110px;
   width: 174px;
 
-  :deep(.iconsearch)) {
+  :deep(.iconsearch) {
     font-size: $font-size-medium;
     cursor: pointer;
   }
 
-  :deep(.el-input__suffix)) {
+  :deep(.el-input__suffix) {
     right: 12px;
   }
 }
 
 // 图书搜索框样式
 .book-search {
-  :deep(.el-input)) {
+  :deep(.el-input) {
     margin: 0;
   }
 }
@@ -196,3 +195,4 @@ export default {
   }
 }
 </style>
+

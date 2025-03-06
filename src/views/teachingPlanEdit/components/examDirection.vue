@@ -96,12 +96,11 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-:deep(.el-dialog)) {
+:deep(.el-dialog) {
   .exam_content {
     padding: 30px 30px 0;
     h6 {
@@ -118,3 +117,4 @@ export default {
   }
 }
 </style>
+

@@ -153,7 +153,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -168,14 +167,15 @@ export default {
     overflow: hidden;
     padding: 20px 20px 0 20px;
   }
-  :deep(.el-dialog__body)) {
+  :deep(.el-dialog__body) {
     height: 500px;
     overflow-y: scroll;
   }
-  :deep(.el-dialog__footer)) {
+  :deep(.el-dialog__footer) {
     height: 60px;
     padding: 15px 0px;
     text-align: center;
   }
 }
 </style>
+

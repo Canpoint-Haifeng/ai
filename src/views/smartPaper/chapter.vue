@@ -10,7 +10,7 @@
             </div>
             <span v-else>请点击图标，选择教材</span>
             <el-popover
-              v-model="visible"
+              :visible="visible" @update:visible="$emit('update:visible', $event)"
               style="height: 16px;"
               placement="bottom"
               popper-class="select-popper"
@@ -236,7 +236,7 @@ import {
 } from '@/common/js/util'
 import ItemOne from '@/views/smartPaper/components/one-selection-knowledge'
 import merge from 'webpack-merge'
-import { delCatalogueTypeByTree } from '@/common/js/util.js'
+import { delCatalogueTypeByTree } from '@/common/js/util'
 export default {
   name: 'Chapter',
   components: { ItemOne },
@@ -639,8 +639,8 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
+<style lang="scss">
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
@@ -692,7 +692,7 @@ export default {
     position: relative;
     cursor: pointer;
 
-    :deep(.scsne_tip)) {
+    :deep(.scsne_tip) {
       cursor: pointer;
       position: absolute;
       top: -10px;
@@ -837,15 +837,15 @@ export default {
     width: 914px;
     height: min-content;
 
-    :deep(.el-tabs .el-tabs__header)) {
+    :deep(.el-tabs .el-tabs__header) {
       padding: 0 20px;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar)) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
       background-color: $color-theme;
     }
 
-    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active)) {
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
       color: $color-theme;
     }
   }
@@ -892,8 +892,6 @@ export default {
   // text-overflow: ellipsis;
   // white-space: normal;
 }
-</style>
-<style lang="scss">
 .custom-tree-content {
   /* 隐藏默认勾选框 */
   .el-tree-node__content .el-checkbox {
@@ -943,3 +941,4 @@ export default {
   }
 }
 </style>
+

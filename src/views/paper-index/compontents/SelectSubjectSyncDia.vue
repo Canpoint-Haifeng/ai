@@ -92,8 +92,8 @@
 </template>
 
 <script>
-import { isLogin, setCookieSubjectVolume } from '@/common/js/util.js'
-import { API } from '@/api/config.js'
+import { isLogin, setCookieSubjectVolume } from '@/common/js/util'
+import { API } from '@/api/config'
 export default {
   data() {
     return {
@@ -317,7 +317,6 @@ export default {
   },
 }
 </script>
-
 <style scoped lang="scss">
 @import "@/assets/css/variables.scss";
 .subject-sync-body {
@@ -350,3 +349,4 @@ export default {
   text-align: center;
 }
 </style>
+

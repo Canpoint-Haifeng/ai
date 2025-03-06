@@ -88,7 +88,6 @@ export default {
     }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -122,7 +121,7 @@ export default {
                 color: #fff;
             }
         }
-        :deep(.el-button)) {
+        :deep(.el-button) {
             margin-left: auto;
             padding: 0;
             span {
@@ -132,3 +131,4 @@ export default {
     }
 }
 </style>
+

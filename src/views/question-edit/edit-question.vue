@@ -92,9 +92,9 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
     CpMessageDialog,
   } from '@/components/CpFan/index.js'
   import { mapState } from 'vuex'
-  import questionAttributeMixin from '@/common/mixins/questionAttributeMixin.js'
+  import questionAttributeMixin from '@/common/mixins/questionAttributeMixin'
   import popupSeparateQuestion from '@/components/Dialog/popup-separate-question'
-  import { verifyQuestion } from '@/common/js/question-verify.js'
+  import { verifyQuestion } from '@/common/js/question-verify'
   export default {
     components: {
       RenderQuestion,
@@ -462,7 +462,6 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -599,10 +598,10 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
       }
     }
   }
-  :deep(.cp-select-input)) {
+  :deep(.cp-select-input) {
     width: 100%;
   }
-  :deep(.cp-select-component .pop-search-select)) {
+  :deep(.cp-select-component .pop-search-select) {
     width: 1120px;
   }
 
@@ -624,3 +623,4 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
     }
   }
 </style>
+

@@ -43,7 +43,6 @@
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -52,3 +51,4 @@
     margin-left: 15px;
   }
 </style>
+

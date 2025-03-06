@@ -51,12 +51,11 @@
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-  :deep(.auth-dialog)) {
+  :deep(.auth-dialog) {
     .el-dialog {
       width: 600px;
       // height: 520px;
@@ -81,3 +80,4 @@
     }
   }
 </style>
+

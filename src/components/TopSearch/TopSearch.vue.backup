@@ -1,0 +1,145 @@
+<template>
+  <div>
+    <div class="head-contenter">
+      <div class="center">
+        <div class="name">
+          全品文教-基础教育的内容供应商和服务者
+        </div>
+        <div class="help">
+          <div
+            class="help-center"
+            @click="helpCenter"
+          >
+            <span class="el-dropdown-link top">
+              <img
+                style="width: 24px;"
+                src="./img/help_fill.svg"
+                alt="帮助中心"
+                class="logo-img"
+              >
+              帮助中心
+            </span>
+          </div>
+          <div class="user">
+            <div
+              v-if="loginStatus"
+              class="user-center"
+            >
+              <span class="el-dropdown-link top">
+                <img
+                  style="width: 24px;"
+                  src="./img/user_4_fill.svg"
+                  alt="用户"
+                  class="logo-img"
+                >
+                我的
+              </span>
+              <i class="el-icon-arrow-down" />
+            </div>
+          </div>
+          <div
+            v-if="!loginStatus"
+            class="login"
+          >
+            <span
+              class="login-btn"
+              @click="showLogin"
+            >登录</span>
+            <span
+              class="register-btn"
+              @click="showRegister"
+            >注册</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      loginStatus: false
+    }
+  },
+  methods: {
+    helpCenter() {
+      console.log('Help center clicked')
+    },
+    showLogin() {
+      console.log('Login clicked')
+    },
+    showRegister() {
+      console.log('Register clicked')
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+@import "@/assets/css/variables.scss";
+.head-contenter {
+  width: 100%;
+  height: 40px;
+  background: #487fff;
+  .center {
+    width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .name {
+      font-size: 14px;
+      color: #fff;
+    }
+    .help {
+      display: flex;
+      align-items: center;
+      .help-center {
+        margin-right: 20px;
+        cursor: pointer;
+        .top {
+          display: flex;
+          align-items: center;
+          color: #fff;
+          .logo-img {
+            margin-right: 5px;
+          }
+        }
+      }
+      .user {
+        margin-right: 20px;
+        .user-center {
+          cursor: pointer;
+          .top {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            .logo-img {
+              margin-right: 5px;
+            }
+          }
+        }
+      }
+      .login {
+        color: #fff;
+        .login-btn {
+          cursor: pointer;
+          margin-right: 10px;
+          &:hover {
+            color: #d6e2ff;
+          }
+        }
+        .register-btn {
+          cursor: pointer;
+          &:hover {
+            color: #d6e2ff;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

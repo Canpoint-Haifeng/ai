@@ -349,17 +349,15 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
 /* SCSS styles */
-</style>
-<style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-@import "@/assets/css/variables.scss";
-@import "@/assets/css/variables.scss";
   
 .tree_select {
   .version_grade {
@@ -380,7 +378,7 @@ export default {
   .tree {
     height: 300px;
     overflow: auto;
-    :deep(.el-tree)) {
+    :deep(.el-tree) {
       .el-tree-node {
         .custom-tree-node {
           .knowledge {
@@ -397,3 +395,4 @@ export default {
   }
 }
 </style>
+

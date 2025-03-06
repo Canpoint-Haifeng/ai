@@ -159,12 +159,12 @@
 </template>
 
 <script>
-  import { isLogin, getToken } from '@/common/js/util.js'
-  import { API } from '@/api/config.js'
+  import { isLogin, getToken } from '@/common/js/util'
+  import { API } from '@/api/config'
   import { mapState } from 'vuex'
-  import PaperHomeList from '@/components/PaperItem/PaperHomeList.js'
+  import PaperHomeList from '@/components/PaperItem/PaperHomeList'
   import QuestionCell from '@/components/QuestionItem/QuestionCell.vue'
-  import MyCompositionBooks from './MyCompositionBooks.js'
+  import MyCompositionBooks from './MyCompositionBooks'
   import NoresultSearchPng from '@/components/Noresult/noresult-search.png'
   export default {
     components: { PaperHomeList, QuestionCell, MyCompositionBooks },
@@ -375,7 +375,6 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
 @import "@/assets/css/variables.scss";
   .my-composition-segment {
@@ -542,3 +541,4 @@
     }
   }
 </style>
+

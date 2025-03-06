@@ -98,7 +98,7 @@
 <script>
 import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
 import CTS from '@/common/js/constant'
-import { HTMLDecode } from '@/common/js/util.js'
+import { HTMLDecode } from '@/common/js/util'
 import { mapState } from 'vuex'
 import { API } from '@/api/config'
 import { isLogin } from '@/common/js/util'
@@ -402,7 +402,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -516,3 +515,4 @@ export default {
   line-height: 20px;
 }
 </style>
+

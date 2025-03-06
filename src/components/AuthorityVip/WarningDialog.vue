@@ -117,7 +117,6 @@
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -130,7 +129,7 @@
       color: $color-button-d-hover;
     }
   }
-  .auth-dialog :deep(.el-dialog)) {
+  .auth-dialog :deep(.el-dialog) {
     .el-dialog {
       width: 600px;
       // height: 520px;
@@ -160,3 +159,4 @@
     padding: 10px;
   }
 </style>
+

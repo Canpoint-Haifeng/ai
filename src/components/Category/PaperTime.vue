@@ -33,7 +33,7 @@
 
 <script>
 import moment from 'moment'
-import { PaperTimesPicker } from '@/components/CpFan/index.js'
+import { PaperTimesPicker } from '@/components/CpFan/index'
 moment.locale('zh-cn')
 export default {
   name: 'PaperTime',
@@ -147,8 +147,9 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped></style>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
+</style>
+

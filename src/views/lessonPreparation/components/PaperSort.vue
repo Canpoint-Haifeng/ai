@@ -67,7 +67,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -80,7 +79,7 @@ export default {
   margin-right: 30px;
 }
 
-.paper-search :deep()) {
+.paper-search :deep() {
   display: inline-block;
   margin: 0 30px 0 110px;
   width: 174px;
@@ -96,7 +95,7 @@ export default {
 }
 
 // 图书搜索框样式
-.book-search :deep()) {
+.book-search :deep() {
   margin: 0;
 }
 
@@ -194,3 +193,4 @@ export default {
   }
 }
 </style>
+

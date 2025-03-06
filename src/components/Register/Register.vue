@@ -519,18 +519,15 @@ export default {
   },
 }
 </script>
-
 <style lang="scss">
-// .v-modal {
-//   opacity: 0.1;
-// }
-</style>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
-.login-dialog :deep(.el-dialog)) {
+// .v-modal {
+//   opacity: 0.1;
+// }
+.login-dialog :deep(.el-dialog) {
     width: 824px;
     height: 540px;
     padding: 32px 32px 70px 32px;
@@ -572,7 +569,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    .form-item :deep()) {
+    .form-item :deep() {
       position: relative;
       .is-error {
         .form-input {
@@ -657,7 +654,7 @@ export default {
         opacity: 1;
       }
     }
-    .form-item-agree :deep()) {
+    .form-item-agree :deep() {
       margin-top: -5px;
       margin-bottom: 5px;
       .el-radio__input.is-checked + .el-radio__label {
@@ -733,3 +730,5 @@ export default {
   }
 }
 </style>
+
+

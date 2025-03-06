@@ -142,7 +142,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
   import QuestionType from '@/components/Category/QuestionType'
   import QuestionDiff from '@/components/Category/QuestionDiff'
   import QuestionSource from '@/components/Category/QuestionSource'
-  import { SpanPagintion } from '@/components/CpFan/index.js'
+  import { SpanPagintion } from '@/components/CpFan/index'
   import BaseDialog from '@/components/BaseDialog/BaseDialog'
   import ShareQuestionItem from './ShareQuestionItem'
   import { throttle } from '@/common/helper/throttle-debounce'
@@ -512,7 +512,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
         }
       }
     }
-    :deep(.paper-search)) {
+    :deep(.paper-search) {
       display: inline-block;
       margin: 0 30px 0 110px;
       width: 174px;
@@ -524,7 +524,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeMount, onBeforeUpdat
         right: 12px;
       }
     }
-    :deep(.paper-show-answer)) {
+    :deep(.paper-show-answer) {
       display: inline-block;
       margin-right: 30px;
       .el-checkbox__inner {

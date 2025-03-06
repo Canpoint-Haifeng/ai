@@ -303,7 +303,7 @@ export default {
 .upload-file-paper {
   margin-top: 40px;
 
-  :deep(.upload-demo)) {
+  :deep(.upload-demo) {
     .el-upload {
       width: 862px;
 

@@ -1,0 +1,94 @@
+<template>
+  <div class="dialog-wrapper">
+    <el-dialog
+      :visible="visible" @update:visible="$emit('update:visible', $event)"
+      title="选择我的服务"
+      :modal-append-to-body="false"
+      :show-close="true"
+      width="650px"
+    >
+      <div class="dialog-content">
+        <slot name="dialogTips" />
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button
+            v-if="showCancelBtn"
+            class="btn btn-gray"
+            @click="cancel"
+          >
+            {{ cancelBtnText }}
+          </el-button>
+          <el-button
+            v-if="showConfirmBtn"
+            class="btn btn-shadow"
+            @click="confirm"
+          >
+            {{ confirmBtnText }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { defineComponent, ref } from "vue"
+
+export default defineComponent({
+  props: {
+    showConfirmBtn: {
+      type: Boolean,
+      default: true
+    },
+    showCancelBtn: {
+      type: Boolean,
+      default: true
+    },
+    confirmBtnText: {
+      type: String,
+      default: '确定'
+    },
+    cancelBtnText: {
+      type: String,
+      default: '取消'
+    }
+  },
+  setup(props, { emit }) {
+    const visible = ref(false)
+    
+    const show = () => {
+      visible.value = true
+    }
+    
+    const hide = () => {
+      visible.value = false
+    }
+    
+    const cancel = () => {
+      hide()
+      emit('cancel')
+    }
+    
+    const confirm = () => {
+      hide()
+      emit('confirm')
+    }
+    
+    return {
+      visible,
+      show,
+      hide,
+      cancel,
+      confirm
+    }
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+/* SCSS styles */
+</style>

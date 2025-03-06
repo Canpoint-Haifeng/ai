@@ -76,8 +76,8 @@ export default {
   }
 }
 </script>
-
 <style lang="scss">
+@import "@/assets/css/variables.scss";
 .head-contenter {
   width: 100%;
   height: 40px;
@@ -142,3 +142,4 @@ export default {
   }
 }
 </style>
+

@@ -402,13 +402,12 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
   
-.category-container :deep()) {
+.category-container :deep() {
   padding: 20px 20px 8px 20px;
   background: $color-white;
   // .category-content {
@@ -432,3 +431,4 @@ export default {
   margin-top: 4px;
 }
 </style>
+

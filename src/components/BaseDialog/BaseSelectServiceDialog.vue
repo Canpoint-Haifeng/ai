@@ -1,7 +1,7 @@
 <template>
   <div class="dialog-wrapper">
     <el-dialog
-      v-model="visible"
+      :visible="visible" @update:visible="$emit('update:visible', $event)"
       title="选择我的服务"
       :modal-append-to-body="false"
       :show-close="true"
@@ -85,10 +85,10 @@ export default defineComponent({
   }
 })
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
 @import "@/assets/css/variables.scss";
 /* SCSS styles */
 </style>
+

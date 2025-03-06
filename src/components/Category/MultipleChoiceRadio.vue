@@ -30,8 +30,8 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
+@import "@/assets/css/variables.scss";
   .multi-choice {
     display: inline-block;
     padding: 0 4px 12px 4px;
@@ -64,3 +64,4 @@
     }
   }
 </style>
+

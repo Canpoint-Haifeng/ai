@@ -139,9 +139,9 @@ import { getToken, isLogin } from '@/common/js/util'
 import questionItemMixin from '@/common/mixins/questionItemMixin'
 import KnowledgeTypeMulti from '@/components/Category/MultiKnowledgeType'
 import { throttle } from '@/common/helper/throttle-debounce'
-import { SpanPagintion } from '@/components/CpFan/index.js'
-import { dealQuestion } from '@/common/helper/search-keywords.js'
-import { decrypt } from '@/common/js/util.js'
+import { SpanPagintion } from '@/components/CpFan/index'
+import { dealQuestion } from '@/common/helper/search-keywords'
+import { decrypt } from '@/common/js/util'
 
 export default {
   components: {
@@ -782,7 +782,7 @@ export default {
       }
     }
   }
-  :deep(.paper-search)) {
+  :deep(.paper-search) {
     display: inline-block;
     margin-left: 40px;
     width: 200px;

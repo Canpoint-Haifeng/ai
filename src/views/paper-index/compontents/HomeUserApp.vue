@@ -87,7 +87,6 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
 @import "@/assets/css/variables.scss";
   .home-user-app-segment {
@@ -128,3 +127,4 @@
     }
   }
 </style>
+

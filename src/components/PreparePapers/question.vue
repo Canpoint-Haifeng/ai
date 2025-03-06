@@ -188,7 +188,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -277,7 +276,7 @@ export default {
       display: flex;
       align-items: center;
     }
-    :deep(.el-button)) {
+    :deep(.el-button) {
       margin-left: 12px;
       display: flex;
       align-items: center;
@@ -313,3 +312,4 @@ export default {
   }
 }
 </style>
+

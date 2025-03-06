@@ -68,8 +68,8 @@ export default {
   }
 }
 </script>
-
 <style lang="scss">
+@import "@/assets/css/variables.scss";
 .top-bar {
   width: 100%;
   min-width: 1200px;
@@ -128,3 +128,4 @@ export default {
   }
 }
 </style>
+

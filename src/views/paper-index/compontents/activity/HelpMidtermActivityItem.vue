@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import CpModal from '@/components/CpFan/Category/CpModal.js'
+  import CpModal from '@/components/CpFan/Category/CpModal'
   export default {
     components: { CpModal },
     data() {
@@ -59,7 +59,6 @@
     },
   }
 </script>
-
 <style scoped lang="scss">
 @import "@/assets/css/variables.scss";
   .three-gift-success-body {
@@ -136,3 +135,4 @@
     }
   }
 </style>
+

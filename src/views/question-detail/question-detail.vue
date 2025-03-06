@@ -419,7 +419,6 @@
     },
   }
 </script>
-
 <style lang="scss" scoped>
 @import "@/assets/css/mixins.scss";
 @import "@/assets/css/variables.scss";
@@ -442,7 +441,7 @@
   .question-content {
     overflow: hidden;
     padding: 20px 20px 0 20px;
-    :deep(.question-wrapper-faber)) {
+    :deep(.question-wrapper-faber) {
       .collected-btn {
         display: none !important;
       }
@@ -597,3 +596,4 @@
     }
   }
 </style>
+

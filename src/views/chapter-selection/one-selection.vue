@@ -155,7 +155,7 @@
   import QuestionFilter from '@/components/Category/QuestionFilter'
   import KnowledgeTypeMulti from '@/components/Category/MultiKnowledgeType'
   import { throttle } from '@/common/helper/throttle-debounce'
-  import { SpanPagintion } from '@/components/CpFan/index.js'
+  import { SpanPagintion } from '@/components/CpFan/index'
 
   export default {
     components: {
@@ -570,7 +570,7 @@
         }
       }
     }
-    :deep(.paper-search)) {
+    :deep(.paper-search) {
       display: inline-block;
       margin: 0 30px 0 110px;
       width: 174px;
@@ -582,7 +582,7 @@
         right: 12px;
       }
     }
-    :deep(.paper-show-answer)) {
+    :deep(.paper-show-answer) {
       display: inline-block;
       margin-right: 30px;
       .el-checkbox__inner {

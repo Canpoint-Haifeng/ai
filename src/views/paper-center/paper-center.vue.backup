@@ -1,0 +1,191 @@
+<template>
+  <div class="content-container">
+    <div class="user-content">
+      <div class="user-content-top">
+        <ul class="my-resources-list">
+          <div
+            v-for="sub of tabsData"
+            :key="sub.name"
+          >
+            <li
+              v-if="sub === tabsData[tabsData.length - 1]"
+              :class="{ active: sub.order == currentIndex }"
+              @click=" goLinkRoute(sub)"
+            >
+              {{ sub.name }}
+            </li>
+            <li
+              v-else
+              :class="{ active: sub.order == currentIndex }"
+              @click=" goLinkRoute(sub)"
+            >
+              {{ sub.name
+              }}<span />
+            </li>
+          </div>
+        </ul>
+      </div>
+      <div class="user-content-bottom">
+        <SyncPapers
+          v-if="itemData"
+          :item-data="itemData"
+          :order="currentIndex"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import CTS from '@/common/js/constant.js'
+import Breadcrumb from '@/components/Breadcrumb/Breadcrumb.js'
+import ItemOne from './children/one-selection.js'
+import merge from 'webpack-merge'
+import SyncPapers from './children/sync-papers.vue'
+import StagePapers from './children/stage-papers.vue'
+import PreparePapers from './children/prepare-papers.vue'
+import windowScrollResetMixin from '@/common/mixins/windowScrollResetMixin.js'
+import { mapState } from 'vuex'
+export default {
+  components: {
+    Breadcrumb,
+    ItemOne,
+    SyncPapers,
+    StagePapers,
+    PreparePapers
+  },
+  mixins: [windowScrollResetMixin],
+  data() {
+    return {
+      tabsData: [],
+      currentIndex: '0',
+      nickName: 'Smile',
+      visible: false,
+      currentPath: '',
+      itemData: null
+    }
+  },
+  computed: {
+    ...mapState(['currSubject']),
+  },
+  watch: {
+    $route: {
+      handler(newUrl, oldUrl) {
+        console.log(this.tabsData);
+        this.currentIndex = newUrl.query.type ? newUrl.query.type : '0'
+        this.tabsData.forEach(item => {
+          if (item.order === this.currentIndex) {
+            this.itemData = item
+          }
+        })
+      },
+      immediate: true
+    },
+  },
+  created() {
+    this.getSyncPaper()
+  },
+  methods: {
+    getSyncPaper() {
+      const url = { urlPath: '/paper-builder/config/queryPaperScene' }
+      const params = {
+        stage: this.currSubject.periodCode,
+      }
+      this.apiGet(url, params).then(res => {
+        if (res.code === CTS.constant.SUCCESS_CODE) {
+          this.tabsData = res.data.map((v, i) => {
+            v.order = i + ''
+            v.name = v.paperSceneName
+            return v
+          })
+          let index = this.$route.query.type ? this.$route.query.type : '0'
+          this.tabsData.forEach(item => {
+            if (item.order === index) {
+              this.itemData = item
+            }
+          })
+          console.log(this.tabsData);
+        } else {
+          // this.$message.error(res.msg)
+        }
+      })
+    },
+    handleClick(tab, event) {
+      this.$router.push({
+        query: merge(this.$route.query, { 'tabActiveName': tab.name })
+      })
+      this.crumbsData[1].text = tab.label
+    },
+    goLinkRoute(row) {
+      this.itemData = row
+      if (row.order === this.currentIndex) return
+      const data = ['', '?type=1', '?type=2']
+      const url = `/paper/center/syncPapers${data[row.order]}`
+      this.$router.push({ path: url })
+    },
+    treeNodeClick() {
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+@import "@/assets/css/variables.scss";
+@import "@/assets/css/variables.scss";
+.user-content {
+  width: 1200px;
+  min-height: 473px;
+  margin-bottom: 20px;
+
+  .user-content-top {
+    background-color: $color-white;
+
+    .my-resources-list {
+      margin: 20px 0;
+      display: flex;
+
+      li {
+        width: 88px;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+        cursor: pointer;
+        margin: 10px;
+        position: relative;
+      }
+
+      span {
+        position: absolute;
+        height: 20px;
+        width: 0;
+        top: 5px;
+        left: 98px;
+        border-right: 1px solid rgb(226, 226, 226);
+      }
+
+      li.active {
+        color: white;
+        background: #487FFF;
+        border-radius: 15px;
+      }
+
+      // li:hover {
+      //   color: black;
+      // }
+    }
+
+    :deep(.el-tabs .el-tabs__header) {
+      padding: 0 20px;
+    }
+
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .el-tabs__active-bar) {
+      background-color: $color-theme;
+    }
+
+    :deep(.el-tabs .el-tabs__header .el-tabs__nav .is-active) {
+      color: $color-theme;
+    }
+  }
+}
+</style>
+
